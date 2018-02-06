@@ -5,9 +5,7 @@ An fast and easy to use application bootstrapping tool for [node](http://nodejs.
 
   [![NPM Version][npm-image]][npm-url]
   [![NPM Downloads][downloads-image]][downloads-url]
-  <!-- [![Linux Build][linux-image]][downloads-url]
-  [![Windows Build][windows-image]][downloads-url]
-  [![Test Coverage][test-image]][downloads-url] -->
+ 
 
 ----
 ### **To install**
