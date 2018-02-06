@@ -14,10 +14,10 @@
 })();
 */
 
-require('bixbyte-frame');
+require('bixbyte-frame-lite');
 
 //@ Load the basic server configurations
-require(path.join(__dirname,'configuration.js'));
+require(path.join(__dirname,'configuration.es6'));
 
 //@ THE PREVENT UNAUTHORIZED TASKS MIDDLEWARE
 global.adminOnly = function(req,res,next){
