@@ -1,6 +1,6 @@
 {
     "name": "framify-lite",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A lightweight application bootstraping tool for node.js",
     "main": "index.js",
     "scripts": {
@@ -34,7 +34,7 @@
     "homepage": "https://bitbucket.org/ianmin2/framify-lite#readme",
     "email": "framify@bixbyte.io",
     "dependencies": {
-        "bixbyte-frame-lite": "1.0.0",
+        "bixbyte-frame-lite": "1.0.1",
         "shelljs": "*"
     },
     "bin": {
