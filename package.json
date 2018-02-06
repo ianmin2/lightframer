@@ -1,0 +1,43 @@
+{
+    "name": "framify-lite",
+    "version": "1.0.0",
+    "description": "A lightweight application bootstraping tool for node.js",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"\nThank you for choosing framify-lite\n\""
+    },
+    "preferGlobal": true,
+    "engineStrict": true,
+    "engines": {
+        "node": ">=6.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://bitbucket.org/ianmin2/framify-lite"
+    },
+    "keywords": [
+        "bixbyte-frame-lite",
+        "framify-lite",
+        "bixbyte-cli",
+        "project generator",
+        "generator",
+        "drivify",
+        "gitify",
+        "cli"
+    ],
+    "author": "Ian Innocent",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://bitbucket.org/ianmin2/framify-lite/issues"
+    },
+    "website": "https://bixbyte.io",
+    "homepage": "https://bitbucket.org/ianmin2/framify-lite#readme",
+    "email": "framify@bixbyte.io",
+    "dependencies": {
+        "bixbyte-frame-lite": "1.0.0",
+        "shelljs": "*"
+    },
+    "bin": {
+        "framify-lite": "index.js"
+    }
+}

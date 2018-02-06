@@ -1,0 +1,22 @@
+module.exports = 
+{
+  connection : 
+  {
+    service: 'gmail',
+    auth: 
+    {
+      user: 'passwordreset@example.com',
+      pass: 'YOUR_EMAIL_PASSWORD'
+    }
+  }
+  ,accounts : 
+  {
+    passwords:        "Password Recovery <passwordreset@example.com>",
+    welcome:          "User Accounts <accounts@example.com>",
+    errors:           "Framify Errors <errors@example.com>",
+    notifications:    "Framify Newsletter <noreply@example.com>",
+    support:          "Framify Support <support@example.com>"
+  }
+  , recipient : "administrator@example.com"
+  
+};
