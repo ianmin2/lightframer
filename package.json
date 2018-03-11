@@ -1,6 +1,6 @@
 {
     "name": "lightframer",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "A basic lightframe based application bootstraping tool",
     "main": "index.js",
     "scripts": {
@@ -31,7 +31,7 @@
     "homepage": "https://bitbucket.org/ianmin2/framify-lite#readme",
     "email": "framify@bixbyte.io",
     "dependencies": {
-        "lightframe": "~1.0.0",
+        "lightframe": "^1.0.0",
         "shelljs": "*"
     },
     "bin": {
