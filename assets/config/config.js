@@ -6,36 +6,6 @@ let files = {
 }
 
 
-//@ OATH SERVICE PROVIDER CONNNECTION KEYS
-exports.oauth = 
-{
-	"facebook" : {
-		"client_id": "",
-		"client_secret": "",
-		"callback": "http://localhost:1357/auth/facebook/callback"
-	},
-	"google" : {
-		"client_id": "",
-		"client_secret": "",
-		"callback": ""
-	},
-	"twitter" : {
-		"client_id": "",
-		"client_secret": "",
-		"callback": ""
-	},
-	"github" : {
-		"client_id": "",
-		"client_secret": "",
-		"callback": ""
-	},
-	"linkedin" : {
-		"client_id": "",
-		"client_secret": "",
-		"callback": ""
-	}
-};
-
 //@ SQL DATABASE CONNECTION PARAMETERS (.sql)
 if(fs.existsSync(files.sql_config)){
 	exports.sql = require(files.sql_config,'utf8');
@@ -131,3 +101,33 @@ module.exports =
 	+`\nPlease visit https://nodemailer.com/about/ for information on other email configuration options\n\n`.yell
 );
 }
+
+//@ OATH SERVICE PROVIDER CONNNECTION KEYS
+exports.oauth = 
+{
+	"facebook" : {
+		"client_id": "",
+		"client_secret": "",
+		"callback": "http://localhost:1357/auth/facebook/callback"
+	},
+	"google" : {
+		"client_id": "",
+		"client_secret": "",
+		"callback": ""
+	},
+	"twitter" : {
+		"client_id": "",
+		"client_secret": "",
+		"callback": ""
+	},
+	"github" : {
+		"client_id": "",
+		"client_secret": "",
+		"callback": ""
+	},
+	"linkedin" : {
+		"client_id": "",
+		"client_secret": "",
+		"callback": ""
+	}
+};

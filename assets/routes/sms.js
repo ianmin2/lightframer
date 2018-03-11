@@ -40,6 +40,7 @@ router.route("/")
 
 });
 
+//@ ****
 router.route("/echo")
 .all((req,res)=>
 {
@@ -52,6 +53,7 @@ router.route("/echo")
 
 });
 
+ //@ { body : {to,text} }
 router.route("/one")
 .all((req,res)=>
 {
@@ -82,6 +84,7 @@ router.route("/one")
 
 });
 
+//@ { body : [{to,text},{to,text}] }
 router.route("/many")
 .all((req,res) => 
 {
@@ -121,6 +124,7 @@ router.route("/many")
 
 });
 
+//@ { body : {to,text} }
 router.route("/track")
 .all((req,res) => 
 {
@@ -150,7 +154,7 @@ router.route("/track")
 
 });
 
-
+ //@ { body: { to:"__GROUP_ID__" text: "__MESSAGE_{{mem_***}}__TEXT__"  }
 router.route("/template")
 .all((req,res)=>
 {

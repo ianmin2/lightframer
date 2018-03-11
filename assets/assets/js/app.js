@@ -73,7 +73,31 @@ angular.module('framify', ['framify.js'])
         url: "/manage_users",
         cache: false,
         templateUrl: "views/manage_users.html"
+    })
+
+    //@ EO - SDK 
+    .state("app.dotnet_sdk", {
+        url: "/sdk/dotnet",
+        cache: false,
+        templateUrl: "views/sdk/dotnet.html"
+    }).state("app.java_sdk", {
+        url: "/sdk/java",
+        cache: false,
+        templateUrl: "views/sdk/java.html"
+    }).state("app.nodejs_sdk", {
+        url: "/sdk/nodejs",
+        cache: false,
+        templateUrl: "views/sdk/nodejs.html"
+    }).state("app.php_sdk", {
+        url: "/sdk/php",
+        cache: false,
+        templateUrl: "views/sdk/php.html"
+    }).state("app.python_sdk", {
+        url: "/sdk/python",
+        cache: false,
+        templateUrl: "views/sdk/python.html"
     });
+    //@ EO - SDK
 
     //!EXTENDED ROUTE SETTING
     var setRoutes = function setRoutes(routeArray) {

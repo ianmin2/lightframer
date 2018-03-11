@@ -1,5 +1,5 @@
 //@BASIC PROJECT REQUIREMENTS
-require("bixbyte-frame-lite");
+require("lightframe");
 
 //# FETCH THE SCRIPT INSTALLATION DIRECTORY
 app.vars.home 		= 	path.join( path.dirname( fs.realpathSync( __filename ) ) , '/');

@@ -827,9 +827,6 @@ angular.module('framify.js', [
 
 }])
 
-
-
-
 //@ The infobip SMS integration module
 .service("iSMS", ['$http', '$q', 'app', function($http, $q, app) {
 
@@ -844,6 +841,7 @@ angular.module('framify.js', [
 
     }
 
+    //@ { body : {to,text} }
     me.one = (data) => {
 
         return $q((resolve, reject) => {
@@ -870,6 +868,7 @@ angular.module('framify.js', [
 
     };
 
+    //@ { body : [{to,text},{to,text}] }
     me.many = (data) => {
 
         return $q((resolve, reject) => {
@@ -896,6 +895,7 @@ angular.module('framify.js', [
 
     };
 
+    //@ { body: { to:"__GROUP_ID__" text: "__MESSAGE_{{mem_***}}__TEXT__"  }
     me.template = (data) => {
 
         return $q((resolve, reject) => {
@@ -922,6 +922,7 @@ angular.module('framify.js', [
 
     };
 
+    //@ { body : {to,text} }
     me.test = (data) => {
 
         return $q((resolve, reject) => {
@@ -948,6 +949,7 @@ angular.module('framify.js', [
 
     };
 
+    //@ ************ 
     me.echo = (data) => {
 
         return $q((resolve, reject) => {
@@ -1118,10 +1120,8 @@ angular.module('framify.js', [
         if ($localStorage.framify_user) {
             $http.defaults.headers.common.Authorization = $localStorage.framify_user.token;
         }
-
-
-
-    }])
+    }
+])
 
 
 

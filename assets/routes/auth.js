@@ -124,7 +124,7 @@ auth.route("/register")
             // mysms.one( { 
             //     to:params.telephone, 
             //     text: 
-            //     `Jambo ${params['name.first']}!\nWelcome to framify!\nYou may now login https://${myAddr}:${app.port}`
+            //     `Jambo ${params['name.first']}!\nWelcome to lightframe!\nYou may now login https://${myAddr}:${app.port}`
             // } ,{ 
             //     'user.name': 'userAdmin', 
             //     'organization': 1, 

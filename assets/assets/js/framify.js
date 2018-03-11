@@ -799,6 +799,7 @@ angular.module('framify.js', ['ui.router', 'framify-paginate', 'ngStorage', 'jso
         // console.log(`All SMS requests via the i service will now be routed to ${me.provider}`);
     };
 
+    //@ { body : {to,text} }
     me.one = function (data) {
 
         return $q(function (resolve, reject) {
@@ -818,6 +819,7 @@ angular.module('framify.js', ['ui.router', 'framify-paginate', 'ngStorage', 'jso
         });
     };
 
+    //@ { body : [{to,text},{to,text}] }
     me.many = function (data) {
 
         return $q(function (resolve, reject) {
@@ -837,6 +839,7 @@ angular.module('framify.js', ['ui.router', 'framify-paginate', 'ngStorage', 'jso
         });
     };
 
+    //@ { body: { to:"__GROUP_ID__" text: "__MESSAGE_{{mem_***}}__TEXT__"  }
     me.template = function (data) {
 
         return $q(function (resolve, reject) {
@@ -856,6 +859,7 @@ angular.module('framify.js', ['ui.router', 'framify-paginate', 'ngStorage', 'jso
         });
     };
 
+    //@ { body : {to,text} }
     me.test = function (data) {
 
         return $q(function (resolve, reject) {
@@ -875,6 +879,7 @@ angular.module('framify.js', ['ui.router', 'framify-paginate', 'ngStorage', 'jso
         });
     };
 
+    //@ ************ 
     me.echo = function (data) {
 
         return $q(function (resolve, reject) {
@@ -1320,26 +1325,20 @@ angular.module('framify.js', ['ui.router', 'framify-paginate', 'ngStorage', 'jso
     $scope.fetch = function (table, data, cryptFields, cb) {
 
         if (Array.isArray(table)) {
-            var _ret = function () {
 
-                var promiseArr = new Array();
+            var promiseArr = new Array();
 
-                table.filter(function (e) {
-                    return typeof e[0] != 'undefined';
-                }).forEach(function (tData, tkey) {
-                    promiseArr.push(do_fetch(tData[0], tData[1] || {}), cryptFields);
-                });
+            table.filter(function (e) {
+                return typeof e[0] != 'undefined';
+            }).forEach(function (tData, tkey) {
+                promiseArr.push(do_fetch(tData[0], tData[1] || {}), cryptFields);
+            });
 
-                promiseArr = promiseArr.filter(function (e) {
-                    return typeof e != 'undefined';
-                });
+            promiseArr = promiseArr.filter(function (e) {
+                return typeof e != 'undefined';
+            });
 
-                return {
-                    v: $q.all(promiseArr)
-                };
-            }();
-
-            if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+            return $q.all(promiseArr);
         } else {
             return $q.resolve(do_fetch(table, data, cryptFields)).catch(function (e) {
                 // console.log("Encountered an error when processing the fetch function.")

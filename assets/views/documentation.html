@@ -1,5 +1,5 @@
 <div ng-init="current='intro'"></div>
-<div id="top_bar">
+<!-- <div id="top_bar">
     <div class="md-top-bar">
         <div class="uk-width-large-8-10 uk-container-center uk-animation-slide-right">
             <ul class="top_bar_nav" id="snippets_grid_filter">
@@ -33,18 +33,72 @@
             </ul>
         </div>
     </div>
-</div>
+</div> -->
+
+
+    <!-- Top-Bar -->
+    <div id="top_bar">
+        <div class="md-top-bar uk-grid">
+            <div class="uk-grid uk-grid-collapse uk-container-center uk-animation-slide-right">
+                <ul class="top_bar_nav uk-width-1-8  uk-hidden-small" id="snippets_grid_filter">
+                    <li class="" ng-class="{'uk-active' : current=='intro'}">
+                        <a ng-click="current='intro'" style="color:red;">intro</a>
+                    </li>
+                    <li class="" ng-class="{'uk-active' : current=='app'}">
+                        <a ng-click="current='app'" style="color:red;">app</a>
+                    </li>
+                    <li class="" ng-class="{'uk-active' : current=='sms'}">
+                        <a ng-click="current='sms'" style="color:red;">sms</a>
+                    </li>
+                    <li class="" ng-class="{'uk-active' : current=='cgi'}">
+                        <a ng-click="current='cgi'" style="color:red;">cgi</a>
+                    </li>
+                    <li class="" ng-class="{'uk-active' : current=='auth'}">
+                        <a ng-click="current='auth'" style="color:red;">auth</a>
+                    </li>
+                    <li class="" ng-class="{'uk-active' : current=='remoteAuth'}">
+                        <a ng-click="current='remoteAuth'" style="color:red;">remoteAuth</a>
+                    </li>
+                    <li class="" ng-class="{'uk-active' : current=='fileModel'}">
+                        <a ng-click="current='fileModel'" style="color:red;">fileModel</a>
+                    </li>
+                    <li class="" ng-class="{'uk-active' : current=='contenteditable'}">
+                        <a ng-click="current='contenteditable'" style="color:red;">contenteditable</a>
+                    </li>
+                    <li class="" ng-class="{'uk-active' : current=='framifyController'}">
+                        <a ng-click="current='framifyController'" style="color:red;">framifyController</a>
+                    </li>
+                </ul>
+                <div class="uk-form  uk-visible-small">
+                    <select class="uk-select" style=" margin-top: 0.2em !important;min-height:2em !important;padding:0px !important;" ng-model="current" >
+                        <option value="intro"> Intro</option>
+                        <option value="app" >App</option>
+                        <option value="sms" >SMS</option>
+                        <option value="cgi" >CGI</option>
+                        <option value="auth" >Authentication</option>
+                        <option value="remoteAuth" >Remote Authentication</option>
+                        <option value="fileModel" >fileModel Directive</option>
+                        <option value="contenteditable" >contenteditable Directive</option>
+                        <option value="framifyController" >framifyController</option>
+                    </select>
+                </div>
+                
+
+            </div>
+        </div>
+    </div>
+    <!-- /Top-Bar -->
 
 
 <div ng-if="current=='intro'">
     <br>
     <center>
-        <h1>@Framify</h1>
+        <h1>@LightFrame</h1>
     </center>
     <br>
     <br>
-    <br> Welcome to Framify,
-    <br><br> The Framify framework is built upon the <code>bixbyte-frame</code> framework ( a back end development framework for the nodejs runtime ) and <code>framify.js</code> ( an Angular 1X UI agnostic platform for eased interaction with the bixbyte-frame
+    <br> Welcome to LightFrame.
+    <br><br> The lghtframe framework is built upon the <code>bixbyte-frame-lite</code> framework ( a back end development framework for the nodejs runtime ) and <code>framify.js</code> ( an Angular 1X UI agnostic platform for eased interaction with the bixbyte-frame
     platform).
 
     <div class="section">

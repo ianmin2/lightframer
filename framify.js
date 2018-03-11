@@ -27,7 +27,7 @@ var Framify = function(){
 				mkdir(homedir);				
 			}else{
 				//INFORM THE USER THAT THE DIRECTORY ALREADY EXISTS 
-				console.log("\n@framify-lite\n\t\t".succ + "Failed to initialize project: ".err + "A directory by that name already exists in the current path.\n" + "Please try another".info + "\n");				
+				console.log("\n@lightframer\n\t\t".succ + "Failed to initialize the project; ".err + "A directory "+ 	`${app.vars.repository }`.yell +" already exists in the current path.\n" + "\t\tPlease try another project name".info + "\n");				
 			};
             
 		});
@@ -36,7 +36,7 @@ var Framify = function(){
 		var mkdir = function (homedir){
 			
 			
-			console.log("\n@framify-lite\n\t\t".success + "Initializing Project ".info + homedir + "\n");
+			console.log("\n@lightframer\n\t\t".success + "Initializing Project ".info + homedir + "\n");
 			
 			//@ Ensure that the target directory exists
 			fse.ensureDirSync(homedir);
@@ -45,7 +45,11 @@ var Framify = function(){
 			fse.copy(path.join(__dirname, "/assets"), homedir)
 			.then(() => {
 
-				c_log(`\n@framify-lite\n\t\t`.success + `A new project '`+ `${homedir}`.yell+`' has been initialized. `);
+				// let app_config_file = json ( fs.readFileSync(path.join(homedir,`/package.json`), 'utf8') );
+
+				// j_log(app_config_file)
+
+				c_log(`\n@lightframer\n\t\t`.success + `A new project '`+ `${homedir}`.yell+`' has been initialized. `);
 
 			})
 			.catch(err => console.error(err))

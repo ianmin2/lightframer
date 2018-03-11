@@ -26,7 +26,7 @@ switch( app.vars.repository ){
     case "--v":
     case "-version":
 	 case "--version":
-        console.log( "\n@framify-lite".yell + appInfo.version + "\n"  )
+        console.log( "\n@lightframer".yell + appInfo.version + "\n"  )
     break;
 	
 	//#APP HELP

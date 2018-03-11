@@ -1,10 +1,10 @@
 {
-    "name": "framify-lite",
+    "name": "lightframer",
     "version": "1.0.1",
-    "description": "A lightweight application bootstraping tool for node.js",
+    "description": "A basic lightframe based application bootstraping tool",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"\nThank you for choosing framify-lite\n\""
+        "test": "echo \"\nPowered by litelightframe\n\""
     },
     "preferGlobal": true,
     "engineStrict": true,
@@ -16,13 +16,10 @@
         "url": "https://bitbucket.org/ianmin2/framify-lite"
     },
     "keywords": [
-        "bixbyte-frame-lite",
-        "framify-lite",
-        "bixbyte-cli",
+        "lightframe",
+        "lightframer",
+        "bixbyte",
         "project generator",
-        "generator",
-        "drivify",
-        "gitify",
         "cli"
     ],
     "author": "Ian Innocent",
@@ -34,10 +31,10 @@
     "homepage": "https://bitbucket.org/ianmin2/framify-lite#readme",
     "email": "framify@bixbyte.io",
     "dependencies": {
-        "bixbyte-frame-lite": "1.0.1",
+        "lightframe": "~1.0.0",
         "shelljs": "*"
     },
     "bin": {
-        "framify-lite": "index.js"
+        "lightframer": "index.js"
     }
 }

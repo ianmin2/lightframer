@@ -14,7 +14,7 @@
 })();
 */
 
-require('bixbyte-frame-lite');
+require('lightframe');
 
 //@ Load the basic server configurations
 require(path.join(__dirname,'configuration.es6'));
@@ -140,10 +140,7 @@ var framifySecurity = function(req, res, next) {
                 next()
     
             }
-    
-    
-    
-    
+        
             //@ Prevent rendering of unauthorized files in the project
         } else if (isConfig.test(req.path) || isSchema.test(req.path) || isRoutes.test(req.path) || isServer.test(req.path)) {
             res.status(401).json(make_response(401, 'Unauthorized'))

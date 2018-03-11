@@ -1,6 +1,7 @@
 {
+	"esvversion": 6,
     "compilerOptions": {
-        "target": "ES6",
+		"target": "ES6",
         "module": "commonjs",	
 		"files": [
 			"*.js",
@@ -8,5 +9,6 @@
 			"**/**/*.js",
 			"**/**/**/*.js"
 		] 
-    }
+	},
+	
 }

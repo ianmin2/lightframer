@@ -12,7 +12,7 @@ module.exports 	= ( passport ) =>
     passport.use( new jwtStrategy( opts, ( jwt_payload,done ) => 
     {	
         
-        $connection.any('SELECT * FROM vw_members WHERE member_id=$1 AND email=$2 AND role=$3 AND telephone=$4 AND active=true',
+        $connection.query('SELECT * FROM vw_members WHERE member_id=$1 AND email=$2 AND role=$3 AND telephone=$4 AND active=true',
         [jwt_payload.member_id,
         jwt_payload.email,
         jwt_payload.role,

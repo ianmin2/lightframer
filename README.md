@@ -1,4 +1,4 @@
-[![##framify-lite](http://cards.ueab.ac.ke/framify-lite.png)](https://www.npmjs.com/package/framify-lite)
+[![##LightFramer](http://cards.ueab.ac.ke/framify-lite.png)](https://www.npmjs.com/package/lightframer)
 
 An fast and easy to use application bootstrapping tool for [node](http://nodejs.org).
 
@@ -9,7 +9,7 @@ An fast and easy to use application bootstrapping tool for [node](http://nodejs.
 
 ----
 ### **To install**
-> npm install -g framify-lite
+> npm install -g lightframer
 
 ---
 ## **usage**
@@ -18,13 +18,13 @@ An fast and easy to use application bootstrapping tool for [node](http://nodejs.
 ### To create a new application ...
 *On the command line, navigate to the directory where you would like to start your application then type :*
    
-> framify-lite appName
+> lightframer appName
 
 ***Note:***
 
 * The *appName* provided will be turned into lowercase
 
-* Spaces are not allowed in the *appName* unless you use  escape characters e.g ** framify-lite *My Application* ** can be typed as ** framify-lite *My\ \Application* **
+* Spaces are not allowed in the *appName* unless you use  escape characters e.g ** lightframer *My Application* ** can be typed as ** lightframer *My\ \Application* **
 The result of this will however be ***my_application***
 
 * The new application directory will be created in the ***current working directory *** (**$PWD**) at the time of running the command.
@@ -32,30 +32,25 @@ The result of this will however be ***my_application***
 ----
 ## A Brief Introduction
 
-Bixbyte's **framify-lite** rapid app development framework base relies primarily on the **UIKit**  and **AngularJs** frameworks for *UI* development. 
+Bixbyte's **lightframer** rapid app development framework base relies primarily on the **UIKit**  and **AngularJs** frameworks for *UI* development. 
 
 it can also easily be ported as a *UI* base for mobile applications. 
 
-**framify-lite** UI builder is built out of the box to interact *Bixbyte's* **bixbyte-frame** application base which is a rapid API development framework complete with a GraphQl like ORM with built in simple yet powerful user access control management.
+**lightframer** UI builder is built out of the box to interact *Bixbyte's* **lightframe** application base which is a rapid API development framework complete with a GraphQl like ORM with built in simple yet powerful user access control management.
 
 This aids in the rapid development of a full stack application essentially following an **MVC** *ish* architecture.
 
-Some of the things that come with ***bixbyte-frame*** *and therefore available in **framify-lite*** by default are:
+Some of the things that come with ***lightframe*** *and therefore available in **lightframer*** by default are:
 
 * A **socket.io** and *CORS* enabled *standardized* **express** based server - base application
 
-* A simple communications module for email sending via the **mandrill api**
+* A simple communications module for email sending via the **nodemailer** mailer
 
 * A simple Branded SMS sender module **premium rate api**
 
-* ***mongodb*** reusable connections and sample schema based off ***mongoose*** and Simple server side factories running off ***wagner-core***
-
-* ***postgresql*** promise based query handler complete with an easy to use 'no alteration required' ORM.
+* ***sql*** promise based query handler complete with an easy to use 'no alteration required' ORM.
 
 * A simple **gulp** based javascript framework packaging module that allows for customization of the default shipped angular modules 
-
-* A CGI based handler to allow the running of php scripts in nodejs.
-Comes with a **JSON** *API* ORM with optional *CORS* packaging of ***HTTP*** requests using ***JSONP*** 
 
 ----
 ## **APP STRUCTURE**
@@ -82,24 +77,19 @@ Comes with a **JSON** *API* ORM with optional *CORS* packaging of ***HTTP*** req
 			- app.json
 			+ & config.js
 			- app-routes.json
+			- passport.js
 > ### *These files are to be created manually*
 >			* & jwt-secret.conf
->			* & mailgun.conf
->			* & mongo.conf
+>			* & email.conf
+>			* & sql.conf
 > 			* & postgres.conf
 > 			* & sms.conf
 > ### *These files are to be created manually*
 
 	  => db
->#####	*POSTGRESQL ORM HANDLER*
+>#####	*SQL ORM HANDLER*
 
 	  		& .js	
-
-	  => php
->#####	*PHP CGI & ORM HANDLER*
-	  		&  index.php
-	  	 	-> classes
-				  & *.php	
 
 	  => routes
 
@@ -126,7 +116,6 @@ Comes with a **JSON** *API* ORM with optional *CORS* packaging of ***HTTP*** req
 
 	  => schema
 
-	     & members.js
 		 - sample.sql
 
 	  => server
@@ -142,7 +131,7 @@ Comes with a **JSON** *API* ORM with optional *CORS* packaging of ***HTTP*** req
 
 		=> framework
 
-			+ & framify-lite.es6		
+			+ & framify.es6		
 
 		+ & app.es6
 	  
@@ -186,7 +175,7 @@ Comes with a **JSON** *API* ORM with optional *CORS* packaging of ***HTTP*** req
 ---
 #### handling files in ***src/ {{ services | directives | controllers }}***
 
-> Make your main controller and directive changes in the ***framework/framify-lite.es6*** file	
+> Make your main controller and directive changes in the ***framework/framify.es6*** file	
 
 #### Note:	
 	
@@ -226,7 +215,7 @@ Comes with a **JSON** *API* ORM with optional *CORS* packaging of ***HTTP*** req
 
 [ Google Material Icons](https://design.google.com/icons/)
 
-[ Out of the box application example](https://bixbyte.io/framify-lite)
+[ Out of the box application example](https://bixbyte.io/lightframer)
 
 ----
 
@@ -242,11 +231,11 @@ Comes with a **JSON** *API* ORM with optional *CORS* packaging of ***HTTP*** req
 
   [MIT](LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/framify-lite.svg
-[npm-url]: https://npmjs.org/package/framify-lite
-[downloads-image]: https://img.shields.io/npm/dm/framify-lite.svg
-[downloads-url]: https://npmjs.org/package/framify-lite
-[linux-image]: https://img.shields.io/travis/ianmin2/framify-lite/master.svg?label=linux
+[npm-image]: https://img.shields.io/npm/v/lightframer.svg
+[npm-url]: https://npmjs.org/package/lightframer
+[downloads-image]: https://img.shields.io/npm/dm/lightframer.svg
+[downloads-url]: https://npmjs.org/package/lightframer
+[linux-image]: https://img.shields.io/travis/ianmin2/lightframer/master.svg?label=linux
 [windows-image]: https://img.shields.io/appveyor/ci/dougwilson/express/master.svg?label=windows
 
-[test-image]: https://img.shields.io/coveralls/ianmin2/framify-lite/master.svg
+[test-image]: https://img.shields.io/coveralls/ianmin2/lightframer/master.svg

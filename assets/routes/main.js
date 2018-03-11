@@ -12,7 +12,7 @@ app.route("/echo")
 .all((req,res)=>
 {
     var params =  global.keyFormat(global.keyFormat( ( Object.keys(req.body).length > 0 ) ? req.body : (url.parse( req.url , true ).query) ? url.parse( req.url , true ).query : {} ));
-    res.status( params.status || 404 ).send( make_response( params.status || 404 , ( Object.keys(params).length > 0 ) ? params : "Nothing Was found" , 'framify echo service' ) )
+    res.status( params.status || 404 ).send( make_response( params.status || 404 , ( Object.keys(params).length > 0 ) ? params : "Nothing Was found" , '@lightframe echo service' ) )
 });
 
 //@ Handle configuration fille requests
