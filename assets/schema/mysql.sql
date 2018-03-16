@@ -615,3 +615,52 @@ INSERT INTO `templates` (`t_id`,`t_name`,`t_organization`,`t_added`,`t_active`) 
 INSERT INTO `group_members` (`mem_id`,`mem_name`,`mem_user`,`mem_phone`,`mem_email`,`mem_group`,`mem_added`,`mem_active`) VALUES (1,'Ian Innocent','ianmin2','0725678447','ianmin2@live.com',1,'2018-03-16 13:01:14.912051',1);
 
 
+
+
+--==========================================================================================================
+
+
+--- PAYMENTS &&&&
+DROP TRIGGER IF EXISTS tr_payments_after_insert;
+CREATE TRIGGER tr_payments_after_insert AFTER UPDATE ON payments
+FOR EACH ROW BEGIN
+    SELECT log_balance INTO _log_balance FROM logs WHERE log_organization = NEW.pay_org ORDER BY log_id DESC;           
+    IF _log_balance IS NULL THEN
+        INSERT INTO logs (log_summary,log_organization,log_balance,log_reference) VALUES ( NEW.pay_services,NEW.pay_org, NEW.pay_amount,NEW.pay_id );
+    ELSE 
+        INSERT INTO logs (log_summary,log_organization,log_balance,log_reference) VALUES ( NEW.pay_services,NEW.pay_org, _log_balance+NEW.pay_amount, NEW.pay_id );
+    END IF;
+END;
+
+DROP TRIGGER IF EXISTS tr_payments_after_update;
+CREATE TRIGGER tr_payments_after_update AFTER UPDATE ON payments
+  FOR EACH ROW BEGIN
+    INSERT INTO aud_payments (pay_id,pay_org,pay_amount,pay_method,pay_services,pay_token,pay_message,pay_added,pay_active,func) 
+    SELECT OLD.pay_id,OLD.pay_org,OLD.pay_amount,OLD.pay_method,OLD.pay_services,OLD.pay_token,OLD.pay_message,OLD.pay_added,OLD.pay_active,'UPDATE';
+  END;
+
+DROP TRIGGER IF EXISTS tr_payments_after_delete;
+CREATE TRIGGER tr_payments_after_delete AFTER UPDATE ON payments
+FOR EACH ROW BEGIN
+    INSERT INTO aud_payments (pay_id,pay_org,pay_amount,pay_method,pay_services,pay_token,pay_message,pay_added,pay_active,func) 
+    SELECT OLD.pay_id,OLD.pay_org,OLD.pay_amount,OLD.pay_method,OLD.pay_services,OLD.pay_token,OLD.pay_message,OLD.pay_added,OLD.pay_active,'DELETE';
+END;
+
+--==========================================================================================================
+
+
+--- MEMBERS &&&&
+DROP TRIGGER IF EXISTS tr_member_after_update;
+CREATE TRIGGER tr_member_after_update AFTER UPDATE ON members
+  FOR EACH ROW BEGIN
+    INSERT INTO aud_members (member_id,"name.first","name.last","account.name","account.balance",organization,email,password,role,telephone,joined,active,func) 
+        SELECT OLD.member_id,OLD."name.first",OLD."name.last",OLD."account.name",OLD."account.balance",OLD.organization,OLD.email,OLD.password,OLD.role,OLD.telephone,OLD.joined,OLD.active,'UPDATE';
+  END;
+
+DROP TRIGGER IF EXISTS tr_member_after_delete;
+CREATE TRIGGER tr_member_after_delete AFTER UPDATE ON members
+FOR EACH ROW BEGIN
+    INSERT INTO aud_members (member_id,"name.first","name.last","account.name","account.balance",organization,email,password,role,telephone,joined,active,func) 
+        SELECT OLD.member_id,OLD."name.first",OLD."name.last",OLD."account.name",OLD."account.balance",OLD.organization,OLD.email,OLD.password,OLD.role,OLD.telephone,OLD.joined,OLD.active,'DELETE';
+END;
+--==========================================================================================================
