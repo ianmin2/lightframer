@@ -39,7 +39,7 @@ CREATE TABLE `aud_organizations` (
 ) DEFAULT CHARSET=utf8 ENGINE=InnoDB;
 
 
---- ORGANIZATIONS
+-- ORGANIZATIONS
 DROP TRIGGER IF EXISTS tr_organizations_after_update;
 CREATE TRIGGER tr_organizations_after_update AFTER UPDATE ON organizations
   FOR EACH ROW BEGIN
@@ -54,7 +54,7 @@ FOR EACH ROW BEGIN
         SELECT OLD.org_id,OLD.org_name,OLD.org_telephone,OLD.org_email,OLD.org_code,OLD.org_added,OLD.org_active,'DELETE';
 END;
 
---==========================================================================================================
+-- ==========================================================================================================
 
 
 
@@ -92,7 +92,7 @@ CREATE TABLE `aud_services` (
 ) DEFAULT CHARSET=utf8 ENGINE=InnoDB;
 
 
---- SERVICES 
+-- SERVICES 
 DROP TRIGGER IF EXISTS tr_services_after_update;
 CREATE TRIGGER tr_services_after_update AFTER UPDATE ON services
   FOR EACH ROW BEGIN
@@ -107,7 +107,7 @@ FOR EACH ROW BEGIN
     SELECT OLD.service_id,OLD.service_name,OLD.service_fee,OLD.service_code,OLD.service_added,OLD.service_active,'DELETE';
 END;
 
---==========================================================================================================
+-- ==========================================================================================================
 
 --
 -- Table structure for table `subscriptions`
@@ -142,7 +142,7 @@ CREATE TABLE `aud_subscriptions` (
 
 
 
---- SUBSCRIPTIONS
+-- SUBSCRIPTIONS
 DROP TRIGGER IF EXISTS tr_subscriptions_after_update;
 CREATE TRIGGER tr_subscriptions_after_update AFTER UPDATE ON subscriptions
   FOR EACH ROW BEGIN
@@ -157,7 +157,7 @@ FOR EACH ROW BEGIN
     SELECT OLD.sub_id,OLD.sub_org,OLD.sub_service,OLD.sub_added,OLD.sub_active,'DELETE';
 END;
 
---==========================================================================================================
+-- ==========================================================================================================
 
 --
 -- Table structure for table `payment_methods`
@@ -189,7 +189,7 @@ CREATE TABLE `aud_payment_methods` (
 ) DEFAULT CHARSET=utf8 ENGINE=InnoDB;
 
 
---- PAYMENT_METHODS
+-- PAYMENT_METHODS
 DROP TRIGGER IF EXISTS tr_payment_methods_after_update;
 CREATE TRIGGER tr_payment_methods_after_update AFTER UPDATE ON payment_methods
   FOR EACH ROW BEGIN
@@ -204,7 +204,7 @@ FOR EACH ROW BEGIN
     SELECT OLD.pay_method_id,OLD.pay_method_name,OLD.pay_method_fee,OLD.pay_method_added,OLD.pay_method_active,'DELETE';
 END;
 
---==========================================================================================================
+-- ==========================================================================================================
 
 --
 -- Table structure for table `payments`
@@ -247,6 +247,33 @@ CREATE TABLE `aud_payments` (
 ) DEFAULT CHARSET=utf8 ENGINE=InnoDB;
 
 
+-- PAYMENTS
+DROP TRIGGER IF EXISTS tr_payments_after_insert;
+CREATE TRIGGER tr_payments_after_insert AFTER UPDATE ON payments
+FOR EACH ROW BEGIN
+    SET @_log_balance = ( SELECT log_balance  FROM logs WHERE log_organization = NEW.pay_org ORDER BY log_id DESC);           
+    IF @_log_balance IS NULL THEN
+        INSERT INTO logs (log_summary,log_organization,log_balance,log_reference) VALUES ( NEW.pay_services,NEW.pay_org, NEW.pay_amount,NEW.pay_id );
+    ELSE 
+        INSERT INTO logs (log_summary,log_organization,log_balance,log_reference) VALUES ( NEW.pay_services,NEW.pay_org, @_log_balance+NEW.pay_amount, NEW.pay_id );
+    END IF;
+END;
+
+DROP TRIGGER IF EXISTS tr_payments_after_update;
+CREATE TRIGGER tr_payments_after_update AFTER UPDATE ON payments
+  FOR EACH ROW BEGIN
+    INSERT INTO aud_payments (pay_id,pay_org,pay_amount,pay_method,pay_services,pay_token,pay_message,pay_added,pay_active,func) 
+    SELECT OLD.pay_id,OLD.pay_org,OLD.pay_amount,OLD.pay_method,OLD.pay_services,OLD.pay_token,OLD.pay_message,OLD.pay_added,OLD.pay_active,'UPDATE';
+  END;
+
+DROP TRIGGER IF EXISTS tr_payments_after_delete;
+CREATE TRIGGER tr_payments_after_delete AFTER UPDATE ON payments
+FOR EACH ROW BEGIN
+    INSERT INTO aud_payments (pay_id,pay_org,pay_amount,pay_method,pay_services,pay_token,pay_message,pay_added,pay_active,func) 
+    SELECT OLD.pay_id,OLD.pay_org,OLD.pay_amount,OLD.pay_method,OLD.pay_services,OLD.pay_token,OLD.pay_message,OLD.pay_added,OLD.pay_active,'DELETE';
+END;
+
+-- ==========================================================================================================
 
 --
 -- Table structure for table `members`
@@ -294,7 +321,21 @@ CREATE TABLE `aud_members` (
   `func` CHAR(15) NULL
 ) DEFAULT CHARSET=utf8 ENGINE=InnoDB;
 
+-- MEMBERS &&&&
+DROP TRIGGER IF EXISTS tr_member_after_update;
+CREATE TRIGGER tr_member_after_update AFTER UPDATE ON members
+  FOR EACH ROW BEGIN
+        INSERT INTO aud_members (member_id,`name.first`,`name.last`,`account.name`,`account.balance`,organization,email,password,role,telephone,joined,active,func) 
+        SELECT OLD.member_id,OLD.`name.first`,OLD.`name.last`,OLD.`account.name`,OLD.`account.balance`,OLD.organization,OLD.email,OLD.password,OLD.role,OLD.telephone,OLD.joined,OLD.active,'UPDATE';
+  END;
 
+DROP TRIGGER IF EXISTS tr_member_after_update;
+CREATE TRIGGER tr_member_after_update AFTER UPDATE ON members
+    FOR EACH ROW BEGIN
+        INSERT INTO aud_members (member_id,`name.first`,`name.last`,`account.name`,`account.balance`,organization,email,password,role,telephone,joined,active,func) 
+        SELECT OLD.member_id,OLD.`name.first`,OLD.`name.last`,OLD.`account.name`,OLD.`account.balance`,OLD.organization,OLD.email,OLD.password,OLD.role,OLD.telephone,OLD.joined,OLD.active,'UPDATE';
+END;
+-- ==========================================================================================================
 
 --
 -- Table structure for table `password_recovery`
@@ -328,7 +369,7 @@ CREATE TABLE `aud_password_recovery` (
   `func` CHAR(15) NULL
 ) DEFAULT CHARSET=utf8 ENGINE=InnoDB;
 
---- PASSWORD_RECOVERY TRIGGER FUNCTION
+-- PASSWORD_RECOVERY TRIGGER FUNCTION
 DROP TRIGGER IF EXISTS tr_password_recovery_after_update;
 CREATE TRIGGER tr_password_recovery_after_update AFTER UPDATE ON password_recovery
   FOR EACH ROW BEGIN
@@ -343,7 +384,7 @@ FOR EACH ROW BEGIN
     SELECT OLD.password_recovery_id,OLD.member,OLD.recovery_key,OLD.requested,OLD.used,OLD.used_at,'DELETE';
 END;
 
---==========================================================================================================
+-- ==========================================================================================================
 
 
 --
@@ -379,7 +420,7 @@ CREATE TABLE `aud_groups` (
 
 
 
---- AUDIT_GROUPS
+-- AUDIT_GROUPS
 DROP TRIGGER IF EXISTS tr_groups_after_update;
 CREATE TRIGGER tr_groups_after_update AFTER UPDATE ON groups
   FOR EACH ROW BEGIN
@@ -394,7 +435,7 @@ FOR EACH ROW BEGIN
     SELECT OLD.group_id,OLD.group_name,OLD.group_organization,OLD.group_added,OLD.group_active,'DELETE';
 END;
 
---==========================================================================================================
+-- ==========================================================================================================
 
 --
 -- Table structure for table `group_members`
@@ -434,7 +475,7 @@ CREATE TABLE `aud_group_members` (
 ) DEFAULT CHARSET=utf8 ENGINE=InnoDB;
 
 
---- AUDIT_GROUP_MEMBERS
+-- AUDIT_GROUP_MEMBERS
 DROP TRIGGER IF EXISTS tr_group_members_after_update;
 CREATE TRIGGER tr_group_members_after_update AFTER UPDATE ON group_members
   FOR EACH ROW BEGIN
@@ -449,7 +490,7 @@ FOR EACH ROW BEGIN
     SELECT OLD.mem_id,OLD.mem_name,OLD.mem_user,OLD.mem_phone,OLD.mem_email,OLD.mem_group,OLD.mem_added,OLD.mem_active,'DELETE';
 END;
 
---==========================================================================================================
+-- ==========================================================================================================
 
 --
 -- Table structure for table `templates`
@@ -482,7 +523,7 @@ CREATE TABLE `aud_templates` (
 ) DEFAULT CHARSET=utf8 ENGINE=InnoDB;
 
 
---- AUDIT_TEMPLATES
+-- AUDIT_TEMPLATES
 DROP TRIGGER IF EXISTS tr_templates_after_update;
 CREATE TRIGGER tr_templates_after_update AFTER UPDATE ON templates
   FOR EACH ROW BEGIN
@@ -498,7 +539,7 @@ FOR EACH ROW BEGIN
 END;
 
 
---==========================================================================================================
+-- ==========================================================================================================
 
 --
 -- Table structure for table `logs`
@@ -533,7 +574,7 @@ CREATE TABLE `aud_logs` (
 
 
 
---- AUDIT_LOGS
+-- AUDIT_LOGS
 DROP TRIGGER IF EXISTS tr_logs_after_update;
 CREATE TRIGGER tr_logs_after_update AFTER UPDATE ON logs
   FOR EACH ROW BEGIN
@@ -548,7 +589,7 @@ FOR EACH ROW BEGIN
     SELECT OLD.log_id,OLD.log_summary,OLD.log_organization,OLD.log_reference,OLD.log_time,OLD.log_balance,'DELETE';
 END;
 
---==========================================================================================================
+-- ==========================================================================================================
 
 
 
@@ -557,110 +598,107 @@ END;
 -- Dumping data for table `organizations`
 --
 
-INSERT INTO `organizations` (`org_id`,`org_name`,`org_telephone`,`org_email`,`org_code`,`org_added`,`org_active`) VALUES (1,'Bixbyte Solutions','+254725678447','info@bixbyte.io','pm_bx_001','2018-03-16 13:01:14.912051',1);
+INSERT INTO `organizations` 
+(`org_id`,`org_name`,`org_telephone`,`org_email`,`org_code`,`org_added`,`org_active`) 
+VALUES 
+(1,'Bixbyte Solutions','+254725678447','info@bixbyte.io','pm_bx_001','2018-03-16 13:01:14.912051',1);
 
 --
 -- Dumping data for table `groups`
 --
 
-INSERT INTO `groups` (`group_id`,`group_name`,`group_organization`,`group_added`,`group_active`) VALUES (1,'Members',1,'2018-03-16 13:01:14.912051',1),(2,'Staff',1,'2018-03-16 13:01:14.912051',1),(3,'Board Members',1,'2018-03-16 13:01:14.912051',1);
+INSERT INTO `groups` 
+(`group_id`,`group_name`,`group_organization`,`group_added`,`group_active`) 
+VALUES 
+(1,'Members',1,'2018-03-16 13:01:14.912051',1)
+,(2,'Staff',1,'2018-03-16 13:01:14.912051',1)
+,(3,'Board Members',1,'2018-03-16 13:01:14.912051',1);
 
 --
 -- Dumping data for table `logs`
 --
 
-INSERT INTO `logs` (`log_id`,`log_summary`,`log_organization`,`log_reference`,`log_time`,`log_balance`) VALUES (1,'{\"payments\": [{\"services\": [1]}]}',1,1,'2018-03-16 13:01:14.912051',10);
+INSERT INTO `logs` 
+(`log_id`,`log_summary`,`log_organization`,`log_reference`,`log_time`,`log_balance`) 
+VALUES 
+(1,'{\"payments\": [{\"services\": [1]}]}',1,1,'2018-03-16 13:01:14.912051',10);
 
 --
 -- Dumping data for table `members`
 --
 
-INSERT INTO `members` (`member_id`,`name.first`,`name.last`,`account.name`,`account.balance`,`organization`,`email`,`password`,`role`,`telephone`,`joined`,`active`) VALUES (1,'User','Administrator','userAdmin',0,1,'useradmin@bixbyte.io','153797e5fc6433812172aa8d47ec69e1','admin','725678447','2018-03-16 13:01:14.912051',1);
+INSERT INTO `members` 
+(`member_id`,`name.first`,`name.last`,`account.name`,`account.balance`,`organization`,`email`,`password`,`role`,`telephone`,`joined`,`active`) 
+VALUES 
+(1,'User','Administrator','userAdmin',0,1,'useradmin@bixbyte.io','153797e5fc6433812172aa8d47ec69e1','admin','725678447','2018-03-16 13:01:14.912051',1);
 
 --
 -- Dumping data for table `payment_methods`
 --
 
-INSERT INTO `payment_methods` (`pay_method_id`,`pay_method_name`,`pay_method_fee`,`pay_method_added`,`pay_method_active`) VALUES (1,'Card',0,'2018-03-16 13:01:14.912051',1),(2,'Mpesa',0,'2018-03-16 13:01:14.912051',1),(3,'Cash',0,'2018-03-16 13:01:14.912051',1),(4,'Cheque',0,'2018-03-16 13:01:14.912051',1);
+INSERT INTO `payment_methods` 
+(`pay_method_id`,`pay_method_name`,`pay_method_fee`,`pay_method_added`,`pay_method_active`) 
+VALUES 
+(1,'Card',0,'2018-03-16 13:01:14.912051',1)
+,(2,'Mpesa',0,'2018-03-16 13:01:14.912051',1)
+,(3,'Cash',0,'2018-03-16 13:01:14.912051',1)
+,(4,'Cheque',0,'2018-03-16 13:01:14.912051',1);
 
 --
 -- Dumping data for table `payments`
 --
 
-INSERT INTO `payments` (`pay_id`,`pay_org`,`pay_amount`,`pay_method`,`pay_services`,`pay_token`,`pay_message`,`pay_added`,`pay_active`) VALUES (1,1,10,1,'{\"payments\": [{\"services\": [1]}]}','bixbyte','10 logged Complementary SMS messages','2018-03-16 13:01:14.912051',1);
+INSERT INTO `payments` 
+(`pay_id`,`pay_org`,`pay_amount`,`pay_method`,`pay_services`,`pay_token`,`pay_message`,`pay_added`,`pay_active`) 
+VALUES 
+(1,1,10,1,'{\"payments\": [{\"services\": [1]}]}','bixbyte','10 logged Complementary SMS messages','2018-03-16 13:01:14.912051',1);
 
 --
 -- Dumping data for table `services`
 --
 
-INSERT INTO `services` (`service_id`,`service_name`,`service_fee`,`service_code`,`service_added`,`service_active`) VALUES (1,'SMS',0,'BX_SMS','2018-03-16 13:01:14.912051',1);
+INSERT INTO `services` 
+(`service_id`,`service_name`,`service_fee`,`service_code`,`service_added`,`service_active`) 
+VALUES 
+(1,'SMS',0,'BX_SMS','2018-03-16 13:01:14.912051',1);
 
 --
 -- Dumping data for table `subscriptions`
 --
 
-INSERT INTO `subscriptions` (`sub_id`,`sub_org`,`sub_service`,`sub_added`,`sub_active`) VALUES (1,1,1,'2018-03-16 13:01:14.912051',1);
+INSERT INTO `subscriptions` 
+(`sub_id`,`sub_org`,`sub_service`,`sub_added`,`sub_active`) 
+VALUES 
+(1,1,1,'2018-03-16 13:01:14.912051',1);
 
 --
 -- Dumping data for table `templates`
 --
 
-INSERT INTO `templates` (`t_id`,`t_name`,`t_organization`,`t_added`,`t_active`) VALUES (0,'The main bulk sms template  is this',1,'2018-03-16 13:01:14.912051',1);
-INSERT INTO `templates` (`t_id`,`t_name`,`t_organization`,`t_added`,`t_active`) VALUES (1,'This is but a sample SMS template. Edit me as you see fit',1,'2018-03-16 13:01:14.912051',1);
+INSERT INTO `templates` 
+(`t_id`,`t_name`,`t_organization`,`t_added`,`t_active`) 
+VALUES 
+(0,'The main bulk sms template  is this',1,'2018-03-16 13:01:14.912051',1);
+UPDATE templates SET t_id = 0;
+INSERT INTO `templates` 
+(`t_id`,`t_name`,`t_organization`,`t_added`,`t_active`) 
+VALUES 
+(1,'This is but a sample SMS template. Edit me as you see fit',1,'2018-03-16 13:01:14.912051',1);
 
 --
 -- Dumping data for table `group_members`
 --
 
-INSERT INTO `group_members` (`mem_id`,`mem_name`,`mem_user`,`mem_phone`,`mem_email`,`mem_group`,`mem_added`,`mem_active`) VALUES (1,'Ian Innocent','ianmin2','0725678447','ianmin2@live.com',1,'2018-03-16 13:01:14.912051',1);
+INSERT INTO `group_members` 
+(`mem_id`,`mem_name`,`mem_user`,`mem_phone`,`mem_email`,`mem_group`,`mem_added`,`mem_active`) 
+VALUES 
+(1,'Ian Innocent','ianmin2','0725678447','ianmin2@live.com',1,'2018-03-16 13:01:14.912051',1);
 
 
 
 
---==========================================================================================================
+-- ==========================================================================================================
 
 
---- PAYMENTS &&&&
-DROP TRIGGER IF EXISTS tr_payments_after_insert;
-CREATE TRIGGER tr_payments_after_insert AFTER UPDATE ON payments
-FOR EACH ROW BEGIN
-    SELECT log_balance INTO _log_balance FROM logs WHERE log_organization = NEW.pay_org ORDER BY log_id DESC;           
-    IF _log_balance IS NULL THEN
-        INSERT INTO logs (log_summary,log_organization,log_balance,log_reference) VALUES ( NEW.pay_services,NEW.pay_org, NEW.pay_amount,NEW.pay_id );
-    ELSE 
-        INSERT INTO logs (log_summary,log_organization,log_balance,log_reference) VALUES ( NEW.pay_services,NEW.pay_org, _log_balance+NEW.pay_amount, NEW.pay_id );
-    END IF;
-END;
-
-DROP TRIGGER IF EXISTS tr_payments_after_update;
-CREATE TRIGGER tr_payments_after_update AFTER UPDATE ON payments
-  FOR EACH ROW BEGIN
-    INSERT INTO aud_payments (pay_id,pay_org,pay_amount,pay_method,pay_services,pay_token,pay_message,pay_added,pay_active,func) 
-    SELECT OLD.pay_id,OLD.pay_org,OLD.pay_amount,OLD.pay_method,OLD.pay_services,OLD.pay_token,OLD.pay_message,OLD.pay_added,OLD.pay_active,'UPDATE';
-  END;
-
-DROP TRIGGER IF EXISTS tr_payments_after_delete;
-CREATE TRIGGER tr_payments_after_delete AFTER UPDATE ON payments
-FOR EACH ROW BEGIN
-    INSERT INTO aud_payments (pay_id,pay_org,pay_amount,pay_method,pay_services,pay_token,pay_message,pay_added,pay_active,func) 
-    SELECT OLD.pay_id,OLD.pay_org,OLD.pay_amount,OLD.pay_method,OLD.pay_services,OLD.pay_token,OLD.pay_message,OLD.pay_added,OLD.pay_active,'DELETE';
-END;
-
---==========================================================================================================
 
 
---- MEMBERS &&&&
-DROP TRIGGER IF EXISTS tr_member_after_update;
-CREATE TRIGGER tr_member_after_update AFTER UPDATE ON members
-  FOR EACH ROW BEGIN
-    INSERT INTO aud_members (member_id,"name.first","name.last","account.name","account.balance",organization,email,password,role,telephone,joined,active,func) 
-        SELECT OLD.member_id,OLD."name.first",OLD."name.last",OLD."account.name",OLD."account.balance",OLD.organization,OLD.email,OLD.password,OLD.role,OLD.telephone,OLD.joined,OLD.active,'UPDATE';
-  END;
-
-DROP TRIGGER IF EXISTS tr_member_after_delete;
-CREATE TRIGGER tr_member_after_delete AFTER UPDATE ON members
-FOR EACH ROW BEGIN
-    INSERT INTO aud_members (member_id,"name.first","name.last","account.name","account.balance",organization,email,password,role,telephone,joined,active,func) 
-        SELECT OLD.member_id,OLD."name.first",OLD."name.last",OLD."account.name",OLD."account.balance",OLD.organization,OLD.email,OLD.password,OLD.role,OLD.telephone,OLD.joined,OLD.active,'DELETE';
-END;
---==========================================================================================================
