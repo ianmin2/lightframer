@@ -24,7 +24,7 @@
 
 
 <div ng-if="storage.framify_user && data.me" >
-    <div class="" ng-init="fetch('vw_member_info');frame.currTab='edit';sort('name');">
+    <div class="" ng-init="fetch('vw_members');frame.currTab='edit';sort('name');">
 
         <div class="col-lg-12">
 
@@ -58,19 +58,19 @@
                                             <i class="icon ion-search placeholder-icon"></i>
                                             <input type="text" ng-model="search" value="" class="md-input" placeholder="Search">
                                         </label>
-                                <button class="md-btn" ng-click="fetch([['vw_member_info']])"><i class="fa fa-refresh"></i></button>
+                                <button class="md-btn" ng-click="fetch([['vw_members']])"><i class="fa fa-refresh"></i></button>
                             </div>
                             <table id="table-id" align="center" class=" uk-animation-slide-bottom uk-table uk-table-striped  responsive-table" name="content">
                                 <thead>
-                                    <tr style="font-weight:bold; text-transform:uppercase; color:white !important; font-weight:bold !important; background-color: #1976D2 !important;">
+                                    <tr style="font-weight:bold; text-transform:uppercase; color:white !important; font-weight:bold !important; background-color: #2196F3 !important;">
                                         <th style="color:white !important; font-weight:bold;" ng-click="sort('member_id')">Id
                                             <span class="icon col-white" ng-show="sortKey=='member_id'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
                                         </th>
                                         <th style="color:white !important; font-weight:bold;" ng-click="sort('name.first')">First Name
                                             <span class="icon col-white" ng-show="sortKey=='name.first'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
                                         </th>
-                                        <th style="color:white !important; font-weight:bold;" ng-click="sort('name.last')">Last Name
-                                            <span class="icon col-white" ng-show="sortKey=='name.last'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                        <th style="color:white !important; font-weight:bold;" ng-click="sort('org_name')">Organization
+                                            <span class="icon col-white" ng-show="sortKey=='org_name'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
                                         </th>
                                         <th style="color:white !important; font-weight:bold;" ng-click="sort('telephone')">Telephone
                                             <span class="icon col-white" ng-show="sortKey=='telephone'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
@@ -83,16 +83,19 @@
                                         </th>
                                         <th style="color:white !important; font-weight:bold;" class="noprint" style="margin:0 auto;text-align:center;">Update</th>
                                         <th style="color:white !important; font-weight:bold;" class="noprint" style="margin:0 auto;text-align:center;">Availability</th>
+                                        <th style="color:white !important; font-weight:bold;" class="noprint" style="margin:0 auto;text-align:center;" ng-if="permissions.admin_only(data.me)">Administrator</th>
                                         <th style="color:white !important; font-weight:bold;" class="noprint" style="margin:0 auto;text-align:center;">Recovery</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <form name="admin_edit" novalidate>
-                                        <tr dir-paginate="admin in fetched.vw_member_info |orderBy:sortKey:reverse|filter:search|itemsPerPage:5">
+                                        <tr dir-paginate="admin in fetched.vw_members |orderBy:sortKey:reverse|filter:search|itemsPerPage:5">
 
                                             <th scope="row" data-label="ID">{{admin["member_id"]}}</th>
-                                            <th scope="row" data-label="First Name" contenteditable ng-model="admin['name.first']"></th>
-                                            <th scope="row" data-label="Last Name" contenteditable ng-model="admin['name.last']"></th>
+                                            <th scope="row" data-label="Name" contenteditable ng-model="admin['name.first']"></th>
+                                            <th scope="row" data-label="Organization">
+                                                {{admin['organization_name']}}
+                                            </th>
                                             <td data-label="Telephone" contenteditable ng-model="admin.telephone"></td>
                                             <td data-label="Email" contenteditable ng-model="admin.email"></td>
                                             <td data-label="Username">
@@ -102,27 +105,47 @@
                                                 <!--ng-if="(storage.admin.admin_name==admin.admin_name || permissions.admin_only(data.me) )&& admin.admin_name!='userAdmin'" -->
                                                 <button title="Update" 
                                                 ng-disabled="admin['name.first'].length < 3 || !app.isEmail(admin.email) || !app.isTelephone(admin.telephone)" 
-                                                ng-class="(!admin.active||admin['name.first'].length < 3 || !app.isEmail(admin.email) || !app.isTelephone(admin.telephone))?'md-btn-danger':'md-btn-success'"  class="md-btn"  ng-click="update('members',setVar({ 'telephone': admin.telephone, 'name.first': admin['name.first'], email: admin.email },['extras'], ' member_id='+admin.member_id ))">
+                                                ng-class="((admin.active=='0')||admin['name.first'].length < 3 || !app.isEmail(admin.email) || !app.isTelephone(admin.telephone))?'md-btn-danger':'md-btn-success'"  class="md-btn"  
+                                                ng-click="update('vw_members',setVar({ 'telephone': admin.telephone, 'name.first': admin['name.first'], email: admin.email },['extras'], ' member_id='+admin.member_id ))">
                                                     <i style="color:white;" class="uk-icon-edit"></i>
                                                 </button>
                                             </td>
                                             <td data-label="" class="noprint" style="margin:0 auto;text-align:center;">
+                                                    <!-- {'md-btn-warning': (admin.member_id<=4), 'md-btn-success': (admin.member_id > 4 &&admin.active), 'md-btn-danger': (admin.member_id > 4 &&!admin.active)} -->
                                                 <!--ng-disabled="(admin.admin_name==storage.admin.admin_name || (admin.access==0 && storage.admin.access!=0)) || admin.admin_name=='userAdmin'" -->
                                                 <button 
-                                                title="{{(admin.member_id > 4)?'Toggle Availability':'Cannot disable base administrators'}}" 
+                                                title="{{(admin.member_id <= 4)? 'Cannot disable base administrators' : ( admin.member_id == storage.framify_user.me.member_id) ? 'You Cannot Disable your own account' : ( admin.active == 1 ) ? 'Disable the account' : 'Enable the account'}}" 
                                                 class="md-btn" 
-                                                ng-class="!admin.active ? ' md-btn-danger':'md-btn-success';{'md-btn-warning': (admin.member_id<=4), 'md-btn-success': (admin.member_id > 4 &&admin.active), 'md-btn-danger': (admin.member_id > 4 &&!admin.active)}" 
-                                                ng-disabled="admin.member_id <= 4" 
+                                                ng-class="(admin.active==0) ? ' md-btn-danger':( admin.member_id <= 4 || admin.member_id == storage.framify_user.me.member_id)? 'md-btn-warning': 'md-btn-success'; " 
+                                                ng-disabled="admin.member_id <= 4 || admin.member_id == storage.framify_user.me.member_id" 
                                                 style="font-weight:bold; font-size:1em !important; color:white !important; text-align:center;" 
-                                                ng-click="update('members', setVar({ active: !admin.active },['extras'], 'member_id='+admin.member_id) )">
-                                                    <i class="fa" ng-class="( !admin.active ? 'fa-eye-slash':'fa-eye')"></i>
+                                                ng-click="update('vw_members', setVar({ active: (admin.active==1)? false : true },['extras'], 'member_id='+admin.member_id) )">
+                                                    <i class="fa" ng-class="( admin.active == 0 ? 'fa-eye-slash':'fa-eye')"></i>
                                                 </button>
+                                            </td>
+                                            <td 
+                                                class="noprint" 
+                                                style="margin:0 auto;text-align:center;"
+                                            >
+                                            <!-- ng-if="permissions.admin_only(data.me)" -->
+
+                                                <button 
+                                               
+                                                title="{{ (admin.member_id <= 4) ? 'Cannot Revoke base administrator rights' : (admin.role == 'admin') ?  ( admin.member_id == storage.framify_user.me.member_id) ? 'You Cannot downgrade your own account' :  'Revoke Admin Rights':'Grant Administrative rights'}}" 
+                                                class="md-btn" 
+                                                ng-class="(admin.role=='admin' && admin.member_id != storage.framify_user.me.member_id ) ? ' md-btn-success':( admin.member_id <= 4 || admin.member_id == storage.framify_user.me.member_id )? 'md-btn-warning': 'md-btn-danger'; " 
+                                                ng-disabled="(admin.member_id <= 4 || admin.member_id == storage.framify_user.me.member_id)" 
+                                                style="font-weight:bold; font-size:1em !important; color:white !important; text-align:center;" 
+                                                ng-click="update('vw_members', setVar({ role: (admin.role=='admin')? 'client' : 'admin' },['extras'], 'member_id='+admin.member_id) )">
+                                                    {{ ( admin.role == 'admin' ? 'Demote':'Promote') }}
+                                                </button>
+
                                             </td>
                                             <td>
                                                     <button 
                                                     title="Send Recovery Password"
                                                     class="md-btn  md-btn-primary"
-                                                    ng-click="recover_password(admin.email)"
+                                                    ng-click="app.notify('Sending a  password recovery email to '+ admin.email);recover_password(admin.email)"
                                                     >
                                                     <i class="material-icons">&#XE0DA;</i>
                                                     </button>
@@ -139,8 +162,6 @@
                         </dir-pagination-controls>
 
                         </div>
-
-
 
                     </div>
 
