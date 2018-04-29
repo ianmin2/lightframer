@@ -6,10 +6,25 @@ var sort_by = function(field,reverse,primer){
     }
 }
 
+angular.module("framify", 
+                            [
+                                "framify.js"
+                                ,"smDateTimeRangePicker"
+                            ])
 
-angular.module('framify', ['framify.js'])
 // !CONFIGURE THE BNASIC PRE-RUNTIME STATES OF THE APPLICATION
-.config(["$stateProvider","$urlRouterProvider","$provide","$sceProvider", function($stateProvider,$urlRouterProvider,$provide,$sceProvider) {
+.config([
+            "$stateProvider"
+            ,"$urlRouterProvider"
+            ,"$provide"
+            ,"$sceProvider"
+            ,"$mdThemingProvider"
+            ,function($stateProvider,$urlRouterProvider,$provide,$sceProvider,$mdThemingProvider) 
+{
+
+    $mdThemingProvider.theme('default')
+    .primaryPalette('light-blue')
+    .backgroundPalette('blue-grey');
 
     $sceProvider.enabled(false);
 
@@ -77,89 +92,15 @@ angular.module('framify', ['framify.js'])
         ,cache:false
         ,templateUrl: "views/manage_users.html"
     })
+    //@Application balance Manager
+    .state("app.balances",{
+        url : "/balances"
+        ,cache: false
+        ,templateUrl: "views/balances.html"
+    })
+  
     
-    //@ EO - SDK 
-    .state("app.dotnet_sdk",{
-        url: "/sdk/dotnet"
-        ,cache:false
-        ,templateUrl: "views/sdk/dotnet.html"
-    })
-    .state("app.java_sdk",{
-        url: "/sdk/java"
-        ,cache:false
-        ,templateUrl: "views/sdk/java.html"
-    })
-    .state("app.nodejs_sdk",{
-        url: "/sdk/nodejs"
-        ,cache:false
-        ,templateUrl: "views/sdk/nodejs.html"
-    })
-    .state("app.php_sdk",{
-        url: "/sdk/php"
-        ,cache:false
-        ,templateUrl: "views/sdk/php.html"
-    })
-    .state("app.python_sdk",{
-        url: "/sdk/python"
-        ,cache:false
-        ,templateUrl: "views/sdk/python.html"
-    })
-    //@ EO - SDK
-
-    //!EXTENDED ROUTE SETTING
-    var setRoutes = (routeArray) => {
-
-        // return new Promise( function(resolve,reject){
-
-            // var processed = 0;
-                
-            routeArray = routeArray.sort(sort_by('title',false,function(a){return a.toLowerCase()})) || [];
-
-            
-            $stateProvider
-            
-            routeArray
-            .forEach( (rData, r) => {
-
-                // processed++;
-
-                var currState = "app." + rData.path;
-                $stateProvider.state(currState, {
-                    url: rData.url
-                    ,templateUrl: rData.view
-                    ,controller: ((rData.controller) ? rData.controller : "")
-                    ,cache: false
-                });
-
-                // if(processed == routeArray.length){
-                    
-                    //!REDIRECT APP TO THE ROOT IN THE CASE THAT THE REQUESTED ROUTE IS NOT FOUND
-                    $urlRouterProvider.otherwise('/app/index');
-
-                // }
-
-            })
-
-        // })         
-        // alert("setRoutes function successfully setup")
-        
-    };
-
-
-    //!CAPTURE THE DEFINED JSON ROUTES
-    // $.getJSON("./config/app-routes.json", function(response) {
-    //     setRoutes(response);
-    // });
-
-
-    //!CAPTURE THE DEFINED JSON ROUTES
-    $.getJSON("./config/app-routes.json")
-    .then(setRoutes)
-    .then(function(){
-        $urlRouterProvider.otherwise('/app/login');
-    });
-
-
+    //@ Force a view reload
     $provide.decorator('$state', function($delegate, $stateParams) {
 
         $delegate.forceReload = function() {
@@ -176,16 +117,20 @@ angular.module('framify', ['framify.js'])
         
 
 
-    //!REDIRECT APP TO THE ROOT IN THE CASE THAT THE REQUESTED ROUTE IS NOT FOUND
+    //@ Define the main route
     $urlRouterProvider.otherwise('/app/panel');
 
 }])
 
 //!DEFINE THE APPLICATION RUNTIME DEFAULTS
 //$templateCache
-.run(
-["app","$rootScope","$state","$localStorage"
-,function(app,$rootScope,$state,$localStorage) {
+.run([
+        "app"
+        ,"$rootScope"
+        ,"$state"
+        ,"$localStorage"
+        ,function(app,$rootScope,$state,$localStorage) 
+{
 
 
     // $rootScope.$on('$viewContentLoaded', function() {
@@ -202,13 +147,6 @@ angular.module('framify', ['framify.js'])
     };
 
 
-    //# SETUP AND DEFINE THE APPLICATION ROUTES INTO AN ALL ACCESSIBLE 'links' VARIABLE
-    $rootScope.links = [];
-    $.getJSON("./config/app-routes.json")
-    .then(function(routes){
-        $rootScope.links = routes.sort($rootScope.sort_by('title',false,function(a){return a.toLowerCase()}));
-    });
-
     //! INJECT THE LOCATION SOURCE TO THE ROOT SCOPE
     $rootScope.location = $state;
 
@@ -217,7 +155,6 @@ angular.module('framify', ['framify.js'])
 
     //! INJECT THE APPLICATION'S MAIN SERVICE TO THE ROOT SCOPE SUCH THAT ALL SCOPES MAY INHERIT IT
     $rootScope.app = app;
-
 
     //! SIMPLE APPLICATION BEHAVIOR SETUP
     $rootScope.frame = {};
@@ -230,43 +167,17 @@ angular.module('framify', ['framify.js'])
 
     //! RELOCATION HANDLING
     $rootScope.frame.relocate = function(loc) {
-        console.log('Relocating to: #' + loc);
+        // console.log('Relocating to: #' + loc);
         $rootScope.location.go(loc);
-    };
-
-    //! ADMIN HANDLING  
-    $rootScope.frame.is_admin = false;
-
-    //! ADMIN STATUS CHECKER 
-    $rootScope.frame.isAdmin = function() {
-        return $rootScope.frame.is_admin ? true : false;
-    };
-
-    //! ROOT USER STATUS CHECKER
-    $rootScope.frame.isRoot = function() {
-        return $rootScope.storage.admin.access == 0 ? true : false;
-    };
-
-    //! ADMIN STATUS SWITCH
-    $rootScope.frame.changeAdmin = function(bool) {
-        $rootScope.frame.is_admin = bool;
-        //  $rootScope.$apply();
-    };
-
-    //! RESET THE ADMIN STATUS
-    $rootScope.frame.reset = function() {
-        delete $rootScope.storage.admin;
-        delete $rootScope.storage.user;
-        $rootScope.frame.changeAdmin(false);
-        window.location = "/#/";
-    };
+    }; 
 
 }])
 
-
-.filter('startFrom', function() {
+.filter('startFrom', [
+    function() 
+{
     return function(input, start) {
         start = +start; //parse to int
         return input.slice(start);
     }
-});
+}]);

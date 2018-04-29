@@ -1,12 +1,14 @@
-var gulp        = require('gulp');
-var concat      = require('gulp-concat');  
-var rename      = require('gulp-rename');  
-var uglify      = require('gulp-uglify'); 
+const gulp        = require('gulp');
+const concat      = require('gulp-concat');  
+const rename      = require('gulp-rename');  
+const uglify      = require('gulp-uglify'); 
 
-var babel = require("gulp-babel");
-var plumber = require("gulp-plumber");
+const babel = require("gulp-babel");
+const plumber = require("gulp-plumber");
  
-var paths = {
+// const linter      = require("gulp-jshint");
+
+const paths = {
   es6: ['./src/*.es6']
   ,framework: ['./src/framework/framify.es6']
 };
@@ -35,3 +37,9 @@ gulp.task('framify', function() {
         .pipe(uglify())
         .pipe(gulp.dest('assets/js'));
 });
+
+// gulp.task('lint',()=>
+//   gulp.src(  paths.framework.concat(paths.es6) )
+//   .pipe(linter())
+//   .pipe(linter.reporter())
+// );
