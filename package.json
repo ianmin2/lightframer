@@ -1,6 +1,6 @@
 {
     "name": "lightframer",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "A basic lightframe based application bootstraping tool",
     "main": "index.js",
     "scripts": {

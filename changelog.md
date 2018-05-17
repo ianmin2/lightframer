@@ -276,3 +276,6 @@ Added support for angular-charts
 
 > ## v1.0.0
 	=> Cloned framify to framify-lite to remove the long existing yet unimplemented bloat
+
+> # v1.0.3
+	=> added support to disable html anchor tags
