@@ -1892,4 +1892,18 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
             $compile(element.contents())(scope);
         });
     };
+}])
+
+//@ Optionally prevent default behavior of anchor tags
+.directive("a", [function () {
+    return {
+        restrict: 'E',
+        link: function link(scope, elem, attrs) {
+            elem.on('click', function (e) {
+                if (attrs.disabled) {
+                    e.preventDefault(); // prevent link click from working
+                }
+            });
+        }
+    };
 }]);

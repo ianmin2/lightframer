@@ -2132,3 +2132,19 @@ angular.module("framify.js",
         );
     };
 }])
+
+//@ Optionally prevent default behavior of anchor tags
+.directive("a", [
+    function() 
+{
+    return {
+        restrict: 'E',
+        link: function(scope, elem, attrs) {
+            elem.on('click', function(e) {
+                if (attrs.disabled) {
+                    e.preventDefault(); // prevent link click from working
+                }
+            });
+        }
+    };
+}])
