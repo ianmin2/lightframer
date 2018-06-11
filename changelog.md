@@ -279,3 +279,6 @@ Added support for angular-charts
 
 > # v1.0.3
 	=> added support to disable html anchor tags
+
+> # v1.2.0
+	=>Migration to Module approach started over global coupling approach
