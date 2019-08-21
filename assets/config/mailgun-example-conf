@@ -1,4 +1,21 @@
-module.exports = {
-                    apiKey: "key-framify",
-                    domain: "mg.framify"
-                 }
+module.exports = 
+{
+	connection : 
+	{
+      auth: 
+      {
+         api_key: 'MAILGUN_API_KEY',
+         domain: 'Ymg.DOMAIN.TLD'
+      }
+	}
+	,accounts : 
+	{
+      passwords:        "Password Recovery <passwordreset@example.com>",
+      welcome:          "User Accounts <accounts@example.com>",
+      errors:           "Framify Errors <errors@example.com>",
+      notifications:    "Framify Notifications <noreply@example.com>",
+      support:          "Framify Support <support@example.com>"   
+	}
+	, recipient : "administrator@example.com"   //@ The one that receives error messages
+	
+};

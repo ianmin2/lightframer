@@ -1,6 +1,6 @@
 {
     "name": "liteframer",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "A basic application bootstraping tool for liteframe",
     "main": "index.js",
     "scripts": {
