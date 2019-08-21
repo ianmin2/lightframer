@@ -15,7 +15,14 @@ var sort_by = function sort_by(field, reverse, primer) {
 angular.module("framify", ["framify.js", "smDateTimeRangePicker"])
 
 // !CONFIGURE THE BNASIC PRE-RUNTIME STATES OF THE APPLICATION
-.config(["$stateProvider", "$urlRouterProvider", "$provide", "$sceProvider", "$mdThemingProvider", function ($stateProvider, $urlRouterProvider, $provide, $sceProvider, $mdThemingProvider) {
+.config(["$stateProvider", "$urlRouterProvider", "$provide", "$sceProvider", "$mdThemingProvider", "ChartJsProvider", "pickerProvider", function ($stateProvider, $urlRouterProvider, $provide, $sceProvider, $mdThemingProvider, ChartJsProvider, pickerProvider) {
+
+    pickerProvider.setOkLabel('Confirm');
+    pickerProvider.setCancelLabel('Close');
+    pickerProvider.setDayHeader('single');
+
+    //@SET THE DEFAULT CHART COLORS
+    ChartJsProvider.setOptions({ colors: ['#d81b60', '#2196f3', '#cddc39', '#00897b', '#5d4037', '#212121', '#9c27b0'] });
 
     $mdThemingProvider.theme('default').primaryPalette('light-blue').backgroundPalette('blue-grey');
 
@@ -82,6 +89,119 @@ angular.module("framify", ["framify.js", "smDateTimeRangePicker"])
         url: "/balances",
         cache: false,
         templateUrl: "views/balances.html"
+    })
+
+    //@ Permissions 
+    .state("app.permissions", {
+        url: "/permissions",
+        cache: false,
+        templateUrl: "views/permissions.html"
+    })
+
+    //@ Permissions (For user access updates by relevant administrators)
+    .state("app.permissions_edit", {
+        url: "/permissions/:member_id",
+        cache: false,
+        templateUrl: "views/permissions_edit.html",
+        controller: function controller($scope, $stateParams) {
+            $scope.active_member_id = $stateParams.member_id;
+        }
+    })
+
+    //@ AID IN PASSWORD RECOVERY
+    .state("app.password_recovery", {
+        url: "/password_recovery/:recovery_id/:recovery_email/:recovery_key",
+        cache: false,
+        templateUrl: "views/password_recovery.html",
+        controller: function controller($scope, $stateParams) {
+            $scope.recovery_email = $stateParams.recovery_email;
+            $scope.recovery_url_tail = "auth/passwords/recover/" + $stateParams.recovery_id + "/" + $stateParams.recovery_email + "/" + $stateParams.recovery_key;
+        }
+    })
+
+    //@ CLIENT MANAGEMENT
+    .state('app.client', {
+        url: "/client",
+        cache: false,
+        templateUrl: 'views/client/index.html'
+        // ,abstract: 'app.index'
+        // ,controller: 'framifyController'
+        // resolve: {
+        //     currentStats: function($http) {
+        //         // return $http.get('/currentStats')
+        //         //         .then(function(response){
+        //         //             return response.data;
+        //         //         })
+        //         return {};
+        //     }
+        // }
+    })
+    //@ contact management
+    .state("app.client.contacts", {
+        url: "/contacts",
+        cache: false,
+        templateUrl: "views/client/contacts.html"
+    })
+    //@ campaign management
+    .state("app.client.campaigns", {
+        url: "/campaigns",
+        cache: false,
+        templateUrl: "views/client/campaigns.html"
+    })
+    //@ template management
+    .state("app.client.templates", {
+        url: "/templates",
+        cache: false,
+        templateUrl: "views/client/templates.html"
+    })
+    //@ tag management
+    .state("app.client.tags", {
+        url: "/tags",
+        cache: false,
+        templateUrl: "views/client/tags.html"
+    }).state("app.client.tests", {
+        url: "/tests",
+        cache: false,
+        templateUrl: "views/client/test.html"
+    }).state("app.client.sms", {
+        url: "/sms",
+        cache: false,
+        templateUrl: "views/client/sms.html"
+    })
+
+    //@ SMS
+    .state("app.sms", {
+        url: "/sms",
+        cache: false,
+        templateUrl: "views/client/sms/index.html"
+    })
+
+    //@ SIMPLE SMS HANDLING
+    .state("app.sms.simple_sms", {
+        url: "/simple_sms",
+        cache: false,
+        templateUrl: "views/client/sms/simple_sms.html"
+    })
+
+    //@ TEMPLATE SMS HANDLING
+    .state("app.sms.template_sms", {
+        url: "/template_sms",
+        cache: false,
+        templateUrl: "views/client/sms/template_sms.html"
+    })
+
+    //@ GROUP SMS HANDLING
+    .state("app.sms.group_sms", {
+        url: "/group_sms",
+        cache: false,
+        templateUrl: "views/client/sms/group_sms.html"
+    })
+
+    //@ DIRECT BULK SMS HANDLING
+    .state("app.sms.direct_bulk", {
+        url: '/direct_bulk',
+        cache: false,
+        templateUrl: "views/client/sms/direct_bulk.html"
     });
 
     //@ Force a view reload
@@ -99,7 +219,7 @@ angular.module("framify", ["framify.js", "smDateTimeRangePicker"])
     });
 
     //@ Define the main route
-    $urlRouterProvider.otherwise('/app/panel');
+    $urlRouterProvider.otherwise('/app/index');
 }])
 
 //!DEFINE THE APPLICATION RUNTIME DEFAULTS
@@ -146,9 +266,9 @@ angular.module("framify", ["framify.js", "smDateTimeRangePicker"])
         // console.log('Relocating to: #' + loc);
         $rootScope.location.go(loc);
     };
-}]).filter('startFrom', [function () {
+}]).filter('startFrom', function () {
     return function (input, start) {
         start = +start; //parse to int
         return input.slice(start);
     };
-}]);
+});

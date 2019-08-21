@@ -1,5 +1,332 @@
-Welcome to this Lightframe application!
+<div ng-init="handlers.isLogedIn().then(handlers.identity).then(app.doNothing).catch(app.doNothing)"></div>
+<h3 class="heading_b uk-margin-bottom">JAMBOPAY SMS</h3>
 
-{{app.hlink}}
+<div ng-if="storage.framify_user" ng-controller="chartcontroller" ng-init="frame.currTab = 'all';section='charts';">
+    <!-- DISPLAY THE TOP MENU -->
+    <div id="top_bar" class="uk-animation-slide-bottom" style="background-color:rgba(100, 100, 100,0.99);text-transform: uppercase !important;"> 
+        <div class="md-top-bar">
+            <div class="uk-width-large-4-4 uk-text-justify uk-container-justify">
+                <ul class="top_bar_nav" id="snippets_grid_filter">
 
-{{remoteAuth.url}}
+                    <li class="uk-width-medium-1-4 uk-text-center" ng-class="{'uk-active': frame.currTab == 'all' }">
+                        <a ng-click="frame.currTab='all';" style="font-weight:bold;color: white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px black ;">General Summary</a>
+                    </li>            
+                    <li  ng-if="show_charts()" 
+                    class="uk-width-medium-1-4 uk-text-center" ng-class="{'uk-active': frame.currTab == 'delivered' }" >
+                        <a ng-click="frame.currTab='delivered';" style="font-weight:bold;color: white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px black ;">Delivered This Week</a>
+                    </li>
+                    <!-- <li ng-if="show_charts()"  class="uk-width-medium-1-4 uk-text-center" ng-class="{'uk-active': frame.currTab == 'pending' }" >
+                        <a ng-click="frame.currTab='pending';" style="font-weight:bold;color: white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px black ;">Pending This Week</a>
+                    </li> -->
+                    <li ng-if="show_charts()"  class="uk-width-medium-1-4 uk-text-center" ng-class="{'uk-active': frame.currTab == 'failed' }" >
+                        <a ng-click="frame.currTab='failed';" style="font-weight:bold;color: white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px black ;">Failed This Week</a>
+                    </li>
+                    <!-- <li ng-if="show_charts()"  class="uk-width-medium-1-4 uk-text-center" ng-class="{'uk-active': frame.currTab == 'requeued' }" >
+                        <a ng-click="frame.currTab='requeued';" style="font-weight:bold;color: white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px black ;">Requeued This Week</a>
+                    </li> -->
+                    <li ng-if="show_charts()"  class="uk-width-medium-1-4 uk-text-center" ng-class="{'uk-active': frame.currTab == 'total' }" >
+                        <a ng-click="frame.currTab='total'" style="font-weight:bold;color: white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px black ;">Messages This week</a>
+                    </li>                
+                
+                    <!-- <li class="pull-right" ng-if="data.me.role">
+                        <a style="font-weight:bold;color:white;text-decoration:none !important;cursor:pointer;">
+                                {{data.me["name.first"]}} -- <font ng-class=" (permissions.admin_only(data.me))? 'uk-text-success' : 'uk-text-primary' "> {{data.me.role | uppercase}} MODE</font> 
+                            </a>
+                    </li> -->
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    
+    <!-- Show a loading statistics loader -->
+    <div ng-hide="charts.Total_SMS_Summary.data" class="uk-text-center col-red uk-text-large">
+        <br>
+        <i class="fa fa-2x fa-spin fa-spinner"></i> PREPARING CHARTS
+    </div>
+    <!-- <br><br> -->
+    <!-- <div class="md-btn md-btn-block" ng-click="app.redirect(app.hlink+'/auth/reports/sms?start=now&stop=now&auth='+storage.framify_user.token);app.notify('Downloading the file')">DOWNLOAD</div> -->
+
+    <!-- FETCH THE REQUIRED DATA  -->
+    <!-- 
+        fetch([
+            ['vw_general_stats'],['vw_sms_last_week'],['vw_sms_this_week'],['vw_sms_three_week'],['vw_sms_two_week'],
+            ['vw_sms_one_day'],
+            ['vw_sms_two_day'],
+            ['vw_sms_three_day'],
+            ['vw_sms_four_day'],
+            ['vw_sms_five_day'],
+            ['vw_sms_six_day'],
+            ['vw_sms_seven_day']
+        ]);frame.currTab='all';
+        ,(['vw_sms_three_week'])
+        ,(['vw_sms_two_week'])
+        ,(['vw_sms_last_week'])
+     -->
+    <div ng-init="promisify([
+                (['vw_general_stats'])
+                ,(['vw_sms_this_week'])                
+                ,(['vw_sms_one_day'])
+                ,(['vw_sms_two_day'])
+                ,(['vw_sms_three_day'])
+                ,(['vw_sms_four_day'])
+                ,(['vw_sms_five_day'])
+                ,(['vw_sms_six_day'])
+                ,(['vw_sms_seven_day'])
+    ]).then(draw_charts)"></div>
+
+    
+    <!-- Handle the processing of the weekly data once the data is all in -->
+    <div  
+        ng-if="show_charts()"
+    >
+
+
+        <!-- Display only if the data has been fetched  -->
+        <div ng-if="fetched" >
+            <br><br>    
+            
+            <div class="md-card uk-border-rounded">
+                <div class="md-card-content">
+
+                    <!-- Chart type switcher -->
+                    <div class="pull-right" ng-if="frame.currTab!='all'">
+                        <md-select class=" uk-animation-slide-bottom" name="role" placeholder="Pick a chart type" ng-model="charts.type" required>
+                            <md-option value="">...</md-option>
+                            <md-option value="line">Line Chart</md-option>
+                            <md-option value="bar">Bar Chart</md-option>
+                            <!-- <md-option value="pie">Pie Chart</md-option> -->
+                            <!-- <md-option value="polar-area">Polar Area Chart</md-option> -->
+                            <!-- <md-option value="horizontal-bar">Horizontal Bar Chart</md-option> -->
+                            <!-- <md-option value="doughnut">Dougnut Chart</md-option> -->
+                        </md-select>
+                    </div>
+
+                    <!-- General summary -->
+                    <div ng-if="frame.currTab=='all'">
+
+                        <!-- <center><h3><u > MESSAGES HANDLED </u></h3></center> -->
+                        <div ng-if="fetched.vw_general_stats[0]" ng-init="getData(fetched.vw_general_stats,'Total_SMS_Summary')">
+                            
+                            <div class="uk-grid">
+                                <div class="uk-width-medium-1-2 uk-text-center">
+                                    
+                                    <div class="md-card">
+                                        <div class="md-card-header">
+                                            <h5 class="uk-text-muted col-green uk-margin-top"  style="font-family:  'Andale Mono', sans-serif;">GROUPED BY DELIVERY STATUS</h5>
+                                        </div>
+                                        <div class="md-card-content" style="padding-bottom: 6em;">
+                                            <center class="">
+                                                <canvas 
+                                                style="max-height:500px !important; max-width:500px !important;" 
+                                                class="chart chart-line" 
+                                                chart-data="charts.Total_SMS_Summary.data"
+                                                chart-labels="charts.Total_SMS_Summary.labels" 
+                                                chart-series="charts.Total_SMS_Summary.series"
+                                                chart-options="charts.Total_SMS_Summary.options" 
+                                                chart-colors="['#1976D2','#292955','#7CB342','#FB8C39']">
+                                                </canvas>
+                                            </center>   
+                                        </div>
+                                    </div>
+                                                                
+                                </div>
+                                <div class="uk-width-medium-1-2 uk-text-center">
+                                    
+                                    <div class="md-card">
+                                        <div class="md-card-header">
+                                            <h5 class="uk-text-muted col-green uk-margin-top" style="font-family:  'Andale Mono', sans-serif;">GROUPED BY SENDER</h5>
+                                        </div>
+                                        <div class="md-card-content">
+                                            <center>
+                                                <canvas 
+                                                style="max-height:300px !important; max-width:300px !important;" 
+                                                class="chart chart-pie" 
+                                                chart-data="charts.Total_SMS_Summary.total"
+                                                chart-labels="charts.Total_SMS_Summary.labels" 
+                                                chart-series="charts.Total_SMS_Summary.total_series" 
+                                                chart-options="charts.Total_SMS_Summary.options" 
+                                                chart-colors="['#1976D2','#292955','#7CB342','#FB8C39','#d81b60', '#2196f3', '#cddc39', '#00897b', '#5d4037', '#212121', '#9c27b0']">
+                                                </canvas>
+                                            </center>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            
+                        </div>
+
+                        <!-- Status Cards -->
+                        <div ng-if="fetched.vw_general_stats[0]" class="uk-grid uk-grid-width-large-1-4 uk-grid-width-medium-1-2 uk-grid-medium " data-uk-sortable="" data-uk-grid-margin="">
+                            <div class="uk-row-first" ng-init="prepare_rates()">
+                                <div class="md-card">
+                                    <div class="md-card-content">
+                                        <div class="uk-float-right uk-margin-top uk-margin-small-right"><span class="peity_visitors peity_data" style="display: none;">5,3,9,6,5,9,7</span><svg class="peity" height="28" width="48"><rect fill="#d84315" x="1.3714285714285717" y="12.444444444444443" width="4.114285714285715" height="15.555555555555557"></rect><rect fill="#d84315" x="8.228571428571428" y="18.666666666666668" width="4.114285714285716" height="9.333333333333332"></rect><rect fill="#d84315" x="15.085714285714287" y="0" width="4.1142857142857086" height="28"></rect><rect fill="#d84315" x="21.942857142857147" y="9.333333333333336" width="4.114285714285707" height="18.666666666666664"></rect><rect fill="#d84315" x="28.800000000000004" y="12.444444444444443" width="4.114285714285707" height="15.555555555555557"></rect><rect fill="#d84315" x="35.65714285714286" y="0" width="4.114285714285707" height="28"></rect><rect fill="#d84315" x="42.51428571428572" y="6.222222222222221" width="4.114285714285707" height="21.77777777777778"></rect></svg></div>
+                                        <span class="uk-text-muted uk-text-small uk-text-bold uk-text-uppercase">Total Delivered</span>
+                                        <h4 class="uk-margin-remove"><span class="countUpMe col-red" style="font-family:  'Andale Mono', sans-serif;">{{summaries.delivered | number : '1'}}</span></h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="">
+                                <div class="md-card">
+                                    <div class="md-card-content">
+                                        <div class="uk-float-right uk-margin-top uk-margin-small-right"><span class="peity_live peity_data" style="display: none;">3,9,6,5,9,7,3,5,2,1,7,4,2,10,9,6,0,2,5,5</span><svg class="peity" height="28" width="64"><polygon fill="#efebe9" points="0 27.5 0 19.4 3.3684210526315788 3.1999999999999993 6.7368421052631575 11.3 10.105263157894736 14 13.473684210526315 3.1999999999999993 16.842105263157894 8.600000000000001 20.210526315789473 19.4 23.57894736842105 14 26.94736842105263 22.1 30.31578947368421 24.8 33.68421052631579 8.600000000000001 37.05263157894737 16.7 40.421052631578945 22.1 43.78947368421052 0.5 47.1578947368421 3.1999999999999993 50.526315789473685 11.3 53.89473684210526 27.5 57.263157894736835 22.1 60.63157894736842 14 64 14 64 27.5"></polygon><polyline fill="none" points="0 19.4 3.3684210526315788 3.1999999999999993 6.7368421052631575 11.3 10.105263157894736 14 13.473684210526315 3.1999999999999993 16.842105263157894 8.600000000000001 20.210526315789473 19.4 23.57894736842105 14 26.94736842105263 22.1 30.31578947368421 24.8 33.68421052631579 8.600000000000001 37.05263157894737 16.7 40.421052631578945 22.1 43.78947368421052 0.5 47.1578947368421 3.1999999999999993 50.526315789473685 11.3 53.89473684210526 27.5 57.263157894736835 22.1 60.63157894736842 14 64 14" stroke="#5d4037" stroke-width="1" stroke-linecap="square"></polyline></svg></div>
+                                        <span class="uk-text-muted uk-text-small uk-text-bold uk-text-uppercase">Total Failed</span>
+                                        <h4 class="uk-margin-remove col-brown" id="peity_live_text" style="font-family:  'Andale Mono', sans-serif;">{{summaries.failed | number : '1'}}</h4>
+                                    </div>
+                                </div>
+                            </div>     
+                            <div style="">
+                                <div class="md-card">
+                                    <div class="md-card-content">
+                                        <div class="uk-float-right uk-margin-top uk-margin-small-right"><span class="peity_orders peity_data" style="display: none;">64/100</span><svg class="peity" height="24" width="24"><path d="M 12 0 A 12 12 0 1 1 2.753841086690528 19.649087876984275 L 7.376920543345264 15.824543938492138 A 6 6 0 1 0 12 6" fill="#8bc34a"></path><path d="M 2.753841086690528 19.649087876984275 A 12 12 0 0 1 11.999999999999998 0 L 11.999999999999998 6 A 6 6 0 0 0 7.376920543345264 15.824543938492138" fill="#eee"></path></svg></div>
+                                        <span class="uk-text-muted uk-text-small uk-text-bold uk-text-uppercase">Success Rate</span>
+                                        <h4 class="uk-margin-remove col-green"><span class="countUpMe" style="font-family:  'Andale Mono', sans-serif;">{{summaries.success_rate | number : '1.2' }}</span>%</h4>
+                                    </div>
+                                </div>
+                            </div>                                                   
+                            <div style="">
+                                <div class="md-card">
+                                    <div class="md-card-content">
+                                        <div class="uk-float-right uk-margin-top uk-margin-small-right"><span class="peity_sale peity_data" style="display: none;">5,3,9,6,5,9,7,3,5,2</span><svg class="peity" height="28" width="64"><polygon fill="#d1e4f6" points="0 27.5 0 12.5 7.111111111111111 18.5 14.222222222222221 0.5 21.333333333333332 9.5 28.444444444444443 12.5 35.55555555555556 0.5 42.666666666666664 6.5 49.77777777777777 18.5 56.888888888888886 12.5 64 21.5 64 27.5"></polygon><polyline fill="none" points="0 12.5 7.111111111111111 18.5 14.222222222222221 0.5 21.333333333333332 9.5 28.444444444444443 12.5 35.55555555555556 0.5 42.666666666666664 6.5 49.77777777777777 18.5 56.888888888888886 12.5 64 21.5" stroke="#0288d1" stroke-width="1" stroke-linecap="square"></polyline></svg></div>
+                                        <span class="uk-text-muted uk-text-small uk-text-bold uk-text-uppercase">Cost</span>
+                                        <h4 class="uk-margin-remove col-blue">$<span class="countUpMe" style="font-family:  'Andale Mono', sans-serif;">{{summaries.delivered | currency : ""}}</span></h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Week's delivered -->
+                    <div ng-if="frame.currTab=='delivered'" >
+                        <div class="uk-width-1-1 uk-text-center">
+                            <!-- <h4 class="uk-text-muted col-green">DELIVERED</h4> -->
+
+                            <center>
+                                <canvas 
+                                style="max-height:400px !important; max-width:1200px !important;" 
+                                class="chart chart-base"
+                                chart-type="charts.type"                                
+                                chart-data="charts.seven_day_summary.data.delivered"
+                                chart-labels="charts.seven_day_summary.labels" 
+                                chart-series="charts.seven_day_summary.series"
+                                chart-options="charts.seven_day_summary.options" 
+                                chart-colors="charts.seven_day_summary.options.colors">
+                                </canvas>
+                            </center>
+                                                        
+                        </div>
+                    </div>  
+
+                    <!-- Week's failed -->
+                    <div ng-if="frame.currTab=='failed'" >
+
+                        <div class="uk-width-1-1 uk-text-center">
+                            <!-- <h4 class="uk-text-muted col-green">FAILED</h4> -->
+                            <center>
+                                <canvas 
+                                style="max-height:400px !important; max-width:1200px !important;" 
+                                class="chart chart-base"
+                                chart-type="charts.type"                                 
+                                chart-data="charts.seven_day_summary.data.failed"
+                                chart-labels="charts.seven_day_summary.labels" 
+                                chart-series="charts.seven_day_summary.series"
+                                chart-options="charts.seven_day_summary.options" 
+                                chart-colors="charts.seven_day_summary.options.colors">
+                                </canvas>
+                            </center>
+                                                     
+                        </div>
+                    </div> 
+
+                    <!-- Week's pending -->
+                    <div ng-if="frame.currTab=='pending'">
+                        <div class="uk-width-1-1 uk-text-center">
+                            <!-- <h4 class="uk-text-muted col-green">PENDING</h4> -->
+                            <center>
+                                <canvas 
+                                style="max-height:400px !important; max-width:1200px !important;" 
+                                class="chart chart-base"
+                                chart-type="charts.type"                                 
+                                chart-data="charts.seven_day_summary.data.pending"
+                                chart-labels="charts.seven_day_summary.labels" 
+                                chart-series="charts.seven_day_summary.series"
+                                chart-options="charts.seven_day_summary.options" 
+                                chart-colors="charts.seven_day_summary.options.colors">
+                                </canvas>
+                            </center>
+                        </div>
+                    </div>
+
+                    <!-- Week's requeued -->
+                    <div ng-if="frame.currTab=='requeued'">
+                        <div class="uk-width-1-1 uk-text-center">
+                            <!-- <h4 class="uk-text-muted col-green">REQUEUED</h4> -->
+
+                            <div class="md-card">
+                                <div class="md-card-header"></div>
+                                <div class="md-card-content">
+                                    <center>
+                                        <canvas 
+                                        style="max-height:400px !important; max-width:1200px !important;" 
+                                        class="chart chart-base"
+                                        chart-type="charts.type"
+                                            
+                                        chart-data="charts.seven_day_summary.data.requeued"
+                                        chart-labels="charts.seven_day_summary.labels" 
+                                        chart-series="charts.seven_day_summary.series"
+                                        chart-options="charts.seven_day_summary.options" 
+                                        chart-colors="charts.seven_day_summary.options.colors">
+                                        </canvas>
+                                    </center>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Week's total -->
+                    <div ng-if="frame.currTab=='total'">                 
+                        <div class="uk-width-1-1 uk-text-center">
+                            <!-- <h4 class="uk-text-muted col-green">TOTAL</h4> -->
+
+                            <center>
+                                <canvas 
+                                style="max-height:400px !important; max-width:1200px !important;" 
+                                class="chart chart-base"
+                                chart-type="charts.type"                                 
+                                chart-data="charts.seven_day_summary.data.total"
+                                chart-labels="charts.seven_day_summary.labels" 
+                                chart-series="charts.seven_day_summary.series"
+                                chart-options="charts.seven_day_summary.options"
+                                chart-colors="charts.seven_day_summary.options.colors" >
+                                </canvas>
+                            </center> 
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+                        
+
+        </div>
+
+    </div>  
+    
+    <!-- <hr>
+    <div class="md-card uk-border-rounded">
+        <div class="uk-grid">
+            <div class="uk-width-1-1">
+              Data  <json-formatter json="charts" open="1"></json-formatter>
+            </div>
+        </div>
+    </div> -->
+
+</div>

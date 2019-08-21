@@ -1,5 +1,5 @@
 //@BASIC PROJECT REQUIREMENTS
-require("lightframe");
+require("liteframe");
 
 //# FETCH THE SCRIPT INSTALLATION DIRECTORY
 app.vars.home 		= 	path.join( path.dirname( fs.realpathSync( __filename ) ) , '/');

@@ -7,6 +7,9 @@
 //@ Ignore the development folder
 **dev/
 
+//@ Ignore SSL certificate folders
+**certs/
+
 #!  Ignore all shadow files
 **~
 

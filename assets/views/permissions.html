@@ -1,0 +1,232 @@
+<!-- member_id;
+name.first,
+name.last,
+account.name,
+email,
+password,
+role,
+telephone,
+joined,
+active,
+organization, -->
+<div ng-init="handlers.isLogedIn().then(handlers.identity).then(app.doNothing).catch(app.doNothing)"></div>
+<h3 class="heading_b uk-margin-bottom">JAMBOPAY SMS</h3>
+<div id="permissions" ng-if="permissions.admin_client(data.me)" class="md-card uk-border-rounded uk-animation-slide-top" style="font-family:  'Andale Mono', sans-serif,Andalemono" ng-init="fetch([['organizations']]);signup = {}">
+   
+    <div ng-init="fetch('vw_user_permissions', { member_id: data.me.member_id })"></div>
+    
+    <!-- <div ng-if="fetched.vw_user_permissions">
+        <json-formatter open="1" json="fetched.vw_user_permissions"></json-formatter>
+    </div> -->
+    
+       
+
+        <div class="md-card-content ">
+            
+            <div class="uk-grid" data-uk-grid-margin>
+                    
+                <div class="uk-width-medium-1-3 uk-animation-slide-left">
+                    
+                    <div class="uk-form">
+                        <div class="uk-grid">
+                            <div class="uk-width-1-1">
+
+                                <div class="md-card">
+
+                                    <div class="md-card-head " ng-class="(data.me.role=='admin') ? 'md-bg-light-green-600': 'md-bg-light-blue-600'">
+                                        <div class="md-card-head-menu" data-uk-dropdown="{pos:'bottom-left'}">
+                                            <i 
+                                                class="uk-icon uk-icon-refresh fa-2x col-white" 
+                                                style="font-size:1.3em;cursor:pointer;"
+                                                ng-click="fetch('vw_shortcodes', { extras : ' WHERE NOT  org = \'' + data.me.organization_name + '\'' });fetch('vw_user_permissions', { member_id: data.me.member_id })"
+                                            ></i>
+                                            <!-- <div class="uk-dropdown uk-dropdown-small">
+                                                <ul class="uk-nav">
+                                                    <li><a href="#">User profile</a></li>
+                                                    <li><a href="#">User permissions</a></li>
+                                                    <li><a href="#" class="uk-text-danger">Delete user</a></li>
+                                                </ul> 
+                                            </div>-->
+                                        </div>
+                                        <div class="uk-text-center">
+                                            <div class="md-card-head-avatar fa fa-user fa-4x" style="padding:0.2em; color:white !important;"  alt=""></div>
+                                        </div>
+                                        <h3 class="md-card-head-text uk-text-center md-color-white">
+                                            {{ data.me["name.first"] }} {{ ( data.me["name.last"] != "null" ) ? data.me["name.last"] : ""}}                                
+                                            <span>{{data.me.email}}</span>
+                                        </h3>
+                                    </div>
+                                    <div class="md-card-content" style="min-height: 215px;">
+                                        <ul class="md-list md-list-addon">
+                                            <li>
+                                                <div class="md-list-addon-element">
+                                                    <i class="md-list-addon-icon material-icons"></i>
+                                                </div>
+                                                <div class="md-list-content">
+                                                    <span class="md-list-heading">{{data.me.email}}</span>
+                                                    <span class="uk-text-small uk-text-muted">Email</span>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="md-list-addon-element">
+                                                    <i class="md-list-addon-icon material-icons"></i>
+                                                </div>
+                                                <div class="md-list-content">
+                                                    <span class="md-list-heading">{{data.me.telephone}}</span>
+                                                    <span class="uk-text-small uk-text-muted">Phone</span>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="md-list-addon-element">
+                                                    <i class="md-list-addon-icon uk-icon-home"></i>
+                                                </div>
+                                                <div class="md-list-content">
+                                                    <span class="md-list-heading">{{data.me.organization_name}}</span>
+                                                    <span class="uk-text-small uk-text-muted">Organization</span>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="md-list-addon-element">
+                                                    <i class="md-list-addon-icon uk-icon-lock"></i>
+                                                </div>
+                                                <div class="md-list-content">
+                                                    <span class="md-list-heading" style="text-transform:capitalize;">{{data.me.role}}</span>
+                                                    <span class="uk-text-small uk-text-muted">Access Level</span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-width-medium-2-3 uk-animation-slide-right">
+                    <div class="uk-form">
+                        <div class="md-card">
+                            <div class="md-card-content" >
+                                <form name="password_update_form" novalidate>
+
+                                    <div class="uk-width-1-1 uk-text-left">
+                                        <h5 class="col-blue" style="font-family: 'Andale Mono', sans-serif;"><u>PASSWORD UPDATE</u></h5>
+                                    </div>
+                                    <div class="uk-grid uk-form-row" style="padding-top:1em;">
+                                        <md-input-container class="uk-width-medium-2-6">
+                                            <label>New Passsword<sup style="color:red">*</sup></label>
+                                            <input type="password" ng-model="data.pass_recovery.password" name="password" ng-pattern="app.ispassword"  class="md-input" required>
+                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="password_update_form.password.$error" ng-if="password_update_form.password.$touched">
+                                                <p class="col-red" ng-message="required">A password is required.</p>
+                                                <p class="col-red" ng-message="pattern">Please enter a more secure password.</p>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container class="uk-width-medium-2-6">
+                                            <input type="password" ng-model="data.pass_recovery.password2" name="password2" class="md-input" required>
+                                            <label>Repeat New Passsword<sup style="color:red">*</sup></label>
+                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="password_update_form.password2.$error" ng-if="password_update_form.password2.$touched">
+                                                <p class="col-red" ng-message="required">Please enter a password confirmation.</p>
+                                                <p class="col-red" ng-message="pattern">Please enter a more secure password.</p>
+                                                <p class="col-red uk-text-small" style="color:red !important;" ng-if="!app.matches(data.pass_recovery.password,data.pass_recovery.password2)&&data.pass_recovery.password&&data.pass_recovery.password2">The passwords don't match.</p>
+                                            </div>
+                                        </md-input-container>
+                                        
+                                        <div class="uk-width-medium-2-6">
+                                            <button 
+                                                class="md-btn md-btn-lg" 
+                                                ng-disabled="!( password_update_form.$valid && app.matches(data.pass_recovery.password,data.pass_recovery.password2))"
+                                                ng-class="( password_update_form.$valid && app.matches(data.pass_recovery.password,data.pass_recovery.password2)) ? 'md-btn-success' : 'md-btn-danger' "  
+                                                ng-click="update('vw_members', setVar({ 'password': data.pass_recovery.password},['extras'], ' member_id='+data.me.member_id ),'password');"
+                                            >Save New password</button>
+                                        </div>
+                                    </div>
+
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div ng-hide="permissions.any_org(data.me,1)">
+
+                        <!-- DISPLAY THE USER'S CURRENTLY ASSIGNED ROLES -->
+                        <div ng-if="fetched.vw_user_permissions">
+
+                            <hr >
+
+                            <div class="uk-form">
+                                    <div class="md-card">
+                                        <div class="md-card-content">
+        
+                                            <div class="uk-grid">
+                                                <div class="uk-width-1-1 uk-text-center">
+                                                    <h5 class="col-blue" style="font-family: 'Andale Mono', sans-serif;"><u>ASSIGNED SHORTCODE(S)</u></h5>
+                                                </div>
+                                                <div class="uk-width-1-1">
+                                                    <div class="md-card">
+                                                        <div class="md-card-content col-green">
+                                                            <div ng-if="fetched.vw_user_permissions[0]" class="" compile="removify_roles( fetched.vw_user_permissions[0].roles.split(','), data.me.member_id )"></div>
+                                                            <div ng-hide="fetched.vw_user_permissions[0]">
+                                                                <div class="uk-alert uk-alert-warning uk-text-center">
+                                                                  <mark style="background-color: white !important;"> YOU HAVE ACCESS TO THE <b class="col-red">{{data.me.organization_name}}</b> SMS SHORTCODE </mark>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>                                   
+                                            </div>
+
+                                        </div>
+                                    </div>                        
+                            </div>
+
+
+                        </div>
+
+
+                        
+                        <!-- {{(permissions.admin_only_org(data.me,1) ? 'root' : 'client')}} -->
+
+                        <!-- HANDLE THE ASSIGNING OF USER ROLES [NO NEED IF YOU ARE IN THE MAIN STREAM] -->
+                        <!-- <div ng-if="permissions.admin_only_org(data.me,1)">
+                            <hr >
+                            <div class="uk-form" >
+                                    <div class="md-card">
+                                        <div class="md-card-content">
+                                            <div class="uk-grid" ng-if="permissions.admin_only(data.me)">
+                                                <div class="uk-width-1-1 uk-animation-slide-left" ng-init="fetch('vw_shortcodes', { extras : ' WHERE NOT  org = \'' + data.me.organization_name + '\'' })" >
+                                                    
+                                                    <h5 class="col-blue  uk-text-center" style="font-family: 'Andale Mono', sans-serif;"><u>ASSIGN SHORTCODES</u></h5>
+        
+                                                    <div class="" ng-if="fetched.vw_shortcodes">
+                                                        <div class="" compile="assignify_roles( fetched.vw_shortcodes, data.me.member_id )"></div>                                                
+                                                    </div>
+        
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                        </div>   -->
+
+                    </div>
+
+                    <div ng-if="permissions.any_org(data.me,1)">
+                        <br>
+                        <div class="uk-alert uk-alert-default">
+                            <div class="uk-text-center" style="font-family: 'Andale Mono', sans-serif !important;">
+                                <mark style="background-color: white !important;"> YOU HAVE <b ng-if="permissions.admin_only(data.me)" class="col-black">unlimited read</b>  ACCESS TO <b class="col-black">ALL</b> SMS STREAMS </mark>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>            
+
+        </div>
+        
+</div>

@@ -1,0 +1,376 @@
+<h3 class="heading_b uk-margin-bottom">SMS SENDING</h3>
+
+<div 
+    id="top_bar" 
+    class="uk-animation-slide-bottom" style="background-color:rgba(100, 100, 100,0.99);text-transform: uppercase !important;"
+>
+    <div class="md-top-bar">
+        <div class="uk-width-large-10-10 uk-text-justify uk-container-justify">
+            <ul class="top_bar_nav" id="snippets_grid_filter">
+
+                <li ng-class="{'uk-active': frame.currTab == 'add' }">
+                    <a 
+                        ui-sref="app.sms.simple_sms" 
+                        style="font-weight:bold;color:white;text-shadow: 1px 1px 2px rgba(30, 110, 190, 0.349), 0.5px 0.5px 1px black ;"
+                    >
+                        SIMPLE SMS
+                    </a>
+                </li>
+                <li ng-class="{'uk-active': frame.currTab == 'edit' }" >
+                    <a ui-sref="app.sms.template_sms" style="font-weight:bold;color:white;text-shadow: 1px 1px 2px rgba(30, 110, 190, 0.349),0.5px 0.5px 1px black ;">TEMPLATE SMS</a>
+                </li>
+                <li ng-class="{'uk-active': frame.currTab == 'edit' }" >
+                    <a ui-sref="app.sms.group_sms" style="font-weight:bold;color:white;text-shadow: 1px 1px 2px rgba(30, 110, 190, 0.349),0.5px 0.5px 1px black ;">GROUP SMS</a>
+                </li>
+                <li ng-class="{'uk-active': frame.currTab == 'edit' }" >
+                    <a ui-sref="app.sms.direct_bulk" style="font-weight:bold;color:white;text-shadow: 1px 1px 2px rgba(30, 110, 190, 0.349),0.5px 0.5px 1px black ;">DIRECT BULK</a>
+                </li>
+
+                <li class="pull-right" ng-if="data.me.role">
+                    <a style="font-weight:bold;color:white;text-decoration:none !important;cursor:pointer;" class="uk-text-small">
+                        {{data.me["name.first"]}} -- <font ng-class=" (permissions.admin_only(data.me))? 'uk-text-success' : 'uk-text-primary' "> {{data.me.role | uppercase}} MODE</font> 
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</div>
+<br><br>
+
+<div class="md-card uk-border-rounded uk-margin-medium-bottom">
+    <div class="md-card-content">
+        <div class="uk-grid" data-uk-grid-margin="">
+            <div class="uk-width-1-1 uk-row-first" ng-init="actTab='simple';section='sms';">
+                <ul class="uk-tab" data-uk-tab="{connect:'#tabs_1'}">
+                    <li ng-class="(actTab == 'simple') ? 'uk-active bg-yellow' :''" ng-click="actTab ='simple'" aria-expanded="{{actTab == 'simple'}}"><a disabled='true' >SIMPLE SMS</a></li>
+                    <li ng-class="(actTab == 'contact') ? 'uk-active bg-yellow' :''" ng-click="actTab ='contact'" aria-expanded="{{actTab == 'contact'}}"><a disabled='true' >CONTACT BASED SMS</a></li>
+                    <li ng-class="(actTab == 'upload') ? 'uk-active bg-yellow' :''" ng-click="actTab ='upload'" aria-expanded="{{actTab == 'upload'}}"><a disabled='true'>UPLOAD BASED SMS </a></li>
+                    <!-- <li ng-class="(actTab == 'scheduled') ? 'uk-active bg-yellow' :''" ng-click="actTab ='scheduled'" aria-expanded="{{actTab == 'scheduled'}}"><a disabled='true'>SCHEDULED SMS</a></li> -->
+                    <li class="uk-disabled pull-right" aria-expanded="false"><a disabled='true' class="uk-button uk-button-mini" style="cursor: pointer;" href="#">User Guide</a></li>
+                    <li class="uk-tab-responsive uk-active uk-hidden" aria-haspopup="true" aria-expanded="false"><a disabled='true'>Active</a>
+                        <div class="uk-dropdown uk-dropdown-small" aria-hidden="true">
+                            <ul class="uk-nav uk-nav-dropdown"></ul>
+                        </div>
+                    </li>
+                </ul>
+                <ul  class="uk-switcher uk-margin">
+                    
+                    <!-- SIMPLE SMS -->
+                    <li aria-hidden="{{actTab=='simple'}}" ng-class="(actTab == 'simple') ? 'uk-active' :''">
+                        <div class="md-card">
+                            <div class="md-card-header"style="padding-top:1em;padding-left:1em;">
+                                    <h5 class="col-blue" style="font-family: 'Andale Mono', sans-serif;"><u>SINGLE SMS</u></h5>
+                            </div> 
+                            <div class="md-card-content">
+                                <form name="single_sms_form" class="uk-animation-slide-right" style="" ng-init="data.msg = data.msg || { body : {}}" novalidate>
+            
+                                    <div class="uk-grid" data-uk-grid-margin>
+
+                                        <div class="uk-width-large-1-4 uk-width-medium-1-3" >  
+                                            <label style="padding-top:1em !important;">Sender ID<sup style="color:red">*</sup></label>
+                                            <md-select name="sender" ng-model="data.msg.sender" style="padding-top: 3.2em !important;" placeholder="PICK A SENDER"  required>
+                                                <md-option value="">...</md-option>
+                                                <md-option ng-repeat="org in getRoles()" ng-value="org" >{{org}}</md-option>
+                                            </md-select>
+                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="single_sms_form.sender.$error" ng-if="single_sms_form.sender.$touched">
+                                                <p class="col-red" ng-message="required" class="uk-text-danger">A message sender is required.</p>
+                                            </div>
+                                        </div>
+                            
+                                        <div style="margin-top:1em !important;" class="uk-width-large-1-4 uk-width-medium-1-3">
+                                            <label>Recipient(s)<sup style="color:red">*</sup></label>
+                                            <input type="text" name="recipient" class="md-input" style="padding: 2.0em !important;text-align:justify;font-family: 'Andale Mono', sans-serif;" ng-model="data.msg.body.to" ng-pattern="app.ismultitelephone" placeholder="2547XXXXXXXX,679XXXXXXXX" required>
+                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="single_sms_form.recipient.$error" ng-if="single_sms_form.recipient.$touched">
+                                                <p class="col-red" ng-message="required">A message recipient is required.</p>
+                                                <p class="col-red" ng-message="pattern">Please enter a valid set of phone numbers.</p>
+                                            </div>
+                                        </div>
+                            
+                                        <div style="margin-top:1em !important;" class="uk-width-large-1-4 uk-width-medium-1-3">
+                                            <label>Message<sup style="color:red">*</sup></label>
+                                            
+                                            <textarea style="text-align:justify;font-family: 'Andale Mono', sans-serif;  " placeholder="This is to inform you of an oncoming .." cols="30" name="message" class="md-input " ng-minlength="10" ng-model="data.msg.body.text" required></textarea>
+                                                                                            
+                                            <p class="col-teal" ng-if="data.msg.body.text">{{data.msg.body.text.length}} Characters  [ {{app.countSMS(data.msg.body.text)}} Message{{(app.countSMS(data.msg.body.text)>1)?'s ':' '}}]</p>
+                            
+                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="single_sms_form.message.$error" ng-if="single_sms_form.message.$touched">
+                                                <p class="col-red" ng-message="required">A message is required.</p>
+                                                <p class="col-red" ng-message="minlength">Please enter a longer message.</p>
+                                            </div>
+                                        </div>                                                                            
+                            
+                                        <div style="margin-top:1em !important;" class="uk-width-large-1-4 uk-width-medium-1-3">
+                                            <button 
+                                                style="margin-top: 4.7em !important;"
+                                                ng-disabled="single_sms_form.$invalid" 
+                                                ng-click="iSMS.one(data.msg).then(app.handler).catch(app.handler).then(get_sms_balance);app.notify('Attempting to send your message','warning');" 
+                                                ng-class="(!single_sms_form.$invalid) ? 'md-btn-success' : 'md-btn-danger'" 
+                                                class="md-btn "> Send SMS</button>
+                                        </div>
+                            
+                                    </div>
+            
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <!-- (CONTACT + SYS TEMPLATE) BASED -->
+                    <li aria-hidden="{{actTab=='contact'}}" ng-class="(actTab == 'contact') ? 'uk-active' :''">
+                        
+                        <form name="multi_sms_form" class="uk-animation-slide-right" style="" ng-init="data.multi = data.multi || { body : {}};" novalidate>
+                            <div class="uk-grid" data-uk-grid-margin>
+    
+                                
+                                <div class="uk-width-1-1" style="padding-top:2em !important;">
+
+                                    <div class="uk-grid">
+
+                                        <div class="uk-width-medium-1-3 uk-width-large-1-4 " >                                                
+                                            <label>Sender ID<sup style="color:red">*</sup></label>
+                                            <md-select 
+                                                name="sender" 
+                                                ng-model="data.multi.sender" 
+                                                placeholder="PICK A SENDER"
+                                                ng-change="(data.multi.sender) ? fetch('tags', { tag_owner: data.multi.sender } ) : app.doNothing()"  
+                                                required>
+                                                <md-option value="">...</md-option>
+                                                <md-option ng-repeat="org in getRoles()" ng-value="org" >{{org}}</md-option>
+                                            </md-select>
+                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="multi_sms_form.sender.$error" ng-if="multi_sms_form.sender.$touched">
+                                                <p class="col-red" ng-message="required" class="uk-text-danger">A message sender is required.</p>
+                                            </div>
+                                        </div>
+        
+                                        <div class="uk-width-medium-1-3 uk-width-large-1-4 " ng-if="fetched.tags" >
+                                            <label>Contact Group<sup style="color:red">*</sup></label>  
+                                            <md-select 
+                                                class="uk-animation-slide-bottom" 
+                                                name="tag" 
+                                                ng-model="data.multi.tag" 
+                                                placeholder="PICK A GROUP"                                                 
+                                                required>
+                                                <md-option value="">...</md-option>
+                                                <md-option ng-repeat="tag in fetched.tags" ng-value="tag.tag_id" >{{tag.tag_title}} ({{tag.tag_owner}})</md-option>
+                                            </md-select>
+                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="multi_sms_form.tag.$error" ng-if="multi_sms_form.tag.$touched">
+                                                <p class="col-red" ng-message="required" class="uk-text-danger">A tag is required.</p>
+                                            </div>
+                                        </div>
+        
+                                        <div ng-if="data.multi.tag" class="uk-width-medium-1-3 uk-width-large-1-4 ">
+                                            <font ng-init="fetch('templates')"></font>
+                                            <label>Message Template<sup style="color:red">*</sup></label>
+                                            <!-- <label>Template<sup style="color:red">*</sup></label> -->
+                                            <md-select 
+                                                class="uk-animation-slide-bottom" 
+                                                name="template" 
+                                                ng-model="data.multi.body.text" 
+                                                placeholder="PICK A TEMPLATE"                                                 
+                                                required>
+                                                <md-option value="">...</md-option>
+                                                <md-option ng-repeat="template in fetched.templates" ng-value="template.template_text" >{{ template.template_name}} ({{template.template_senderid}})</md-option>
+                                            </md-select>                                           
+                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="multi_sms_form.template.$error" ng-if="multi_sms_form.template.$touched">
+                                                <p class="col-red" ng-message="required">A template is required.</p>
+                                            </div>
+        
+                                        </div>
+        
+                                        <div style="margin-top:2.8em !important;" class="uk-width-medium-1-3 uk-width-large-1-4 ">
+                                            <button 
+                                                ng-disabled="!(data.multi.body.text && multi_sms_form.$valid ) " 
+                                                ng-click="iSMS.template(data.multi).then(app.handler).catch(app.handler).then(get_sms_balance);app.notify('Attempting to send your contact based message','info');"
+                                                ng-class="(multi_sms_form.$valid && data.multi.body.text )? 'md-btn-success' : 'md-btn-danger'" class="md-btn "> 
+                                                    Send SMS
+                                                </button>
+        
+                                        </div>
+
+                                    </div>
+    
+                                </div>
+    
+                            </div>
+                        </form>
+    
+                    </li>
+
+                    <!-- (UPLOAD + TYPED TEMPLATE) BASED -->
+                    <li aria-hidden="{{actTab!='upload'}}" ng-class="(actTab == 'upload') ? 'uk-active' :''">
+                        <div class="md-card">
+                            <div class="md-card-header"style="padding-top:1em;padding-left:1em;">
+                                    <h5 class="col-blue" style="font-family: 'Andale Mono', sans-serif;"><u>CSV DRIVEN SMS</u></h5>
+                            </div> 
+                            <div class="md-card-content">
+                                <form name="custom_sms_form" class="uk-animation-slide-right" style="" ng-init="data.custom_msg = data.custom_msg || { body : {}}" novalidate>
+
+                                    <div class="uk-grid" data-uk-grid-margin>
+
+                                        <div class="uk-width-medium-1-3 uk-width-large-1-4" >  
+                                            <label>Sender <sup style="color:red">*</sup></label>
+                                            <md-select name="sender" ng-model="data.custom_msg.sender" style="padding-top:3.5em !important;" placeholder="PICK A SENDER"  required>
+                                                <md-option value="">...</md-option>
+                                                <md-option ng-repeat="org in getRoles()" ng-value="org" >{{org}}</md-option>
+                                            </md-select>
+                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="custom_sms_form.sender.$error" ng-if="custom_sms_form.sender.$touched">
+                                                <p class="col-red" ng-message="required" class="uk-text-danger">A message sender is required.</p>
+                                            </div>
+                                        </div>
+                
+                                        <div class="uk-width-medium-1-3 uk-width-large-1-4">
+                                            <label>CSV Template Text<sup class="uk-text-danger">*</sup> </label>
+                                            
+                                            <textarea style="text-align:justify;font-family: 'Andale Mono', sans-serif;" placeholder="Hello &#123; &#123; csv_name } }, thank you for attending the &#123; &#123; csv_event } }..." cols="30" name="message" class="md-input " ng-minlength="10"
+                                                ng-model="data.custom_msg.template" required></textarea>
+                                            <!-- <code ng-if="data.custom_msg.template">Approximately {{data.custom_msg.template.length}} Characters  [ {{app.countSMS(data.custom_msg.template)}} Message(s)]</code> -->
+                                            <p class="col-teal" ng-if="data.custom_msg.template">{{data.custom_msg.template.length}} Characters  [ {{app.countSMS(data.custom_msg.template)}} Message{{(app.countSMS(data.custom_msg.template)>1)?'s ':' '}}]</p>
+                
+                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="custom_sms_form.message.$error" ng-if="custom_sms_form.message.$touched">
+                                                <p class="col-red" ng-message="required">A template is required.</p>
+                                                <p class="col-red" ng-message="minlength">Please enter a longer template.</p>
+                                            </div>
+                                        </div>
+                
+                                        <div class="uk-width-medium-1-3 uk-width-large-1-4">
+                                            <label>CSV File<sup class="uk-text-danger">*</sup> </label>
+                                            <br><br>
+                                            <div class="uk-width-1-1">
+                                                <div class="uk-form-file md-btn uk-border-rounded btn-block " ng-class="(data.custom_msg.csv_sms)? 'md-btn-primary':'md-btn-warning'" style="margin-top:1.5em !important;">
+                                                    {{(data.custom_msg.csv_sms==undefined) ? 'PICK A DATA FILE' : 'USING SELECTED FILE'}}
+                                                    <input id="form-file" type="file" name="upload" file-model="data.custom_msg.csv_sms" accept=".csv" required>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- <span class="md-btn uk-align-left md-btn-primary uk-animation-slide-right" style="margin-top:3.0em !important;">
+                                                <input type="file" name="upload" class="form-control"
+                                                style="background-color:#2196F3 !important; border:0px !important; color:white;font-weight:bold;font-family: 'Andale Mono', sans-serif;" 
+                                                file-model="data.custom_msg.csv_sms"
+                                                accept=".csv"
+                                                required>
+                                            </span> -->
+                                        </div>                                            
+                
+                                        <div class="uk-width-medium-1-3 uk-width-large-1-4">
+                
+                                            <button 
+                                                style="margin-top:4.9em !important;"
+                                                ng-disabled="custom_sms_form.$invalid||!data.custom_msg.csv_sms" 
+                                                ng-class="(!custom_sms_form.$invalid&&data.custom_msg.csv_sms)?'md-btn-success uk-animation-slide-right':'md-btn-danger'" 
+                                                class="md-btn" 
+                                                ng-click="app.upload( data.custom_msg,'csv_sms' ).then(app.handler);app.notify('Attempting to send custom messages.');data.custom_msg={ }"
+                                            >SEND SMS</button>
+                                        </div>
+                
+                                    </div>
+                
+                
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- (SCHEDULED SMS) -->
+                    <li aria-hidden="{{actTab=='scheduled'}}" ng-class="(actTab == 'scheduled') ? 'uk-active' :''">
+                        
+                        <form name="campaign_sms_form" class="uk-animation-slide-right" style="" ng-init="data.schedule = data.schedule || { body : {}};" novalidate>
+                            <div class="uk-grid" data-uk-grid-margin>
+    
+                                
+                                <div class="uk-width-1-1" style="padding-top:2em !important;">
+
+                                    <div class="uk-grid">
+
+                                        <div class="uk-width-medium-1-3 uk-width-large-1-4 " >                                                
+                                            <label>Sender ID<sup style="color:red">*</sup></label>
+                                            <md-select 
+                                                name="sender" 
+                                                ng-model="data.schedule.sender" 
+                                                placeholder="PICK A SENDER"
+                                                ng-change="(data.schedule.sender) ? fetch('tags', { tag_owner: data.schedule.sender } ) : app.doNothing()"  
+                                                required>
+                                                <md-option value="">...</md-option>
+                                                <md-option ng-repeat="org in getRoles()" ng-value="org" >{{org}}</md-option>
+                                            </md-select>
+                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="campaign_sms_form.sender.$error" ng-if="campaign_sms_form.sender.$touched">
+                                                <p class="col-red" ng-message="required" class="uk-text-danger">A message sender is required.</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="uk-width-medium-1-3 uk-width-large-1-4">
+                                            <label>Campaign Name <sup style="color:red;">*</sup></label>
+                                            <input 
+                                                type="text" 
+                                                class="uk-text-center" 
+                                                name="campaign" 
+                                                ng-model="data.schedule.campaign" 
+                                                placeholder="Campaign Name">
+                                        </div>
+        
+                                        <div class="uk-width-medium-1-3 uk-width-large-1-4 " ng-if="fetched.tags" >
+                                            <label>Contact Group<sup style="color:red">*</sup></label>  
+                                            <md-select 
+                                                class="uk-animation-slide-bottom" 
+                                                name="tag" 
+                                                ng-model="data.schedule.tag" 
+                                                placeholder="PICK A GROUP"                                                 
+                                                required>
+                                                <md-option value="">...</md-option>
+                                                <md-option ng-repeat="tag in fetched.tags" ng-value="tag.tag_id" >{{tag.tag_title}} ({{tag.tag_owner}})</md-option>
+                                            </md-select>
+                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="campaign_sms_form.tag.$error" ng-if="campaign_sms_form.tag.$touched">
+                                                <p class="col-red" ng-message="required" class="uk-text-danger">A tag is required.</p>
+                                            </div>
+                                        </div>
+        
+                                        <div ng-if="data.schedule.tag" class="uk-width-medium-1-3 uk-width-large-1-4 ">
+                                            <font ng-init="fetch('templates')"></font>
+                                            <label>Message Template<sup style="color:red">*</sup></label>
+                                            <!-- <label>Template<sup style="color:red">*</sup></label> -->
+                                            <md-select 
+                                                class="uk-animation-slide-bottom" 
+                                                name="template" 
+                                                ng-model="data.schedule.body.text" 
+                                                placeholder="PICK A TEMPLATE"                                                 
+                                                required>
+                                                <md-option value="">...</md-option>
+                                                <md-option ng-repeat="template in fetched.templates" ng-value="template.template_text" >{{ template.template_name}} ({{template.template_senderid}})</md-option>
+                                            </md-select>                                           
+                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="campaign_sms_form.template.$error" ng-if="campaign_sms_form.template.$touched">
+                                                <p class="col-red" ng-message="required">A template is required.</p>
+                                            </div>
+        
+                                        </div>
+        
+                                        <div style="margin-top:2.8em !important;" class="uk-width-medium-1-3 uk-width-large-1-4 ">
+                                            <button 
+                                                ng-disabled="!(data.schedule.body.text && campaign_sms_form.$valid ) " 
+                                                ng-click="iSMS.template(data.schedule).then(app.handler).catch(app.handler).then(get_sms_balance);app.notify('Attempting to send your contact based message','info');"
+                                                ng-class="(campaign_sms_form.$valid && data.schedule.body.text )? 'md-btn-success' : 'md-btn-danger'" class="md-btn "> 
+                                                    Send SMS
+                                                </button>
+        
+                                        </div>
+
+                                    </div>
+    
+                                </div>
+    
+                            </div>
+                        </form>
+    
+                    </li>
+                    
+                </ul>
+                
+                <ul ng-show="false" ng-init="" class="uk-switcher uk-margin">
+                    
+                    
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+              

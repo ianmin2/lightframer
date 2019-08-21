@@ -1,245 +1,468 @@
-<!DOCTYPE html>
-<html lang="en" ng-app="framify">
+<!Doctype html>
+<html ng-app="framify" ng-cloak class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients no-cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths uk-notouch wf-sourcecodepro-n4-active wf-sourcecodepro-n7-active wf-roboto-n4-active wf-roboto-n5-active wf-roboto-n7-active wf-roboto-i4-active wf-roboto-n3-active wf-active" lang="en"><!--<![endif]-->
 <head>
+    <style type="text/css">
+        .gm-style .gm-style-mtc label,.gm-style .gm-style-mtc div{font-weight:400}
+   
+        .gm-style .gm-style-cc span,.gm-style .gm-style-cc a,.gm-style .gm-style-mtc div{font-size:10px}
+    
+        @media print {  .gm-style .gmnoprint, .gmnoprint {    display:none  }}@media screen {  .gm-style .gmnoscreen, .gmnoscreen {    display:none  }}
+    
+        .gm-style-pbc{transition:opacity ease-in-out;background-color:rgba(0,0,0,0.45);text-align:center}.gm-style-pbt{font-size:22px;color:white;font-family: 'Open Sans', sans-serif;position:relative;margin:0;top:50%;-webkit-transform:translateY(-50%);-ms-transform:translateY(-50%);transform:translateY(-50%)}
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
+    <meta name="theme-color" content="#1976D2">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Remove Tap Highlight on Windows Phone IE -->
-    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="msapplication-tap-highlight" content="no">
 
-    <!-- Import the favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
 
-    <!-- Setup an application title -->
-    <title>Framify Lite</title>
+    <title>JamboPay SMS | Dashboard</title>
 
-    <!-- Import the Application Style definitions -->
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/bulk.min.css">
+    <!-- <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/framify_dependencies.min.css">
     <link rel="stylesheet" href="assets/css/style.min.css">
+    <link rel="stylesheet" href="assets/css/picker.css"> -->
 
+    <!-- matchMedia polyfill for testing media queries in JS -->
+    <!--[if lte IE 9]>
+        <script type="text/javascript" src="bower_components/matchMedia/matchMedia.js"></script>
+        <script type="text/javascript" src="bower_components/matchMedia/matchMedia.addListener.js"></script>
+        <link rel="stylesheet" href="assets/css/ie.css" media="all">
+    <![endif]-->
+    
+
+    <style type="text/css">
+        .gm-style {
+            font: 400 11px Roboto, Arial, sans-serif;
+            text-decoration: none;
+        }
+        .gm-style img { max-width: none; }
+
+        html, body {
+            height: 100%;
+            min-height: 700px;
+            margin: 0;
+            padding: 0;
+        }
+        #container { /* div you want to stretch */
+            background-color: #0073B3;
+            height: 100%; /** IE 6 */
+            min-height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .login-bg 
+        {
+            background-color: #0073B3;
+            background-image: url('assets/img/bg.jpg');
+            height: 100%;
+            min-height: 1079px;
+            background-position: center !important;
+            background-repeat: no-repeat;
+            background-size: cover !important;
+            overflow: hidden !important;
+        }
+        /* ::-webkit-scrollbar { 
+            display: none;
+        } */
+        .main-bg
+        {
+            background-color : #E9E9E9 !important;
+            /* background-color: white; */
+            /* background-image: url('assets/img/bg3.png'); */
+            /* background-size: cover !important; */
+            /* background-repeat: repeat; */
+
+            /* color: white !important; */
+            min-height:100%;
+            min-height: 1079px;
+        }
+        .sidebar-logo
+        {
+            background-image: url('assets/img/sidebar.png') !important;
+            min-height: 100px;
+            background-position : center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-color: white;
+            margin: 0 auto !important;
+        }
+        .jp-bg-inactive
+        {
+            background-color: white !important;
+            color: deepskyblue !important;
+            font-weight: bolder !important;
+            font-size: 16px !important;
+            font-family:  'Open Sans', sans-serif;
+        }
+        .jp-bg-active
+        {
+            background-color: #2196F3 !important;
+            color: white !important;
+            font-weight: bolder !important;
+            font-size: 16px !important;
+            font-family:  'Open Sans', sans-serif;
+        }
+        textarea {
+            overflow-y: scroll !important;
+            
+            resize: none !important; /* Remove this if you want the user to resize the textarea */
+        }
+        #sdbar
+        {
+            height: auto; 
+            margin-bottom: -17px; 
+            margin-right: -17px; 
+            min-height: 900px; 
+            /* background-position : center;  */
+           background-image:url('assets/img/bg2.png');
+           /* background-color: #1976D2; */
+           background-repeat: repeat;
+        }
+        body 
+        {
+            font-family: 'Andale Mono' !important;
+        }
+       
+    </style>
+    
 </head>
+<!-- @hlink  +'/auth' -->
 <body 
-    ng-cloak
-    style="font-family: Roboto !important; background-color:white !important;" 
-    class="header_full" 
+    class="sidebar_main_swipe" 
+    cz-shortcut-listen="true"
+    ng-class="(storage.framify_user) ? 'sidebar_main_open' : 'sidebar_main_closed'"
     ng-controller="framifyController" 
-    ng-init="remoteAuth.setUrl(app.hlink)"
->
+    ng-init="remoteAuth.setUrl(app.hlink);"
+    >
+    <!-- main header -->
+    <!-- style="background-color: #2196F3 !important;" -->
+    <header id="header_main" >
+        
+        <!-- Fetch required data on login -->
+        <div ng-if="storage.framify_user">
+            <div ng-init="fetch('vw_organization_balances')"></div>
+        </div>
 
-<!-- Header -->    
-    <header id="header_main" style="">
         <div class="header_main_content">
-            <!-- Navbar -->
             <nav class="uk-navbar">
-
-                <div class="main_logo_top">
-                    <a href="index.html">
-                        <!-- <img src="assets/img/logo_main_white.png" alt="" class="" width="71" height="15"> -->
-                        <div style="color: rgba(999,999,999,1) !important; font-size:1.3em !important;">Jambopay Dash</div>
-                        <!-- <img style="margin-top: 0px !important;" src="assets/img/logo.png" alt="" class="" width="71" height="14"> -->
-                    </a>                  
-                </div>
-
+                                
                 <!-- main sidebar switch -->
-                <a href="#" id="sidebar_main_toggle" class="sSwitch sSwitch_left">
+                <a  disabled="true" id="sidebar_main_toggle" class="sSwitch sSwitch_left" ng-show="storage.framify_user">
                     <span class="sSwitchIcon"></span>
                 </a>
-
+                
                 <!-- secondary sidebar switch -->
-                <a href="#" id="sidebar_secondary_toggle" class="sSwitch sSwitch_right sidebar_secondary_check">
+                <a  disabled="true" id="sidebar_secondary_toggle" class="sSwitch sSwitch_right uk-hidden">
                     <span class="sSwitchIcon"></span>
                 </a>
 
-
-                <div id="menu_top_dropdown" class="uk-float-left uk-hidden-small">
-                    <div class="uk-button-dropdown" data-uk-dropdown="{mode:'click'}">
-                        <a href="#" class="top_menu_toggle"><i class="material-icons md-24">&#xE8F0;</i></a>
-                        <div class="uk-dropdown uk-dropdown-width-3">
-                            <div class="uk-grid uk-dropdown-grid" data-uk-grid-margin>
+                <!-- Balance Display -->
+                <code ng-cloak disabled="true" class="pull-right uk-margin-top uk-text-bold col-blue" ng-hide="!storage.framify_user" ng-if="fetched.vw_organization_balances[0] && storage.framify_user.me.organization != 1">
+                    {{fetched.vw_organization_balances[0].org_name}}: {{fetched.vw_organization_balances[0].Credit | currency : ' '}} Units
+                </code>
+                
+                 <!-- POPUP MENU -->
+                 <div id="menu_top_dropdown" 
+                 class="uk-float-left uk-visible" 
+                >
+                    <div class="uk-button-dropdown" data-uk-dropdown="{mode:'click'}" aria-haspopup="true" aria-expanded="false">
+                        <a href="#" class="top_menu_toggle"><i class="material-icons md-24"></i></a>
+                        <div class="uk-dropdown uk-dropdown-width-3" aria-hidden="true"
+                        style="background-image: url('assets/img/bg2.png');background-position : center; background-repeat: no-repeat; background-size: cover;">
+                            <div class="uk-grid uk-dropdown-grid">
                                 <div class="uk-width-2-3">
-                                    <div class="uk-grid uk-grid-width-medium-1-3 uk-margin-top uk-margin-bottom uk-text-center" data-uk-grid-margin>
-
-                                        <a ng-click="app.doNothing()" ui-sref="app.index">
-                                            <i class="material-icons md-36" style="color:#1976D2;">home</i>
-                                            <span class="muk-text-muted uk-display-block"  style="color:darkslategray;">Home</span>
+                                    <div class="uk-grid uk-grid-width-medium-1-3 uk-margin-bottom uk-text-center">
+                                        <!-- {{storage.framify_user.me["name.first"]}} {{ (storage.framify_user.me["name.last"] != null && storage.framify_user.me["name.last"] != 'null') ? storage.framify_user.me["name.last"] : ''}} -->
+                                        
+                                        <a ng-click="goTo('app.permissions')" ui-sref="app.permissions" ng-if="storage.framify_user" class="uk-margin-top">
+                                            <i class="material-icons md-36" ng-class="( storage.framify_user.me['role'] == 'admin' ) ? 'md-color-light-green-600' : 'md-color-blue-600'" >face</i>
+                                            <span class="uk-text-muted uk-display-block">Profile</span>
+                                        </a>   
+                                        <a ng-click=app.doNothing() ui-sref="app.panel" class="uk-margin-top" ng-if="storage.framify_user">
+                                            <i class="material-icons md-36 md-color-purple-600">list</i>
+                                            <span class="uk-text-muted uk-display-block">Reports</span>
                                         </a>
-
-                                        <a ng-click="app.doNothing()" ui-sref="app.signup">
-                                            <i class="material-icons md-36" style="color:#1976D2;">group</i>
-                                            <span class="muk-text-muted uk-display-block" style="color:darkslategray;">Signup</span>
+                                        <a ng-click=app.doNothing() ui-sref="app.balances" ng-if="storage.framify_user" class="uk-margin-top">
+                                            <i class="material-icons md-36 md-color-cyan-600">attach_money</i>
+                                            <span class="uk-text-muted uk-display-block">Balances</span>
                                         </a>
-
-                                        <a ng-click="auth.Logout().then(handlers.isLogedIn)" ng-if="storage.framify_user">
-                                            <i class="material-icons md-36" style="color:#1976D2;">highlight_off</i>
-                                            <span class="muk-text-muted uk-display-block" style="color:darkslategray;">Logout</span>
+                                        <a ng-click=app.doNothing() ui-sref="app.client.sms" class="uk-margin-top" ng-if="storage.framify_user">
+                                            <i class="material-icons md-36 md-color-red-400">sms</i>
+                                            <span class="uk-text-muted uk-display-block">Messaging</span>
                                         </a>
-
-                                        <a ng-click="app.doNothing()" ui-sref="app.documentation">
-                                            <i class="material-icons md-36" style="color:#1976D2;">book</i>
-                                            <span class="muk-text-muted uk-display-block" style="color:darkslategray;">Documentation</span>
+                                        <a class="uk-margin-top" ng-click="app.doNothing()" ui-sref="app.client.tags" ng-if="storage.framify_user">
+                                            <i class="material-icons md-36 md-color-teal-400">contacts</i>
+                                            <span class="uk-text-muted uk-display-block">Groups</span>
                                         </a>
-
+                                        <a class="uk-margin-top" ng-click="app.doNothing()" ui-sref="app.client.templates" ng-if="storage.framify_user">
+                                            <i class="material-icons md-36 md-color-yellow-600">code</i>
+                                            <span class="uk-text-muted uk-display-block">Templates</span>
+                                        </a>
+                                        <a class="uk-margin-top" ng-click="app.doNothing()" ui-sref="app.client.contacts" ng-if="storage.framify_user">
+                                            <i class="material-icons md-36 md-color-blue-600">contact_phone</i>
+                                            <span class="uk-text-muted uk-display-block">Contacts</span>
+                                        </a>
+                                        <a ng-click=app.doNothing() ui-sref="app.index" class="uk-margin-top" ng-if="storage.framify_user">
+                                            <i class="material-icons md-36 md-color-black-600">insert_chart_outlined</i>
+                                            <span class="uk-text-muted uk-display-block">Summaries</span>
+                                        </a>
+                                        <a ng-click=app.doNothing() ui-sref="app.manage_users" class="uk-margin-top" ng-if="storage.framify_user">
+                                            <i class="material-icons md-36 md-color-orange-600">people</i>
+                                            <span class="uk-text-muted uk-display-block">Users</span>
+                                        </a>
+                                        <a ng-click="auth.Logout().then(handlers.isLogedIn)" ng-if="storage.framify_user" class="uk-margin-top">
+                                            <i class="material-icons md-36 md-color-red-800">highlight_off</i>
+                                            <span class="uk-text-muted uk-display-block">Logout</span>
+                                        </a>
+                                        <a ng-click=app.doNothing() ui-sref="app.login" ng-hide="storage.framify_user" class="uk-margin-top">
+                                            <i class="material-icons md-36 md-color-green-800">security</i>
+                                            <span class="uk-text-muted uk-display-block">User Login</span>
+                                        </a>
+                                        <a ng-click=app.doNothing() ui-sref="app.passwords" ng-hide="storage.framify_user" class="uk-margin-top">
+                                            <i class="material-icons md-36 md-color-purple-600">lock_open</i>
+                                            <span class="uk-text-muted uk-display-block">Password Recovery</span>
+                                        </a>
                                     </div>
-
                                 </div>
-                                <div class="uk-width-1-3">
+                                <div class="uk-width-1-3 uk-hidden-small">
                                     <ul class="uk-nav uk-nav-dropdown uk-panel">
-                                        <li class="uk-nav-header"  style="color:#1976D2;" style="cursor:pointer;" ui-sref="app.index">Home</li>
-                                        <li class="uk-nav-header"  style="color:#1976D2;" style="cursor:pointer;" ui-sref="app.panel">Dashboard</li>
-                                        <li class="uk-nav-header"  style="color:#1976D2;" style="cursor:pointer;" ui-sref="app.documentation">Documentation</li>
-                                        <li class="uk-nav-header"  style="color:#1976D2;" style="cursor:pointer" ui-sref="app.manage_users">Manage User Accounts</li>
-                                        <li class="uk-nav-header"  style="color:#1976D2;" style="cursor:pointer;" ng-show="storage.framify_user" ng-click="auth.Logout().then(handlers.isLogedIn)">LOGOUT</li>
+                                        <li class="uk-nav-header"></li>
+                                        <li><a ng-if="storage.framify_user" class="uk-text-muted" ui-sref="app.permissions">Profile</a></li>
+                                        <li><a ng-if="storage.framify_user" class="uk-text-muted" ui-sref="app.panel">Delivery Reports</a></li>
+                                        <li><a ng-if="storage.framify_user" class="uk-text-muted" ui-sref="app.balances">Balances</a></li>
+                                        <li><a ng-if="storage.framify_user" class="uk-text-muted" ui-sref="app.client.sms">Messaging</a></li>
+                                        <li><a ng-if="storage.framify_user" class="uk-text-muted" ui-sref="app.client.tags">Groups</a></li>
+                                        <li><a ng-if="storage.framify_user" class="uk-text-muted" ui-sref="app.client.templates">Templates</a></li>
+                                        <li><a ng-if="storage.framify_user" class="uk-text-muted" ui-sref="app.client.contacts">Contacts</a></li>
+                                        <li><a ng-if="storage.framify_user" class="uk-text-muted" ui-sref="app.index">Summaries</a></li>
+                                        <li><a ng-if="storage.framify_user" class="uk-text-muted" ui-sref="app.manage_users">User Management</a></li>
+                                        <li><a ng-if="storage.framify_user" class="uk-text-muted" ng-click="auth.Logout().then(handlers.isLogedIn)">Logout</a></li>
                                     </ul>
-                                </div>
-                            </div>
+                                </div>                                
+                            </div>                            
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="uk-navbar-flip">
                     <ul class="uk-navbar-nav user_actions">
-                        <li><a href="#" id="full_screen_toggle" class="user_action_icon uk-visible-large"><i class="material-icons md-24 md-light">&#xE5D0;</i></a></li>
-                        <li><a href="#" id="main_search_btn" class="user_action_icon"><i class="material-icons md-24 md-light">&#xE8B6;</i></a></li>
-                        <li data-uk-dropdown="{mode:'click',pos:'bottom-right'}">
-                            <a href="#" class="user_action_icon"><i class="material-icons md-24 md-light">&#xE8A6;</i><span class="uk-badge"></span></a>
-                            <div class="uk-dropdown uk-dropdown-xlarge">
-                                <div class="md-card-content">
-                                    <ul class="uk-tab uk-tab-grid" data-uk-tab="{connect:'#header_alerts',animation:'slide-horizontal'}">
-                                        <li class="uk-width-1-2 uk-active"><a href="#" class="js-uk-prevent uk-text-small">Actions</a></li>
-                                        <li class="uk-width-1-2"><a href="#" class="js-uk-prevent uk-text-small">About</a></li>
-                                    </ul>
-                                    <ul id="header_alerts" class="uk-switcher uk-margin">
-                                        <li>
-                                            <ul class="md-list md-list-addon">
-                                                <li>
-                                                    <div class="md-list-addon-element">
-                                                        <span class="md-user-letters md-bg-cyan">Hi</span>
-                                                    </div>
-                                                    <div class="md-list-content">
-                                                        <span class="md-list-heading"><a href="#">Hello.</a></span>
-                                                        <span class="uk-text-small uk-text-muted">Welcome to this framify management portal.</span>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                            <div class="uk-text-center uk-margin-top uk-margin-small-bottom">
-                                                <button ng-if="!storage.framify_user" ng-click="goTo('app.login')" class="md-btn"> LOGIN</button>
-                                                <button ng-if="storage.framify_user" ng-click="auth.Logout().then(handlers.isLogedIn)" class="md-btn md-btn-danger"> LOGOUT</button>
-                                                <button ng-if="storage.framify_user" ng-click="goTo('app.signup')" class="md-btn md-btn-warning">ADD USER</button>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <ul class="md-list md-list-addon">
-                                                <li>
-                                                    <div class="md-list-addon-element">
-                                                        <i class="md-list-addon-icon material-icons uk-text-primary">info_outline</i>
-                                                    </div>
-                                                    <div class="md-list-content">
-                                                        <span class="md-list-heading">Framify</span>
-                                                        <span class="uk-text-small uk-text-muted uk-text-truncate">framify@bixbyte.io</span>
-                                                    </div>
-                                                </li>
 
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </li>
-                        <li data-uk-dropdown="{mode:'click',pos:'bottom-right'}">
-                            <!--<a href="#" class="user_action_image"><img class="md-user-image" src="assets/img/avatars/avatar_11_tn.png" alt=""/></a>-->
-                            <div class="uk-dropdown uk-dropdown-small">
-                                <ul class="uk-nav js-uk-prevent">
-                                    <li disabled><a href="page_user_profile.html">My profile</a></li>
-                                    <li disabled><a href="page_settings.html">Settings</a></li>
-                                    <li disabled><a href="login.html">Logout</a></li>
+                        <li><a href="#" id="full_screen_toggle" class="user_action_icon uk-hidden-small"><i class="material-icons md-24 md-light">fullscreen</i></a></li>
+                        
+                        
+                        <li data-uk-dropdown="{mode:'click',pos:'bottom-right'}" aria-haspopup="true" aria-expanded="false">
+                            <a href="#" class="user_action_image uk-hidden-small">
+                                <i class="material-icons md-24 md-light">person</i>
+                            </a>
+                            <div class="uk-dropdown uk-dropdown-small" aria-hidden="true" style="background-image: url('assets/img/bg2.png');background-position : center; background-repeat: no-repeat; background-size: cover">
+                                <ul class="uk-nav js-uk-prevent ">
+                                        <li><a class="uk-text-center uk-text-small" ng-if="storage.framify_user" ui-sref="app.permissions">Profile</a></li>
+                                        <li><a class="uk-text-center uk-text-small" ng-if="storage.framify_user" ui-sref="app.balances">Balances</a></li>
+                                        <li><a class="uk-text-center uk-text-small" ng-hide="storage.framify_user" ui-sref="app.passwords">Password Recovery</a></li>
+                                        <li><a class="uk-text-center uk-text-small" ng-if="storage.framify_user" ng-click="auth.Logout().then(handlers.isLogedIn)">Logout</a></li>
                                 </ul>
                             </div>
                         </li>
                     </ul>
                 </div>
+
             </nav>
-            <!-- /Navbar -->
         </div>
-        <div class="header_main_search_form">
-            <i class="md-icon header_main_search_close material-icons">&#xE5CD;</i>
-            <form class="uk-form">
-                <input type="text" class="header_main_search_input" ng-model="nav.search" ng-bind="nav.search" />
-                <button class="header_main_search_btn uk-button-link"><i class="md-icon material-icons">&#xE8B6;</i></button>
-            </form>
+        
+    </header><!-- main header end -->
+    <!-- main sidebar -->
+    <aside id="sidebar_main">
+        <div class="scroll-wrapper scrollbar-inner" style="position: relative;">
+        <div class="scrollbar-inner scroll-content scroll-scrolly_visible"  id="sdbar"
+        style="">
+        
+            <div class="sidebar-logo" >
+                
+            </div>
+        
+            <div class="menu_section">
+                <ul ng-init="section=section||'charts'">
+
+                    <p></p>
+                    <!-- DASHBOARD -->
+                    <li ng-class="(section=='charts')? 'current_section': ''" title="Dashboard">
+                        <a ui-sref="app.index" ng-click="section='charts'" class="uk-grid">
+                            <span class="menu_icon uk-width-1-2" ><i class="material-icons"></i></span>
+                            <span class="menu_title uk-width-1-2" style="font-weight:bold;">Home</span>
+                        </a>                            
+                    </li>
+
+                    <div class="uk-margin"></div>
+                    <!-- <p></p> -->
+                    <!-- CONTACTS -->
+                    <li ng-class="(section=='group'||section=='contact')? 'current_section': ''" class="submenu_trigger" title="Contacts">
+                        <a href="#" class="uk-grid">
+                            <span class="menu_icon uk-width-1-2"><i class="material-icons ">contact_phone</i></span>
+                            <span class="menu_title uk-width-1-2 " style="font-weight:bold;">Phonebook</span>
+                        </a>
+                        <ul>
+
+                            <li ng-class="(section=='contact')?'md-color-blue-800':''" ng-click="section='contact';">
+                                <a  class="uk-grid" ui-sref="app.client.contacts" ng-class="(section=='contact')? 'md-color-blue-800': ''">
+                                    <span class="menu_icon uk-width-1-4"><i class="material-icons " ng-class="(section=='contact')? 'md-color-blue-800': ''">contacts</i></span>
+                                    <span class="menu_title uk-width-3-4 uk-text-justify"  >Contacts</span>
+                                </a>
+                            </li>  
+
+                            <li ng-class="(section=='group')?'md-color-blue-800':''" ng-click="section='group';">
+                                <a  class="uk-grid" ui-sref="app.client.tags" ng-class="(section=='group')? 'md-color-blue-800': ''">
+                                    <span class="menu_icon uk-width-1-4"><i class="material-icons " ng-class="(section=='group')? 'md-color-blue-800': ''">group</i></span>
+                                    <span class="menu_title uk-width-3-4 uk-text-justify"  >Contact Groups</span>
+                                </a>
+                            </li>
+                                                    
+                        </ul>
+                    </li>
+
+                    <div class="uk-margin"></div>
+                    <!-- <p></p>  -->
+                    <!-- TEMPLATES -->
+                    <li ng-class="(section=='templates')? 'current_section': ''" title="SMS Templates">
+                        <a ng-click="section='templates'" ui-sref="app.client.templates"  class="uk-grid">
+                            <span class="menu_icon uk-width-1-2"><i class="material-icons ">code</i></span>
+                            <span class="menu_title uk-width-1-2 " style="font-weight:bold;">Templates</span>
+                        </a>                            
+                    </li>
+
+                    <div class="uk-margin"></div>
+                    <!-- <p></p> -->
+                    <!-- SMS -->
+                    <li ng-class="(section=='sms')? 'current_section': ''" title="SMS Sending">
+                        <a ng-click="section='sms'" ui-sref="app.sms" class="uk-grid">
+                            <span class="menu_icon uk-width-1-2"><i class="material-icons ">sms</i></span>
+                            <span class="menu_title uk-width-1-2 " style="font-weight:bold;">SMS</span>
+                        </a> 
+                        <ul>
+
+                            <li ng-class="(section=='simple_sms')?'md-color-blue-800':''" ng-click="section='simple_sms';">
+                                <a  class="uk-grid" ui-sref="app.sms.simple_sms" ng-class="(section=='simple_sms')? 'md-color-blue-800': ''">
+                                    <span class="menu_icon uk-width-1-4"><i class="material-icons " ng-class="(section=='simple_sms')? 'md-color-blue-800': ''">chat_bubble_outline</i></span>
+                                    <span class="menu_title uk-width-3-4 uk-text-justify"  >Simple SMS</span>
+                                </a>
+                            </li>  
+
+                            <li ng-class="(section=='template_sms')?'md-color-blue-800':''" ng-click="section='template_sms';">
+                                <a  class="uk-grid" ui-sref="app.sms.template_sms" ng-class="(section=='template_sms')? 'md-color-blue-800': ''">
+                                    <span class="menu_icon uk-width-1-4"><i class="material-icons " ng-class="(section=='template_sms')? 'md-color-blue-800': ''">code</i></span>
+                                    <span class="menu_title uk-width-3-4 uk-text-justify"  >Template SMS</span>
+                                </a>
+                            </li>
+
+                            <li ng-class="(section=='group_sms')?'md-color-blue-800':''" ng-click="section='group_sms';">
+                                <a  class="uk-grid" ui-sref="app.sms.group_sms" ng-class="(section=='group_sms')? 'md-color-blue-800': ''">
+                                    <span class="menu_icon uk-width-1-4"><i class="material-icons " ng-class="(section=='group_sms')? 'md-color-blue-800': ''">group</i></span>
+                                    <span class="menu_title uk-width-3-4 uk-text-justify"  >Group SMS</span>
+                                </a>
+                            </li>
+
+                            <li ng-class="(section=='direct_bulk')?'md-color-blue-800':''" ng-click="section='direct_bulk';">
+                                <a  class="uk-grid" ui-sref="app.sms.direct_bulk" ng-class="(section=='direct_bulk')? 'md-color-blue-800': ''">
+                                    <span class="menu_icon uk-width-1-4"><i class="material-icons " ng-class="(section=='direct_bulk')? 'md-color-blue-800': ''">chat_bubble</i></span>
+                                    <span class="menu_title uk-width-3-4 uk-text-justify"  >Direct Bulk</span>
+                                </a>
+                            </li>
+                                                    
+                        </ul>                           
+                    </li>
+
+                    <div class="uk-margin"></div>
+                    <!-- <p></p> -->
+                    <!-- Lists -->
+                    <li ng-class="(section=='panel')? 'current_section': ''" title="SMS Delivery Logs">
+                        <a ng-click="section='panel'" ui-sref="app.panel" class="uk-grid">
+                            <span class="menu_icon uk-width-1-2"><i class="material-icons ">lists</i></span>
+                            <span class="menu_title uk-width-1-2 " style="font-weight:bold;">Messages</span>
+                        </a>                            
+                    </li>
+
+                    <div class="uk-margin"></div>
+                    <!-- <p></p> -->
+                    <!-- Balances -->
+                    <li ng-class="(section=='balances')? 'current_section': ''" title="Account Balances">
+                        <a ng-click="section='balances'" ui-sref="app.balances" class="uk-grid">
+                            <span class="menu_icon uk-width-1-2"><i class="material-icons ">attach_money</i></span>
+                            <span class="menu_title uk-width-1-2 " style="font-weight:bold;">Balances</span>
+                        </a>                            
+                    </li>
+
+                    <div class="uk-margin"></div>
+                    <!-- <p></p> -->
+                    <!-- users -->
+                    <li ng-class="(section=='users')? 'current_section': ''" title="User Accounts">
+                        <a ng-click="section='users'" ui-sref="app.manage_users" class="uk-grid">
+                            <span class="menu_icon uk-width-1-2"><i class="material-icons ">people</i></span>
+                            <span class="menu_title uk-width-1-2 " style="font-weight:bold;">Users</span>
+                        </a>                            
+                    </li>
+
+                    <div class="uk-margin"></div>
+                    <!-- <p></p> -->
+                    <!-- Profile -->
+                    <li ng-class="(section=='permissions')? 'current_section': ''" title="My Profile">
+                        <a ng-click="section='permissions'" ui-sref="app.permissions" class="uk-grid">
+                            <span class="menu_icon uk-width-1-2"><i class="material-icons ">face</i></span>
+                            <span class="menu_title uk-width-1-2 " style="font-weight:bold;">Profile</span>
+                        </a>                            
+                    </li>
+
+                    <div class="uk-margin"></div>
+                    <!-- <p></p> -->
+                    <!-- Logout -->
+                    <li title="Logout">
+                        <a  ng-click="auth.Logout().then(handlers.isLogedIn)" class="uk-grid">
+                            <span class="menu_icon uk-width-1-2"><i class="material-icons col-red">highlight_off</i></span>
+                            <span class="menu_title uk-width-1-2 " style="font-weight:bold;">Logout</span>
+                        </a>                            
+                    </li>
+
+                </ul>
+            </div>
         </div>
-    </header>
-<!-- /Header -->
-
-
-<!-- Sidebar -->
-    <aside id="sidebar_main" class="" style="color:white !important; background-color:rgba(25, 118, 210, 1) !important; ">
-    <div class="menu_section">
-            <ul class="col-white">
-                <li title="Home">
-                    <a ui-sref="app.index" class="col-white">
-                        <span class="menu_icon col-white"><i class="material-icons col-white">home</i></span>
-                        <span class="menu_title col-white">Home</span>
-                    </a>
-                </li>
-
-                <li title="Documentation">
-                    <a ui-sref="app.documentation" class="col-white">
-                        <span class="menu_icon col-white"><i class="material-icons col-white">book</i></span>
-                        <span class="menu_title col-white">Documentation</span>
-                    </a>
-                </li>
-
-                <li title="User Panel">
-                    <a ui-sref="app.panel" class="col-white">
-                        <span class="menu_icon col-white"><i class="material-icons col-white">fingerprint</i></span>
-                        <span class="menu_title col-white">User Panel</span>
-                    </a>
-                </li>
-
-                <!-- <li ng-repeat="link in links" ng-if="link.menu == 'true' && ( link.parent == 'false' )" title="{{link.title}}">
-                    <a ui-sref="app.{{link.path}}" class="col-white">
-                        <span class="menu_icon col-white"><i class="material-icons col-white">{{link.icon}}</i></span>
-                        <span class="menu_title col-white">{{link.title}}</span>
-                    </a>
-                </li> -->
-
-                <li title="Logout" >
-                    <a ng-click="auth.Logout().then(handlers.isLogedIn)" ng-if="storage.framify_user" ui-sref="app.index" class="col-white">
-                            <span class="menu_icon col-white"><i class="material-icons col-white">highlight_off</i></span>
-                        <span class="menu_title col-white">Logout</span>
-                    </a>
-                </li>
-
-
-
-            </ul>
+        <div class="scroll-element scroll-x scroll-scrolly_visible">
+            <div class="scroll-element_outer">
+                <div class="scroll-element_size"></div>
+                <div class="scroll-element_track"></div>
+                <div class="scroll-bar" style="width: 89px;"></div>
+            </div>
         </div>
-    </aside>
-<!-- /Sidebar -->
-
-
-<br>
-<br>
-
-<div id="page_content">
-
-
-    <div id="page_content_inner">
-        <div ui-view></div>
-
+        <div class="scroll-element scroll-y scroll-scrolly_visible">
+            <div class="scroll-element_outer">
+                <div class="scroll-element_size"></div>
+                <div class="scroll-element_track"></div>
+                <div class="scroll-bar" style="height: 187px; top: 0px;"></div>
+            </div>
+        </div>
     </div>
+</aside>
+<!-- main sidebar end -->
 
-</div>
+    <div id="page_content" >
+        <div id="page_content_inner" ui-view        
+        ng-class="(login_status()) ? 'main-bg' : 'login-bg'"
+        >
+        
+            
+        </div>
+    </div>
+   
 
-</body>
-
-<!-- scripts -->
+    <!-- <script src="assets/js/bulk.min.js"></script> -->
+    <!-- <script src="assets/js/app.js"></script> -->
 
     <script src="assets/js/framify_dependencies.min.js"></script>
     <script src="assets/js/framify.min.js"></script>
-
 
     <!-- common functions -->
     <script src="assets/js/common.min.js"></script>
@@ -247,25 +470,17 @@
     <script src="assets/js/uikit_custom.min.js"></script>
     <!-- altair common functions/helpers -->
     <script src="assets/js/altair_admin_common.min.js"></script>
-
+    <!-- SM DATETIME PICKER -->
+    <script src="assets/js/picker.js"></script>
 
     <!-- MAIN APPLICATION SCRIPT IMPORT -->
     <script src="assets/js/app.js"></script>
+    <script src="assets/js/jspdf.min.js"></script>
 
-    
-    <script>
-        $(function() {
-            // enable hires images
-            altair_helpers.retina_images();
-            // fastClick (touch devices)
-            if (Modernizr.touch) {
-                FastClick.attach(document.body);
-            }
-        });
-    </script>
+ 
+    <!-- <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: medium none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+        <div style="border: medium none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div> -->
 
-    
-
-<!-- /scripts -->
-
+</body>
 </html>

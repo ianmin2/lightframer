@@ -1,8 +1,8 @@
 module.exports = 
 {
-    user        : 'postgres',
-    password    : 'framify',
-    database    : 'framify',
+    user        : 'YOUR_SQL_DB_USERNAME',
+    password    : 'YOUR_SQL_DB_PASSWORD',
+    database    : 'YOUR_DATABSE_NAME',
     extras      : 
                 {
                     dialect     : 'postgres',   // mssql|postgres|mysql|sqlite

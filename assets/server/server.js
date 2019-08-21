@@ -14,7 +14,7 @@
 })();
 */
 
-require('lightframe');
+require('liteframe');
 
 //@ Load the basic server configurations
 require(path.join(__dirname,'configuration.es6'));
@@ -155,9 +155,6 @@ var framifySecurity = function(req, res, next) {
 
 //@ Inject the security middleware
 app.use( framifySecurity );
-
-
-
 
 // //@ SAMPLE SERVER STARTUP MONITORING MAIL TEMPLATE
 // var mailData = {
@@ -366,4 +363,3 @@ app.use(function(req, res) {
 
 // //@ Handle file changes for the SMS sender
 // require(path.join(__dirname,'watcher.js'));
-

@@ -1,1 +1,1 @@
-`An awesome application powered by @lightframe`
+`An awesome application powered by @liteframe`

@@ -1,4 +1,4 @@
-[![##LightFramer](http://cards.ueab.ac.ke/framify-lite.png)](https://www.npmjs.com/package/lightframer)
+[![##LightFramer](http://cards.ueab.ac.ke/framify-lite.png)](https://www.npmjs.com/package/liteframer)
 
 An fast and easy to use application bootstrapping tool for [node](http://nodejs.org).
 
@@ -9,7 +9,7 @@ An fast and easy to use application bootstrapping tool for [node](http://nodejs.
 
 ----
 ### **To install**
-> npm install -g lightframer
+> npm install -g liteframer
 
 ---
 ## **usage**
@@ -18,13 +18,13 @@ An fast and easy to use application bootstrapping tool for [node](http://nodejs.
 ### To create a new application ...
 *On the command line, navigate to the directory where you would like to start your application then type :*
    
-> lightframer appName
+> liteframer appName
 
 ***Note:***
 
 * The *appName* provided will be turned into lowercase
 
-* Spaces are not allowed in the *appName* unless you use  escape characters e.g ** lightframer *My Application* ** can be typed as ** lightframer *My\ \Application* **
+* Spaces are not allowed in the *appName* unless you use  escape characters e.g ** liteframer *My Application* ** can be typed as ** liteframer *My\ \Application* **
 The result of this will however be ***my_application***
 
 * The new application directory will be created in the ***current working directory *** (**$PWD**) at the time of running the command.
@@ -32,15 +32,15 @@ The result of this will however be ***my_application***
 ----
 ## A Brief Introduction
 
-Bixbyte's **lightframer** rapid app development framework base relies primarily on the **UIKit**  and **AngularJs** frameworks for *UI* development. 
+Bixbyte's **liteframer** rapid app development framework base relies primarily on the **UIKit**  and **AngularJs** frameworks for *UI* development. 
 
 it can also easily be ported as a *UI* base for mobile applications. 
 
-**lightframer** UI builder is built out of the box to interact *Bixbyte's* **lightframe** application base which is a rapid API development framework complete with a GraphQl like ORM with built in simple yet powerful user access control management.
+**liteframer** UI builder is built out of the box to interact *Bixbyte's* **liteframe** application base which is a rapid API development framework complete with a GraphQl like ORM with built in simple yet powerful user access control management.
 
 This aids in the rapid development of a full stack application essentially following an **MVC** *ish* architecture.
 
-Some of the things that come with ***lightframe*** *and therefore available in **lightframer*** by default are:
+Some of the things that come with ***liteframe*** *and therefore available in **liteframer*** by default are:
 
 * A **socket.io** and *CORS* enabled *standardized* **express** based server - base application
 
@@ -215,7 +215,7 @@ Some of the things that come with ***lightframe*** *and therefore available in *
 
 [ Google Material Icons](https://design.google.com/icons/)
 
-[ Out of the box application example](https://bixbyte.io/lightframer)
+[ Out of the box application example](https://bixbyte.io/liteframer)
 
 ----
 
@@ -231,11 +231,11 @@ Some of the things that come with ***lightframe*** *and therefore available in *
 
   [MIT](LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/lightframer.svg
-[npm-url]: https://npmjs.org/package/lightframer
-[downloads-image]: https://img.shields.io/npm/dm/lightframer.svg
-[downloads-url]: https://npmjs.org/package/lightframer
-[linux-image]: https://img.shields.io/travis/ianmin2/lightframer/master.svg?label=linux
+[npm-image]: https://img.shields.io/npm/v/liteframer.svg
+[npm-url]: https://npmjs.org/package/liteframer
+[downloads-image]: https://img.shields.io/npm/dm/liteframer.svg
+[downloads-url]: https://npmjs.org/package/liteframer
+[linux-image]: https://img.shields.io/travis/ianmin2/liteframer/master.svg?label=linux
 [windows-image]: https://img.shields.io/appveyor/ci/dougwilson/express/master.svg?label=windows
 
-[test-image]: https://img.shields.io/coveralls/ianmin2/lightframer/master.svg
+[test-image]: https://img.shields.io/coveralls/ianmin2/liteframer/master.svg

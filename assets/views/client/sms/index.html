@@ -1,0 +1,97 @@
+<div class="" ng-init="handlers.isLogedIn().then(handlers.identity).then(app.doNothing).catch(app.doNothing);"></div>
+
+<h3 class="heading_b uk-margin-bottom">SMS SENDING</h3>
+
+<div 
+    id="top_bar"
+    class="uk-animation-slide-bottom" style="background-color:rgba(100, 100, 100,0.99);text-transform: uppercase !important;"
+>
+    <div class="md-top-bar">
+        <div class="uk-width-large-10-10 uk-text-justify uk-container-justify">
+            <ul class="top_bar_nav" id="snippets_grid_filter">
+
+                <li ng-class="{'uk-active': frame.currTab == 'simple_sms' }">
+                    <a 
+                        ui-sref="app.sms.simple_sms" 
+                        style="font-weight:bold;color:white;text-shadow: 1px 1px 2px rgba(30, 110, 190, 0.349), 0.5px 0.5px 1px black ;"
+                    >
+                        SIMPLE SMS
+                    </a>
+                </li>
+                <li ng-class="{'uk-active': frame.currTab == 'template_sms' }" >
+                    <a ui-sref="app.sms.template_sms" style="font-weight:bold;color:white;text-shadow: 1px 1px 2px rgba(30, 110, 190, 0.349),0.5px 0.5px 1px black ;">TEMPLATE SMS</a>
+                </li>
+                <li ng-class="{'uk-active': frame.currTab == 'group_sms' }" >
+                    <a ui-sref="app.sms.group_sms" style="font-weight:bold;color:white;text-shadow: 1px 1px 2px rgba(30, 110, 190, 0.349),0.5px 0.5px 1px black ;">GROUP SMS</a>
+                </li>
+                <li ng-class="{'uk-active': frame.currTab == 'direct_bulk' }" >
+                    <a ui-sref="app.sms.direct_bulk" style="font-weight:bold;color:white;text-shadow: 1px 1px 2px rgba(30, 110, 190, 0.349),0.5px 0.5px 1px black ;">DIRECT BULK</a>
+                </li>
+
+                <li class="pull-right" ng-if="data.me.role">
+                    <a style="font-weight:bold;color:white;text-decoration:none !important;cursor:pointer;" class="uk-text-small">
+                        {{data.me["name.first"]}} -- <font ng-class=" (permissions.admin_only(data.me))? 'uk-text-success' : 'uk-text-primary' "> {{data.me.role | uppercase}} MODE</font> 
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</div>
+<br><br>
+
+<div class="" ui-view>  
+    
+    <div class="md-card uk-border-rounded uk-padding">
+
+        <div  class="uk-grid uk-grid-width-large-1-4 uk-grid-width-medium-1-2 uk-grid-medium " data-uk-sortable="" data-uk-grid-margin="">
+            <div class="uk-row-first" ng-click="app.redirect('/#/app/sms/simple_sms');" >
+                <div class="md-card">
+                    <div class="md-card-content">
+                        <div class="uk-float-right uk-margin-top uk-margin-small-right">
+                            <i class="material-icons md-36 md-color-red-600">chat</i>
+                        </div>
+                        <span class="uk-text-muted uk-text-small uk-text-bold uk-text-uppercase">SIMPLE SMS</span>
+                        <h4 class="uk-margin-remove col-white">SMS</h4>
+                    </div>
+                </div>
+            </div>
+            <div style="" ng-click="app.redirect('/#/app/sms/template_sms');">
+                <div class="md-card">
+                    <div class="md-card-content">
+                        <div class="uk-float-right uk-margin-top uk-margin-small-right">
+                            <i class="material-icons md-36 md-color-brown-600">code</i>
+                        </div>
+                        <span class="uk-text-muted uk-text-small uk-text-bold uk-text-uppercase">TEMPLATE SMS</span>
+                        <h4 class="uk-margin-remove col-white">SMS</h4>
+                    </div>
+                </div>
+            </div>     
+            <div style="" ng-click="app.redirect('/#/app/sms/group_sms');">
+                <div class="md-card">
+                    <div class="md-card-content">
+                        <div class="uk-float-right uk-margin-top uk-margin-small-right">
+                            <i class="material-icons md-36 md-color-green-400">people_outline</i>
+                        </div>
+                        <span class="uk-text-muted uk-text-small uk-text-bold uk-text-uppercase">GROUP SMS</span>
+                        <h4 class="uk-margin-remove col-white">SMS</h4>
+                    </div>
+                </div>
+            </div>                                                   
+            <div style="" ng-click="app.redirect('/#/app/sms/direct_bulk');">
+                <div class="md-card">
+                    <div class="md-card-content">
+                        <div class="uk-float-right uk-margin-top uk-margin-small-right">
+                            <i class="material-icons md-36 md-color-blue-600">assignment</i>
+                        </div>
+                        <span class="uk-text-muted uk-text-small uk-text-bold uk-text-uppercase">DIRECT BULK SMS</span>
+                        <h4 class="uk-margin-remove col-white">SMS</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+   

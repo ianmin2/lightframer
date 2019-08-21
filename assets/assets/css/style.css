@@ -2357,13 +2357,18 @@
     margin-left: 20px; } }
 
 /* General ===================================== */
+@font-face {
+  font-family: "Andale Mono";
+  src: url("css/fonts/Andale-Mono.ttf");
+};
+
 body {
   background-color: #e9e9e9;
   -moz-transition: all 0.5s;
   -o-transition: all 0.5s;
   -webkit-transition: all 0.5s;
   transition: all 0.5s;
-  font-family: 'Roboto', Arial, Tahoma, sans-serif; }
+  font-family: 'Andale Mono', Arial, Tahoma, sans-serif; }
 
 h1,
 h2,
@@ -8030,4 +8035,11 @@ html.ie11 .bs-searchbox .form-control {
 .section {
   padding: 1em;
   text-align: justified;
+}
+@font-face {
+  font-family: 'Andale Mono';
+  src: url('fonts/Andale-Mono.ttf');
+}
+.sm-calender-pane {
+  z-index: 100;
 }

@@ -1,0 +1,15 @@
+module.exports = 
+{
+	"db"           : "DATABASE_NAME",
+	"authDB"	   : "admin"
+	"collection"   : "YOUR_COLLECTION_NAME"
+    ,"user"        : "YOUR_USERNAME"
+    ,"password"    : "YOUR_PASSWORD"
+    ,"host"        : 
+    {
+        "url"     : "localhost"
+        ,"port"   : 27017
+        ,"idle"   : 30
+        ,"max_connections": 100
+    }
+};

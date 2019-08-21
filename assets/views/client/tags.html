@@ -1,0 +1,255 @@
+<div class="" ng-init="handlers.isLogedIn().then(handlers.identity).then(app.doNothing).catch(app.doNothing);"></div>
+<h3 class="heading_b uk-margin-bottom">JAMBOPAY SMS</h3>
+
+<div ng-init="data.tags = {};fetch([['tags']]);" class="md-card uk-border-rounded uk-margin-medium-bottom">
+        <div class="md-card-content">
+            <div class="uk-grid" data-uk-grid-margin="">
+                <div class="uk-width-1-1 uk-row-first" ng-init="actTab='add';section='group';">
+                    <ul class="uk-tab" data-uk-tab="{connect:'#tabs_1'}">
+                        <li ng-class="(actTab == 'add') ? 'uk-active bg-yellow' :''" ng-click="actTab ='add'" aria-expanded="{{actTab == 'add'}}"><a disabled='true' >ADD GROUP</a></li>
+                        <li ng-class="(actTab == 'edit') ? 'uk-active bg-yellow' :''" ng-click="actTab ='edit'" aria-expanded="{{actTab == 'edit'}}"><a disabled='true' >EDIT GROUPS</a></li>
+                        <!-- <li ng-class="(actTab == 'delete') ? 'uk-active bg-yellow' :''" ng-click="actTab ='delete'" aria-expanded="{{actTab == 'delete'}}"><a disabled='true'>DELETE GROUP</a></li> -->
+                        <li class="uk-disabled pull-right" aria-expanded="false" ><a class="uk-button uk-button-small" style="cursor: pointer;" href="{{app.hlink}}/samples/groups">Sample Template</a></li>
+                        <li class="uk-disabled pull-right" aria-expanded="false"><a disabled='true'  ><font color="red">{{fetched.tags.length}}</font> <font class="col-blue"></font>available group{{(fetched.tags.length != 1) ? 's' : ''}}</a></li>
+                        <li class="uk-tab-responsive uk-active uk-hidden" aria-haspopup="true" aria-expanded="false">
+                            <a disabled='true'>Active</a>
+                            <div class="uk-dropdown uk-dropdown-small" aria-hidden="true">
+                                <ul class="uk-nav uk-nav-dropdown"></ul>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul  class="uk-switcher uk-margin">
+                        
+                        <li aria-hidden="{{actTab=='add'}}" ng-class="(actTab == 'add') ? 'uk-active' :''">
+                           
+                                <div class="uk-grid md-card">
+
+                                        <div class="uk-width-medium-1-2 ">
+                                            <div class="uk-grid ">
+                                                <div class="uk-width-1-1 " style="border-right: 1px darkgray dashed ;">
+                
+                                                    <div class="" style="padding-top:1em;">
+                                                        <h5 class="col-blue" style="font-family: 'Andale Mono', sans-serif;"><u>CONTACT GROUP ADDITION</u></h5>
+                                                    </div>
+                
+                                                    <div class="md-card-content" >
+                                                        <form name="tag_addition_form" novalidate>
+                                                                   
+                                                            <div class="uk-grid uk-form-row"  >
+                
+                                                                <md-input-container class="uk-width-medium-2-6 uk-animation-slide-left">
+                                                                    <label>Title<sup style="color:red">*</sup></label>
+                                                                    <input type="text" ng-model="data.tags.tag_title" name="tag_title" ng-maxlength="30"  class="md-input" required>
+                                                                    <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="tag_addition_form.tag_title.$error" ng-if="tag_addition_form.tag_title.$touched">
+                                                                        <p class="col-red" ng-message="required">A group title is required.</p>
+                                                                        <p class="col-red" ng-message="maxlength">Please enter a shorter group name.</p>
+                                                                    </div>
+                                                                </md-input-container>
+                                                                <div class="uk-width-medium-2-6 " >  
+                                                                    <!-- <label>Member Organization <sup style="color:red">*</sup></label> -->
+                                                                    <md-select name="organization" class="uk-margin-top uk-animation-slide-left" ng-model="data.tags.tag_owner" placeholder="SenderID"  required>
+                                                                        <md-option value="">...</md-option>
+                                                                        <md-option ng-repeat="org in getRoles()" ng-value="org" >{{org}}</md-option>
+                                                                    </md-select>
+                                                                    <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="add_user_form.organization.$error" ng-if="add_user_form.organization.$touched">
+                                                                        <p class="col-red" ng-message="required" class="uk-text-danger">A group's senderid is required.</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="uk-width-medium-2-6">
+                                                                    <button 
+                                                                    style="margin-top:2.4em;"
+                                                                        class="md-btn md-btn-lg uk-animation-slide-left" 
+                                                                        ng-disabled="!( tag_addition_form.$valid)"
+                                                                        ng-class="( tag_addition_form.$valid) ? 'md-btn-success' : 'md-btn-danger' "  
+                                                                        ng-click="add('tags', { 'tag_title': data.tags.tag_title, 'tag_owner':data.tags.tag_owner || data.me.organization_name});"
+                                                                    >Add Group</button>
+                                                                </div>                                                                  
+                
+                                                            </div>
+                                                               
+                                                        </form>                                        
+                                                    </div>
+                        
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="uk-width-medium-1-2" >
+
+                                            <div class="uk-grid ">
+                                                <div class="uk-width-1-1 ">
+                                                    <form name="tag_upload_form" novalidate>
+                                                        <div class="" style="padding-top:1em;">
+                                                            <h5 class="col-blue" style="font-family: 'Andale Mono', sans-serif;"><u>CSV GROUP UPLOAD</u></h5>
+                                                        </div>
+                    
+                                                        <div class="uk-grid" style="">
+                                                            <div class="uk-width-medium-1-2">
+                                                                <div class="uk-form-file md-btn uk-border-rounded btn-block " ng-class="(data.tags_upload.tag)? 'md-btn-primary':'md-btn-warning'" style="margin-top:1em !important;">
+                                                                    {{(data.tags_upload.tag==undefined) ? 'PICK A GROUP FILE' : 'USING SELECTED GROUP FILE'}}
+                                                                    <input id="form-file" type="file" name="upload" file-model="data.tags_upload.tag" accept=".csv" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="uk-width-medium-1-2">
+                                                                <button 
+                                                                style="margin-top:1em !important;"
+                                                                ng-disabled="!data.tags_upload.tag" 
+                                                                ng-class=" (data.tags_upload.tag)? 'md-btn-success uk-animation-slide-right' : 'uk-animation-slide-right md-btn-danger'" 
+                                                                class="md-btn uk-animation-slide-right" 
+                                                                ng-click="app.upload( data.tags_upload,'tags' ).then(app.handler);app.notify('Attempting to upload tags.');data.tags_upload.tag=undefined">UPLOAD GROUP CSV</button>
+                                                                    
+                                                            </div>
+                                                            
+                                                        </div>
+                                                    </form>
+                                                    
+                                                    
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                       
+                
+                                    </div>
+
+                        </li>
+                        
+                        <li aria-hidden="{{actTab=='edit'}}" ng-class="(actTab == 'edit') ? 'uk-active' :''">
+                          
+                            <div class="uk-grid md-card">
+
+                                <div class="uk-width-1-1 ">
+                                    <div class="uk-grid ">
+                                        <div class="uk-width-1-1 md-card">
+        
+                                            <div class="md-card-content">
+                                                
+                                                <div class="uk-width-3-3 ">
+                                                    <div  ng-if="fetched.tags" class="md-card">
+                        
+                                                        <div class="md-card-content">
+
+                                                            <div class="list list-inset uk-animation-slide-top">
+                                                                <label class="item item-input">
+                                                                    <i class="icon ion-search placeholder-icon"></i>
+                                                                    <input type="text" ng-model="search" value="" class="md-input" placeholder="Search">
+                                                                </label>
+                                                                <button class="md-btn" ng-click="fetch('tags');app.notify('Fetching Groups')"><i class="fa fa-refresh"></i></button>
+                                                            </div>
+                            
+                                                            <table align="center" class="uk-animation-slide-bottom uk-table uk-table-striped  responsive-table" name="content">
+                                                                <!-- <thead> -->
+                                                                    <tr style="font-weight:bold; text-transform:uppercase; color:white !important; font-weight:bold !important; background-color: #2196F3 !important;">
+                                                                        <th class="uk-text-center" style="color:white !important; font-weight:bold;" ng-click="sort('tag_id')">ID
+                                                                            <span class="icon col-white" ng-show="sortKey=='tag_id'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                                                        </th>
+                                                                        <th class="uk-text-center" style="color:white !important; font-weight:bold;" ng-click="sort('tag_title')">TITLE
+                                                                            <span class="icon col-white" ng-show="sortKey=='tag_title'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                                                        </th>
+                                                                        <th class="uk-text-center" style="color:white !important; font-weight:bold;" ng-click="sort('tag_owner')">OWNER
+                                                                            <span class="icon col-white" ng-show="sortKey=='tag_owner'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                                                        </th>
+                                                                        <th class="uk-text-center" >AVAILABILITY</th>
+                                                                        <th class="uk-text-center">UPDATE</th>
+                                                                        <th class="uk-text-center">DELETE</th>
+                                                                    </tr>
+                                                                <!-- </thead>
+                                                                <tbody> -->
+                                                                    
+                                                                    <tr dir-paginate="org in fetched.tags |orderBy:sortKey:reverse|filter:search|itemsPerPage:5">
+                                                    
+                                                                        <td scope="row" data-label="ID" >{{org["tag_id"]}}</td>
+                                                                        <td scope="row" data-label="TITLE" contenteditable ng-model="org['tag_title']">{{org['tag_title']}}</td>
+                                                                        <td scope="row" data-label="OWNER">{{org.tag_owner}}</td>
+                                                                        <td data-label="" class="noprint" style="margin:0 auto;text-align:center;">
+                                                                                
+                                                                            <button 
+                                                                                title="{{ ( org.tag_active == 1 ) ? 'Disable Group' : 'Enable Group'}}" 
+                                                                                class="md-btn" 
+                                                                                ng-class="(org.tag_active==0) ? ' md-btn-danger': 'md-btn-success'; " 
+                                                                                style="font-weight:bold; font-size:1em !important; color:white !important; text-align:center;" 
+                                                                                ng-click="update('tags', setVar({ tag_active: (org.tag_active==1)? false : true },['extras'], 'tag_id='+org.tag_id) )">
+                                                                                <i class="fa" ng-class="( org.tag_active == 0 ? 'fa-lock':'fa-unlock')"></i>
+                                                                            </button>
+
+                                                                        </td>
+                                                                        <td data-label="" class="noprint" style="margin:0 auto;text-align:center;">
+                                                                            <button 
+                                                                                title="UPDATE GROUP" 
+                                                                                class="md-btn" 
+                                                                                ng-disabled="!( org['tag_title'].length > 2 && org['tag_title'].length <= 30)"
+                                                                                ng-class="(org['tag_title'].length > 2 && org['tag_title'].length <= 30) ? ' md-btn-success': 'md-btn-danger'; " 
+                                                                                style="font-weight:bold; font-size:1em !important; color:white !important; text-align:center;" 
+                                                                                ng-click="update('tags', setVar({ tag_title: org.tag_title },['extras'], 'tag_id='+org.tag_id) )">
+                                                                                <i class="fa" ng-class="( (org['tag_title'].length > 2 && org['tag_title'].length <= 30)  ? 'fa-save':'fa-pencil')"></i>
+                                                                            </button>
+                                                                        </td>
+                                                                        <td data-label="" class="noprint" style="margin:0 auto;text-align:center;">
+                                                                            <button 
+                                                                                title="DELETE GROUP" 
+                                                                                class="md-btn" 
+                                                                                ng-disabled="!( org['tag_title'].length > 2 && org['tag_title'].length <= 30)"
+                                                                                ng-class="(org['tag_title'].length > 2 && org['tag_title'].length <= 30) ? ' md-btn-success': 'md-btn-danger'; " 
+                                                                                style="font-weight:bold; font-size:1em !important; color:white !important; text-align:center;" 
+                                                                                ng-click="del('tags',{ tag_id : org.tag_id, tag_owner : org.tag_owner})">
+                                                                                <i class="fa fa-trash" ></i>
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                                                    
+                                                                <!-- </tbody> -->
+                                                            </table>                                                            
+                                                            <dir-pagination-controls
+                                                                max-size="5"
+                                                                direction-links="true"
+                                                                boundary-links="true" >
+                                                            </dir-pagination-controls>
+                        
+                                                        </div>
+                        
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+        
+                        </li>
+                        
+                        <li aria-hidden="{{actTab!='delete'}}" ng-class="(actTab == 'delete') ? 'uk-active' :''">
+                                <div class="uk-grid md-card">
+
+                                    <div class="uk-width-1-3 ">
+                                        <div class="uk-grid ">
+                                            <div class="uk-width-1-1 md-card">
+            
+                                                <div class="md-card-header" style="padding-top:1em;">
+                                                    <h5 class="col-blue" style="font-family: 'Andale Mono', sans-serif;"><u>CONTACT GROUP DELETING</u></h5>
+                                                </div>
+                                                <div class="md-card-content">
+
+                                                </div>
+    
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </li>
+                        
+                    </ul>
+                    
+                </div>
+            </div>
+        </div>
+</div>
+              
+
+
+

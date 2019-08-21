@@ -1,0 +1,189 @@
+<div class="" ng-init="handlers.isLogedIn().then(handlers.identity).then(app.doNothing).catch(app.doNothing);section='balances';"></div>
+<h3 class="heading_b uk-margin-bottom">JAMBOPAY SMS</h3>
+
+<div>
+    <div id="top_bar" class="uk-animation-slide-bottom" style="background-color:rgba(100, 100, 100,0.99);">
+        <div class="md-top-bar">
+            <div class="uk-width-large-10-10 uk-text-justify uk-container-justify">
+                <ul class="top_bar_nav" id="snippets_grid_filter">
+
+                    <li class="uk-active" >
+                        <a style="color:white;font-weight:bold !important;"> {{ (permissions.admin_only_org( data.me, 1 )) ? 'ACCOUNT MANAGEMENT' : "ACCOUNT OVERVIEW" }}</a>
+                    </li>
+                    
+
+                    <li class="pull-right" ng-if="data.me.role">
+                        <a style="font-weight:bold;color:white;text-decoration:none !important;cursor:pointer;">
+                            {{data.me["name.first"]}} -- <font ng-class=" (permissions.admin_only(data.me))? 'uk-text-success' : 'uk-text-primary' "> {{data.me.role | uppercase}} </font> 
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div ng-if="permissions.admin_only_org(data.me,1)" class="md-card uk-border-rounded uk-animation-slide-top" style="font-family:  'Andale Mono', sans-serif,Andalemono" ng-init="fetch([['vw_organization_balances']]);data.topup={}">
+       
+        <p></p>
+        <div class="uk-card md-card uk-border-rounded">                    
+            <div class="md-card-content">
+
+                <form  name="topup_form"  class="uk-row" novalidate>
+
+                    <div class="md-card-content " data-uk-grid-margin>
+
+                        <h5 class="col-green">Account Topup</h5>
+
+                        <div class="uk-grid">
+                            
+                            <md-input-container class="uk-width-1-3 uk-animation-slide-right" >
+                                
+                                <md-select name="organization" ng-model="data.topup.organization" style="margin-top:4em;" placeholder="Pick an organization"  required>
+                                    <md-option value="">...</md-option>
+                                    <md-option ng-click="data.org_balance = org.Credit" ng-repeat="org in fetched.vw_organization_balances" ng-value="org.org_id" ng-hide="!org.org_active">{{org.org_name}}</md-option>
+                                </md-select>
+                                <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="topup_form.organization.$error" ng-if="topup_form.organization.$touched">
+                                    <p class="col-red" ng-message="required">An organization is required.</p>
+                                </div>
+                            </md-input-container>
+
+                            <md-input-container class="uk-width-1-3 uk-animation-slide-bottom" ng-if="data.topup.organization">
+                                <label>Topup Amount<sup style="color:red">*</sup></label>
+                                <input type="text" name="amount" class="md-input" ng-model="data.topup.amount" min="10"  ng-pattern="app.isnumber" required>
+                                <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="topup_form.amount.$error" ng-if="topup_form.amount.$touched">
+                                    <p class="col-red" ng-message="required">A unit topup amount is required.</p>
+                                    <p class="col-red" ng-message="min">You are required to topup a minimum of 10 units</p>
+                                    <p class="col-red" ng-message="pattern">Please use numbers.</p>
+                                </div>
+                            </md-input-container>
+
+                            <div class="uk-width-1-3 uk-animation-slide-left" ng-if="data.topup.amount">
+                                <div ng-if="data.org_balance">
+                                    <table>
+                                        <tr>
+                                            <td class="uk-margin-right uk-margin-bottom">
+                                                <b class="col-green">Current Balance:</b>
+                                            </td>
+                                            <td>
+                                                <span class="col-red"> {{data.org_balance | currency : " "}} Units</span>
+                                            </td>
+                                        </tr>
+                                        <tr></tr>
+                                        <tr>
+                                            <td class="uk-margin-right uk-margin-bottom">
+                                                <b class="col-green">New Balance: </b>
+                                            </td>
+                                            <td>
+                                                <span class="col-red"> {{ app.add(data.org_balance,data.topup.amount) | currency : " " }} Units</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                     
+                                     
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <div class="uk-grid" ng-if="topup_form.$valid" data-uk-grid-margin>
+                            <div class="uk-width-1-1">
+                                <button  
+                                ng-disabled="topup_form.$invalid" 
+                                ng-click="app.notify('Attempting to add Credits.');app.post(app.hlink+'/topup',data.topup).then(topup_handler).catch(topup_handler)"
+                                ng-class="{'md-btn-primary' : !topup_form.$invalid }"
+                                class="md-btn">Add Credit</button>
+                            </div>                   
+                        </div>
+
+                    </div>
+
+                </form>
+            
+            </div>
+        </div>
+
+    </div>
+
+    <div ng-if="permissions.admin_client(data.me)"  ng-init="fetch([['vw_organization_balances']]);">
+        
+        <p></p>
+        <div class="uk-card md-card uk-border-rounded">                    
+            <div class="md-card-content">
+
+                <div class="uk-text-center" ng-hide="fetched.vw_organization_balances">
+                    <i class="fa-spin uk-loading"></i>
+                    <br>
+                    <div style="color:red;font-weight:bold;">LOADING BALANCE DATA</div>        
+                </div>
+
+                <div class="list list-inset uk-animation-slide-top">
+                    <label class="item item-input">
+                        <i class="icon ion-search placeholder-icon"></i>
+                        <input type="text" ng-model="search" value="" class="md-input" placeholder="Search">
+                    </label>
+                    <button class="md-btn" ng-click="fetch([['vw_organization_balances']]);app.notify('Refreshing organizational balances')"><i class="fa fa-refresh"></i></button>
+                </div>
+                <div  ng-if="fetched.vw_organization_balances">
+                    
+                    <table align="center" class="uk-animation-slide-bottom uk-table uk-table-striped  responsive-table" name="content">
+                        <!-- <thead> -->
+                            <tr style="font-weight:bold; text-transform:uppercase; color:white !important; font-weight:bold !important; background-color: #2196F3 !important;">
+                                <th class="uk-text-center" style="color:white !important; font-weight:bold;" ng-click="sort('org_name')">NAME
+                                    <span class="icon col-white" ng-show="sortKey=='org_name'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                </th>
+                                <th class="uk-text-center" style="color:white !important; font-weight:bold;" ng-click="sort('Credit')">BALANCE (UNITS)
+                                    <span class="icon col-white" ng-show="sortKey=='Credit'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                </th>
+                                <th class="uk-text-center" style="color:white !important; font-weight:bold;" ng-click="sort('Threshold')">THRESHOLD
+                                    <span class="icon col-white" ng-show="sortKey=='Threshold'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                </th>
+                                <th class="uk-text-center" ng-if="permissions.admin_only_org(data.me,1)" style="color:white !important; font-weight:bold;" ng-click="sort('Rate')">RATE
+                                    <span class="icon col-white" ng-show="sortKey=='Rate'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                </th>
+                                <th></th>
+                                <!-- <th style="color:white !important; font-weight:bold;" ng-click="sort('org_added')">Member_since
+                                    <span class="icon col-white" ng-show="sortKey=='org_added'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                </th> -->
+                            </tr>
+                        <!-- </thead>
+                        <tbody> -->
+                            
+                            <tr dir-paginate="org in fetched.vw_organization_balances |orderBy:sortKey:reverse|filter:search|itemsPerPage:5">
+
+                                <td scope="row" data-label="NAME" >{{org["org_name"]}}</td>
+                                <td scope="row" data-label="BALANCE"><font class="uk-text-left">{{org['Credit'] | currency : " " }}</font></td>
+                                <td scope="row" data-label="THRESHOLD" contenteditable ng-model="org['Threshold']"></td>
+                                <td scope="row" ng-if="permissions.admin_only_org(data.me,1)" data-label="RATE" contenteditable ng-model="org['Rate']">0</td>
+                                <td scope="row" class="noprint">
+                                    <button 
+                                    title="Update Organization Threshold" 
+                                    class="md-btn"
+                                    ng-class="org.Threshold >= 10 ? 'md-btn-primary' : 'md-btn-warning'" 
+                                    ng-disabled="org['Threshold'] < 10" 
+                                    style="font-weight:bold; font-size:1em !important; color:white !important; text-align:center;" 
+                                    ng-click="update('Organization', setVar({ Threshold: app.parseFloat(org['Threshold']), Rate: app.parseFloat(org['Rate']) },['extras'], 'ID=\''+org['org_id']+'\'') )">
+                                        <i class="fa fa-save"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                        <!-- </tbody> -->
+                    </table>
+                    <!-- <div class="list list-inset uk-animation-slide-top pull-right">
+                        <button class="md-btn md-btn-primary" ng-click="fetch([['vw_organization_balances']]);app.notify('Refreshing organizational balances')"><i class="fa fa-refresh"></i></button>
+                    </div> -->
+                    <dir-pagination-controls
+                        max-size="5"
+                        direction-links="true"
+                        boundary-links="true" >
+                    </dir-pagination-controls>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+  
+</div>

@@ -1,0 +1,236 @@
+<div ng-init="handlers.isLogedIn().then(handlers.identity).then(app.doNothing).catch(app.doNothing)"></div>
+
+<div ng-controller="chartcontroller" ng-init="frame.currTab = 'all'">
+    
+    <!-- DISPLAY THE TOP MENU -->
+    <div id="top_bar" class="uk-animation-slide-bottom" style="background-color:rgba(100, 100, 100,0.7);text-transform: uppercase !important;"> 
+        <div class="md-top-bar">
+            <div class="uk-width-large-10-10 uk-text-justify uk-container-justify">
+                <ul class="top_bar_nav" id="snippets_grid_filter">
+
+                    <li class="uk-width-1-6 uk-text-center" ng-class="{'uk-active': frame.currTab == 'all' }">
+                        <a ng-click="frame.currTab='all';" style="font-weight:bold;color: white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px black ;">General Summary</a>
+                    </li>            
+                    <li  ng-if="true" 
+                    class="uk-width-1-6 uk-text-center" ng-class="{'uk-active': frame.currTab == 'delivered' }" >
+                        <a ng-click="frame.currTab='delivered';" style="font-weight:bold;color: white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px black ;">Deleivered</a>
+                    </li>
+                    <li ng-if="true"  class="uk-width-1-6 uk-text-center" ng-class="{'uk-active': frame.currTab == 'pending' }" >
+                        <a ng-click="frame.currTab='pending';" style="font-weight:bold;color: white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px black ;">Pending</a>
+                    </li>
+                    <li ng-if="true"  class="uk-width-1-6 uk-text-center" ng-class="{'uk-active': frame.currTab == 'failed' }" >
+                        <a ng-click="frame.currTab='failed';" style="font-weight:bold;color: white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px black ;">Failed</a>
+                    </li>
+                    <li ng-if="true"  class="uk-width-1-6 uk-text-center" ng-class="{'uk-active': frame.currTab == 'requeued' }" >
+                        <a ng-click="frame.currTab='requeued';" style="font-weight:bold;color: white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px black ;">Requeued</a>
+                    </li>
+                    <li ng-if="true"  class="uk-width-1-6 uk-text-center" ng-class="{'uk-active': frame.currTab == 'total' }" >
+                        <a ng-click="frame.currTab='total'" style="font-weight:bold;color: white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px black ;">Messages</a>
+                    </li>                
+                
+                    <!-- <li class="pull-right" ng-if="data.me.role">
+                        <a style="font-weight:bold;color:white;text-decoration:none !important;cursor:pointer;">
+                                {{data.me["name.first"]}} -- <font ng-class=" (permissions.admin_only(data.me))? 'uk-text-success' : 'uk-text-primary' "> {{data.me.role | uppercase}} MODE</font> 
+                            </a>
+                    </li> -->
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PROCESS FLOW -->
+    <!-- 
+        * SELECT A TIME RANGE FOR THE QUERY
+        * FETCH DATA FOR THE SPECIFIED TIME RANGE
+        * GENERATE THE NECESSARY CHARTS (BEING CAREFUL TO LABEL IT PROPERLY) [TAKE CAUTION SINCE P-FRAME APPLIES ORGANIZATION BASED DATA FILTERS]
+        * ALLOW A SUMMARY DOWNLOAD
+        * 
+     -->
+
+     <!-- DATETIME PICKER -->
+     <div class="pull-right">
+         
+     </div>
+    
+
+    <!-- FETCH THE REQUIRED DATA  -->
+    <!-- 
+        fetch([
+            ['vw_general_stats'],['vw_sms_last_week'],['vw_sms_this_week'],['vw_sms_three_week'],['vw_sms_two_week'],
+            ['vw_sms_one_day'],
+            ['vw_sms_two_day'],
+            ['vw_sms_three_day'],
+            ['vw_sms_four_day'],
+            ['vw_sms_five_day'],
+            ['vw_sms_six_day'],
+            ['vw_sms_seven_day']
+        ]);frame.currTab='all';
+     -->
+    <div ng-init=""></div>
+
+    
+    <!-- Handle the processing of the weekly data once the data is all in -->
+    <div  
+        ng-if="true"
+    >
+
+
+        <!-- Display only if the data has been fetched  -->
+        <div ng-if="fetched" >
+
+                <div class="pull-right" ng-if="frame.currTab!='all'">
+                    <md-select class=" uk-animation-slide-bottom" name="role" placeholder="Pick a chart type" ng-model="charts.type" required>
+                        <md-option value="">...</md-option>
+                        <md-option value="line">Line Chart</md-option>
+                        <md-option value="bar">Bar Chart</md-option>
+                        <!-- <md-option value="pie">Pie Chart</md-option> -->
+                        <!-- <md-option value="polar-area">Polar Area Chart</md-option> -->
+                        <!-- <md-option value="horizontal-bar">Horizontal Bar Chart</md-option> -->
+                        <!-- <md-option value="doughnut">Dougnut Chart</md-option> -->
+                    </md-select>
+                </div>
+
+
+            <div ng-if="frame.currTab=='all'">
+
+
+                    <!-- <center><h3><u > MESSAGES HANDLED </u></h3></center> -->
+                    <div ng-if="fetched.vw_general_stats[0]" ng-init="getData(fetched.vw_general_stats,'Total_SMS_Summary')">
+                        
+                        <div class="uk-grid">
+                            <div class="uk-width-1-2 uk-text-center">
+                                <br>
+                                <h3 class="uk-text-muted col-green">GROUPED BY DELIVERY STATUS</h3>
+                                <center>
+                                    <canvas 
+                                    style="max-height:500px !important; max-width:500px !important;" 
+                                    class="chart chart-line" 
+                                    chart-data="charts.Total_SMS_Summary.data"
+                                    chart-labels="charts.Total_SMS_Summary.labels" 
+                                    chart-series="charts.Total_SMS_Summary.series"
+                                    chart-options="charts.Total_SMS_Summary.options" 
+                                    chart-colors="charts.Total_SMS_Summary.options.colors">
+                                    </canvas>
+                                </center>                            
+                            </div>
+                            <div class="uk-width-1-2 uk-text-center">
+                                <br>
+                                <h3 class="uk-text-muted col-green">GROUPED BY SENDER</h3>
+                                <center>
+                                    <canvas 
+                                    style="max-height:300px !important; max-width:300px !important;" 
+                                    class="chart chart-pie" 
+                                    chart-data="charts.Total_SMS_Summary.total"
+                                    chart-labels="charts.Total_SMS_Summary.labels" 
+                                    chart-series="charts.Total_SMS_Summary.total_series" 
+                                    chart-options="charts.Total_SMS_Summary.options" 
+                                    chart-colors="charts.Total_SMS_Summary.options.colors">
+                                    </canvas>
+                                </center>
+
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        
+                    </div>
+
+            </div>
+
+            <div ng-if="frame.currTab=='delivered'" >
+                <div class="uk-width-1-1 uk-text-center">
+                    <!-- <h3 class="uk-text-muted col-green">DELIVERED</h3> -->
+                    <center>
+                        <canvas 
+                        style="max-height:500px !important; max-width:1200px !important;" 
+                        class="chart chart-base"
+                        chart-type="charts.type"                                
+                        chart-data="charts.seven_day_summary.data.delivered"
+                        chart-labels="charts.seven_day_summary.labels" 
+                        chart-series="charts.seven_day_summary.series"
+                        chart-options="charts.seven_day_summary.options" 
+                        chart-colors="charts.seven_day_summary.options.colors">
+                        </canvas>
+                    </center>                            
+                </div>
+            </div>  
+
+            <div ng-if="frame.currTab=='failed'" >
+                <div class="uk-width-1-1 uk-text-center">
+                    <!-- <h3 class="uk-text-muted col-green">FAILED</h3> -->
+                    <center>
+                        <canvas 
+                        style="max-height:500px !important; max-width:1200px !important;" 
+                        class="chart chart-base"
+                        chart-type="charts.type"                                 
+                        chart-data="charts.seven_day_summary.data.failed"
+                        chart-labels="charts.seven_day_summary.labels" 
+                        chart-series="charts.seven_day_summary.series"
+                        chart-options="charts.seven_day_summary.options" 
+                        chart-colors="charts.seven_day_summary.options.colors">
+                        </canvas>
+                    </center>                            
+                </div>
+            </div> 
+
+            <div ng-if="frame.currTab=='pending'">
+                <div class="uk-width-1-1 uk-text-center">
+                    <!-- <h3 class="uk-text-muted col-green">PENDING</h3> -->
+                    <center>
+                        <canvas 
+                        style="max-height:500px !important; max-width:1200px !important;" 
+                        class="chart chart-base"
+                        chart-type="charts.type"                                 
+                        chart-data="charts.seven_day_summary.data.pending"
+                        chart-labels="charts.seven_day_summary.labels" 
+                        chart-series="charts.seven_day_summary.series"
+                        chart-options="charts.seven_day_summary.options" 
+                        chart-colors="charts.seven_day_summary.options.colors">
+                        </canvas>
+                    </center>                            
+                </div>
+            </div>
+
+            <div ng-if="frame.currTab=='requeued'">
+                <div class="uk-width-1-1 uk-text-center">
+                    <!-- <h3 class="uk-text-muted col-green">REQUEUED</h3> -->
+                    <center>
+                        <canvas 
+                        style="max-height:500px !important; max-width:1200px !important;" 
+                        class="chart chart-base"
+                        chart-type="charts.type"
+                            
+                        chart-data="charts.seven_day_summary.data.requeued"
+                        chart-labels="charts.seven_day_summary.labels" 
+                        chart-series="charts.seven_day_summary.series"
+                        chart-options="charts.seven_day_summary.options" 
+                        chart-colors="charts.seven_day_summary.options.colors">
+                        </canvas>
+                    </center>                            
+                </div>
+            </div>
+
+            <div ng-if="frame.currTab=='total'">                 
+                <div class="uk-width-1-1 uk-text-center">
+                    <!-- <h3 class="uk-text-muted col-green">TOTAL</h3> -->
+                    <center>
+                        <canvas 
+                        style="max-height:500px !important; max-width:1200px !important;" 
+                        class="chart chart-base"
+                        chart-type="charts.type"                                 
+                        chart-data="charts.seven_day_summary.data.total"
+                        chart-labels="charts.seven_day_summary.labels" 
+                        chart-series="charts.seven_day_summary.series"
+                        chart-options="charts.seven_day_summary.options"
+                        chart-colors="charts.seven_day_summary.options.colors" >
+                        </canvas>
+                    </center>                            
+                </div>
+            </div>
+                
+
+        </div>
+
+    </div>  

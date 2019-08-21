@@ -1,8 +1,13 @@
 <div class="" ng-init="handlers.isLogedIn().then(app.doNothing).catch(app.doNothing)"></div>
-<div class="md-card" style="font-family: Roboto">
+<h3 class="heading_b ">JAMBOPAY SMS</h3>
+<style>
+
+</style>
+<!-- <div class="md-card" style="font-family:  'Andale Mono', sans-serif,Andalemono">
+    
     <form name="login_form" class="" style="" novalidate>
         <div class="md-card-content">
-            <h2 class="heading_a uk-badge uk-badge-primary" style="border-radius:40%; background-color: #1976D2; padding:0.2em;color:white;">LOGIN</h2>
+            <h2 class="heading_a uk-badge uk-badge-primary" style="border-radius:10%; background-color: #2196F3; padding:0.2em;color:white;">LOGIN</h2>
             <div class="uk-grid" data-uk-grid-margin>
 
                 
@@ -18,10 +23,10 @@
                         required>
                         <div 
                             class="help-block" 
-                            style="font-family: Roboto;color:lightgray;" 
+                            style="font-family:  'Andale Mono', sans-serif;" 
                             ng-messages="login_form.email.$error" ng-if="login_form.email.$touched">
-                                <p ng-message="required">An email address is required.</p>
-                                <p ng-message="pattern">Please enter a valid email address.</p>
+                                <p class="col-red" ng-message="required">An email address is required.</p>
+                                <p class="col-red" ng-message="pattern">Please enter a valid email address.</p>
                         </div>
                 </md-input-container>
                 
@@ -37,10 +42,10 @@
                     required>
                     <div 
                         class="help-block" 
-                        style="font-family: Roboto;color:lightgray;" 
+                        style="font-family:  'Andale Mono', sans-serif;" 
                         ng-messages="login_form.password.$error" ng-if="login_form.password.$touched">
-                            <p ng-message="required">A password is required.</p>
-                            <p ng-message="pattern">Please enter a more secure password.</p>
+                            <p class="col-red" ng-message="required">A password is required.</p>
+                            <p class="col-red" ng-message="pattern">Please enter a more secure password.</p>
                     </div>
                 </md-input-container>
               
@@ -49,35 +54,117 @@
                     <button  
                     style="margin-top:2.2em !important;min-width:12vw !important;"
                     ng-disabled="login_form.$invalid" 
-                    ng-click="app.notify('Attempting to login','info',1000);auth.Login(data.login).then(handlers.loginSuccess).catch(handlers.loginError)"
+                    ng-click="app.notify('Attempting to login','info',1000);auth.Login(data.login,'password').then(handlers.loginSuccess).catch(handlers.loginError)"
                     ng-class="{'md-btn-primary' : !login_form.$invalid }"
                     class="md-btn uk-animation-slide-left"> LOGIN</button>
                    
                 </div>
 
+            <p></p>
+            <div class="uk-row uk-align-left uk-animation-fade">
+                New here? <a class="" >Consult an administrator for account creation</a>
                 <p></p>
-                <div class=" uk-width-1-1 uk-row uk-align-justify uk-animation-fade" style="font-family:Roboto-thin !important;">
-                    <br class="uk-visible-small">
-                    <div class="col-lg-12 col-md-12">
-                        <div class="col-lg-6 col-md-12">
-                                New here? <b><a class="" ng-click="goTo('app.signup')">Create an Account</a></b>
-                        </div>
-                        <br class="uk-visible-small">
-                        <div class="col-lg-6 col-md-12 pull-right">
-                                Forgot Your Password? <b><a class="" ng-click="goTo('app.passwords')">Recover your password</a></b>
-                        </div>
-                    </div>
-                    
-                </div>
-               
+                Forgot Your Password? <a class="" ng-click="goTo('app.passwords')">Recover your password</a>
             </div>
             
         </div>
 
 
+        </div>
 
     </form>
 
+</div> -->
+
+<div class="login_page_wrapper" >
+   
+    <br>
+    <br>
+    <br>
+    <br>
+   
+    <div 
+        class="md-card uk-width-medium-1-3 uk-align-center uk-position-center uk-animation-fade" 
+        id="login_card" style="background: rgba(255,255,255,0.7)"
+        
+    >
+        <div 
+            class="md-card-content large-padding uk-animation-fade" 
+            id="login_form"
+           
+        >
+            <div class="login_heading">
+                <div class="user_avatar uk-position-center" >
+                  <center>
+                        <img class="logo_regular" src="assets/img/jambopay_lg.png" alt="" width="200" height="40">
+                  </center>
+                </div>
+            </div>
+            <form name="login_form">
+                <div class="uk-form-row">
+                    <div class="md-input-wrapper">
+                        <label for="login_username" ng-hide="data.login.email||login_form.email.$dirty">Email</label>
+                        <input 
+                            type="text" 
+                            class="md-input uk-text-center"
+                            name="email" 
+                            ng-model="data.login.email" 
+                            ng-pattern="app.isemail"
+                        required>
+                        <span class="md-input-bar "></span>
+                        <div 
+                            class="help-block" 
+                            style="font-family:  'Andale Mono', sans-serif;color:orangered; text-align: center !important;" 
+                            ng-messages="login_form.email.$error" ng-if="login_form.email.$touched">
+                                <p class="col-red" ng-message="required">An email address is required.</p>
+                                <p class="col-red" ng-message="pattern">Please enter a valid email address.</p>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="uk-form-row">
+                    <div class="md-input-wrapper">
+                        <label for="login_password" ng-hide="data.login.password||login_form.password.$dirty">Password</label>
+                        <input 
+                        name="password"
+                        type="password" 
+                        class="md-input uk-text-center"
+                        ng-model="data.login.password" 
+                        ng-pattern="app.ispassword" 
+                        required>
+                        <span class="md-input-bar "></span>                      
+                        <div 
+                            class="help-block" 
+                            style="font-family:  'Andale Mono', sans-serif;color: orangered;text-align: center !important;" 
+                            ng-messages="login_form.password.$error" ng-if="login_form.password.$touched">
+                                <p class="col-red" ng-message="required">A password is required.</p>
+                                <p class="col-red" ng-message="pattern">Please enter a more secure password.</p>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="uk-margin-medium-top">
+                    <button
+                        disabled="false" 
+                        class="md-btn md-btn-block md-btn-large"
+                        ng-class="(login_form.$valid)? 'md-btn-primary' : 'md-btn-danger'"
+                        ng-disabled="login_form.$invalid" 
+                        ng-click="app.notify('Attempting to login','info',1000);auth.Login(data.login,'password').then(handlers.loginSuccess).catch(handlers.loginError)"    
+                    >Sign In</button> 
+                </div>
+
+                <div class="uk-margin-top uk-text-center">
+                        <a  id="signup_form_show" ui-sref="app.passwords" style="display: inline;">Recover Password</a>
+                    </div>
+               
+               
+            </form>
+           
+        </div>
+        
+    
+    </div>
+   
 </div>
 
 

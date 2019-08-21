@@ -3,7 +3,7 @@
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 // "jsonFormatter",
-angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "chart.js", "ngAria", "ngMaterial", "ngMessages"])
+angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "chart.js", "ngAria", "ngMaterial", "ngMessages", "jsonFormatter"])
 /**
  * Handles the injection of the Authentication Headers with each http call
  */
@@ -33,6 +33,7 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
                     //@ Append the 'Authorization' header
                     config.headers.Authorization = $localStorage.framify_user.token;
 
+                    // console.log(`Authorization header+++ set for the request`)
                     return config;
                 }
                 //@ If the credentials bypass is specified
@@ -40,6 +41,7 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
 
                         //@ Pass the "authorization" header since others are not needed
                         config.headers.Authorization = $localStorage.framify_user.token;
+                        // console.log(`Authorization __ header set for the request`);
                         return config;
                     }
             }
@@ -53,7 +55,7 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
 }])
 
 //@ Basic Application Essentials
-.service("app", ["$http", "remoteAuth", "$q", "pdfGen", function ($http, remoteAuth, $q, pdfGen) {
+.service("app", ["$http", "remoteAuth", "$q", "pdfGen", "$localStorage", function ($http, remoteAuth, $q, pdfGen, $localStorage) {
 
     var app = this;
 
@@ -186,8 +188,8 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
 
                 transformRequest: angular.identity,
 
-                //* ensure automatic content-type settng
-                headers: { 'Content-Type': undefined }
+                //* ensure automatic content-type setting
+                headers: { 'Content-Type': undefined, 'Authorization': $localStorage.framify_user.token }
 
             }).then(function (d) {
                 return resolve(d);
@@ -578,7 +580,7 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
     app.db = function (params, destination) {
         return $q(function (resolve, reject) {
 
-            destination = destination ? destination : hlink + "/sms";
+            destination = destination ? destination : hlink + "/sms/";
             $http.get(destination, { params: params }).success(resolve).error(reject);
         });
     };
@@ -703,7 +705,7 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
             //@ Append the auth command to the params [jp dash auth only]
             // params["action"] = "auth";
             // params["password"]     = (params["password"]);
-
+            console.log(r_auth.url);
             //@ Push the authentication request
             $http.get(r_auth.url + "/auth/verify", { params: params }).success(function (response) {
                 if (response.response == 200) {
@@ -754,9 +756,16 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
 //@ The infobip SMS integration module
 .service("iSMS", ["$http", "$q", "app", function ($http, $q, app) {
 
+    var url = window.location.href.split('/').filter(function (urlPortion) {
+        return urlPortion != '' && urlPortion != 'http:' && urlPortion != 'https:';
+    });
+    var pathPos = window.location.href.split('/').filter(function (urlPortion) {
+        return urlPortion != '';
+    });
+
     var isms = this;
 
-    isms.provider = '/sms';
+    isms.provider = pathPos[0] + "//" + url[0].split(':')[0] + (url[0].split(':')[1] != undefined ? ":" + url[0].split(':')[1] : "") + "/sms";
 
     isms.setProvider = isms.set_provider = function (providerURL) {
         isms.provider = providerURL.toString().includes('/sms') ? providerURL : providerURL + "/sms";
@@ -862,10 +871,10 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
             var resp = responseData.response ? app.clone(responseData) : app.clone(responseData.data);
 
             if (responseData.response == 200) {
-                app.alert("<font color=green>SMS RESPONSE</font>", "The SMS messages have been queued for sending ");
+                app.alert("<font color=green>SMS RESPONSE</font>", app.str(responseData.data.message));
                 resolve(resp);
             } else {
-                app.alert("<font color=red>Uh Oh!</font> ( " + responseData.response + " Error )", app.str(responseData.data.message));
+                app.alert("<font color=red>SMS Sending</font> ( " + responseData.response + " Error )", app.str(responseData.data.message));
                 reject(resp);
             }
         });
@@ -919,65 +928,98 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
     $rootScope.permissions = {
 
         //@ ALLOW ONLY ADMIN USERS
-        admin_only: function admin_only(user) {
+        admin_only: function admin_only() {
+            var user = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
             return user.role ? user.role == 'admin' ? true : false : false;
         },
 
         //@! FROM MATCHING ORGANIZATIONS
-        admin_only_org: function admin_only_org(user, item_org) {
+        admin_only_org: function admin_only_org() {
+            var user = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+            var item_org = arguments[1];
             return user.role ? user.role == 'admin' && user.organization == item_org ? true : false : false;
         },
 
         //@ ALLOW ONLY CLIENT USERS
-        client_only: function client_only(user) {
+        client_only: function client_only() {
+            var user = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
             return user.role ? user.role == 'client' ? true : false : false;
         },
 
         //@! FROM MATCHING ORGANIZATIONS
-        client_only_org: function client_only_org(user, item_org) {
+        client_only_org: function client_only_org() {
+            var user = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+            var item_org = arguments[1];
             return user.role ? user.role == 'client' && user.organization == item_org ? true : false : false;
         },
 
         //@ ALLOW ONLY AUDIT USERS
-        audit_only: function audit_only(user) {
+        audit_only: function audit_only() {
+            var user = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
             return user.role ? user.role == 'audit' ? true : false : false;
         },
 
         //@! FROM MATCHING ORGANIZATIONS        
-        audit_only_org: function audit_only_org(user, item_org) {
+        audit_only_org: function audit_only_org() {
+            var user = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+            var item_org = arguments[1];
             return user.role ? user.role == 'audit' && user.organization == item_org ? true : false : false;
         },
 
         //@ ALLOW BOTH ADMIN AND CLIENT USERS
-        admin_client: function admin_client(user) {
+        admin_client: function admin_client() {
+            var user = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
             return user.role ? user.role == 'admin' || user.role == 'client' ? true : false : false;
         },
 
         //@! FROM MATCHING ORGANIZATIONS
-        admin_client_org: function admin_client_org(user, item_org) {
+        admin_client_org: function admin_client_org() {
+            var user = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+            var item_org = arguments[1];
             return user.role ? (user.role == 'admin' || user.role == 'client') && user.organization == item_org ? true : false : false;
         },
 
         //@! FROM MATCHING ORGANIZATIONS WITH ADMIN EXEMPT
-        any_admin_client_org: function any_admin_client_org(user, item_org) {
+        any_admin_client_org: function any_admin_client_org() {
+            var user = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+            var item_org = arguments[1];
             return user.role ? user.role == 'audit' ? false : user.role == 'admin' ? true : user.organization == item_org ? true : false : false;
         },
 
         //@ ALLOW ALL USERS 
-        any: function any(user) {
+        any: function any() {
+            var user = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
             return true;
         },
 
         //@! FROM MATCHING ORGANIZATIONS
-        any_org: function any_org(user, item_org) {
+        any_org: function any_org() {
+            var user = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+            var item_org = arguments[1];
             return user.organization == item_org ? true : false;
         },
 
         //@! EXCLUDE ADMINS FROM SCRUTINY
-        any_admin_other_org: function any_admin_other_org(user, item_org) {
+        any_admin_other_org: function any_admin_other_org() {
+            var user = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+            var item_org = arguments[1];
             return user.role == 'admin' ? true : user.organization == item_org ? true : false;
         }
 
+    };
+
+    //@ Get the roles assigned to the current user
+    $rootScope.getRoles = function () {
+
+        if ($localStorage["framify_user"]) {
+            var roles = $localStorage["framify_user"].me.roles ? $localStorage["framify_user"].me.roles.split(',').map(function (e) {
+                return e.replace(/^\s/ig, '').replace(/\s$/ig, '');
+            }) : [];
+            roles.push($localStorage["framify_user"].me.organization_name);
+            return roles;
+        } else {
+            $rootScope.auth.Logout();
+        }
     };
 }])
 
@@ -1267,15 +1309,12 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
 
         if (Array.isArray(table)) {
 
-            var promiseArr = new Array();
-
-            table.filter(function (e) {
+            var promiseArr = table.filter(function (e) {
                 return typeof e[0] != 'undefined';
-            }).forEach(function (tData, tkey) {
-                promiseArr.push(do_fetch(tData[0], tData[1] || {}), cryptFields);
-            });
-
-            promiseArr = promiseArr.filter(function (e) {
+            }).reduce(function (cumulative, tData, tkey) {
+                cumulative[tkey] = do_fetch(tData[0], tData[1] || [], cryptFields);
+                return cumulative;
+            }, []).filter(function (e) {
                 return typeof e != 'undefined';
             });
 
@@ -1433,15 +1472,15 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
     //@ DELETE UNWANTED PARAMETERS
     $scope.delParams = $scope.del_params = function (mainObj, removeKeys) {
         // $scope.app.clone
-        mainObj = mainObj || {};
-        removeKeys = removeKeys ? removeKeys.split(',') : [];
+        var newObj = mainObj ? $scope.app.clone(mainObj) : {};
+        removeKeys = removeKeys ? Array.isArray(removeKeys) ? removeKeys : removeKeys.split(',') : [];
 
         removeKeys.forEach(function (e) {
-            mainObj[e] = null;
-            delete mainObj[e];
+            newObj[e] = null;
+            delete newObj[e];
         });
 
-        return mainObj;
+        return newObj;
     };
 
     //@ INJECT A STANDARD WHERE "Extras" OBJECT
@@ -1675,7 +1714,7 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
     //@ The successful login handler
     $scope.handlers.loginSuccess = $scope.r_handlers.loginSuccess = $scope.handlers.login_success = $scope.r_handlers.login_success = function (message) {
         $scope.app.notify("<i class='fa fa-2x fa-spin fa-circle-o-notch'></i> Processing your login data", 'success', 4000);
-        $state.go("app.panel");
+        $state.go("app.index");
     };
 
     //@ The registration error handler
@@ -1694,7 +1733,7 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
 
             $http({
                 method: "GET",
-                url: $scope.app.hlink.replace(/:2433/ig, '') + ":2433/auth/me", //`${$scope.remoteAuth}:2433/auth/me`, 
+                url: $scope.app.hlink.replace(/auth/ig, '') + "/auth/me", ///auth/ //`${$scope.remoteAuth}/auth/auth/me`, 
                 headers: { Authorization: $scope.storage.framify_user.token }
             }).success(function (response) {
                 resolve($scope.data.me = response.data.message);
@@ -1727,7 +1766,7 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
                     // console.log(`\nThe authentication header has been set to ${$http.defaults.headers.common.Authorization}\n`)
 
                     if ($state.current.name == "app.login") {
-                        resolve($state.go("app.panel"));
+                        resolve($state.go("app.index"));
                     } else {
                         resolve();
                     }
@@ -1735,7 +1774,7 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
             } else {
 
                 if ($state.current.name == "app.login") {
-                    resolve($state.go("app.panel"));
+                    resolve($state.go("app.index"));
                 } else {
                     resolve();
                 }
@@ -1756,14 +1795,14 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
                 $scope.remoteAuth.SetAuth(undefined).then(function () {
 
                     if ($state.current.name == "app.login") {
-                        resolve($state.go("app.panel"));
+                        resolve($state.go("app.index"));
                     } else {
                         resolve();
                     }
                 });
             } else {
                 if ($state.current.name == "app.login") {
-                    resolve($state.go("app.panel"));
+                    resolve($state.go("app.index"));
                 } else {
                     resolve();
                 }
@@ -1796,7 +1835,7 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
     $scope.isSignedUp = function (obj) {
         return $q(function (resolve, reject) {
             $scope.app.welcomeMail({
-                from: "Framify Accounts <accounts@bixbyte.io>",
+                from: "Jambopay SMS Dashboard <smsdashboard@jambopay.com>",
                 to: obj.email,
                 subject: "Welcome to our platform",
                 data: { name: obj["name.first"], telephone: obj.telephone, username: obj["account.name"] }
@@ -1818,6 +1857,276 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
     $scope.SmsError = function (response) {
         delete $scope.storage.framify_user["nullify"];
         $scope.app.alert('<font color="red">SMS REQUEUE RESPONSE</font>', $scope.app.str(response.data || response));
+    };
+
+    //@ Handle the requeue of SMS messages
+    $scope.requeue = function () {
+        var sms_object = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        return $q(function (resolve, reject) {
+            //@ Prevent the automatic setting of headers
+            $scope.storage.framify_user['nullify'] = true;
+
+            //@ Alert the client of the ongoing process
+            $scope.app.notify("Requeueing the SMS message", "warning");
+
+            $http({
+                url: "http://sms.jambopay.co.ke/SMSService/Api/SMS",
+                method: "POST",
+                data: $.param({
+                    SenderName: sms_object.Sender_Name || "",
+                    Mobile: sms_object.Phone || "",
+                    Message: sms_object.Message || ""
+                }),
+
+                headers: {
+                    DeveloperKey: "084049D0-AB72-4EE2-9EDE-0C25C1D1268C",
+                    Password: "1d95a4c6d681ede5b18c89b21ceb46bfea7b8e4d8f824107615a2ee297493710",
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }).success(resolve).error(reject);
+        });
+    };
+
+    //@ Handle the prequeueing of SMS messages
+    $scope.prequeue = function () {
+        var sms_object = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
+        return $q(function (resolve, reject) {
+            //@ Ensure that the provided object exists
+            if (sms_object) {
+                if ($scope.actions.prequeue) {
+                    var obj_pos = $scope.obj_in_array($scope.actions.prequeue, sms_object);
+
+                    //@ Remove the object if it exists 
+                    if (obj_pos != -1) {
+                        $scope.actions.prequeue.splice(obj_pos, 1);
+                        // console.log("\n\nPrequeue Removed!")
+                        // console.dir($scope.actions.prequeue)
+                        resolve();
+                    } else
+                        //@ Add the object into the Array
+                        {
+                            $scope.actions.prequeue.push(sms_object);
+                            // console.log("\n\nPrequeue Added!")
+                            // console.dir($scope.actions.prequeue)
+                            resolve();
+                        }
+                } else {
+                    reject();
+                }
+            }
+            //@  Otherwise Fail silently
+            else {
+                    reject();
+                }
+        });
+    };
+
+    //@ Process the sending of the queued up messages
+    $scope.processQueue = function () {
+        return $q(function (resolve, reject) {
+
+            //@ Create a placeholder array for the promises
+            //@ Iterate through each of the queued messages
+            var sms_queue = $scope.actions.prequeue.reduce(function (cumulative, val, idx) {
+                cumulative[idx] = $scope.requeue(val);
+                return cumulative;
+            }, []).filter(function (a) {
+                return a;
+            });
+
+            //@ Process the bulk queue
+            $q.all(sms_queue).then(function (i) {
+                delete $scope.storage.framify_user["nullify"];
+                $scope.actions.prequeue = [];
+                resolve(i);
+            }).catch(function (e) {
+                delete $scope.storage.framify_user["nullify"];
+                $scope.actions.prequeue = [];
+                reject(e);
+            });
+        });
+    };
+
+    //!!! SMS DASH SPECIFIC ENTRIES
+    $scope.topup_handler = function (d) {
+        d = $scope.app.json(d);
+
+        if (d.response == 200) {
+            $scope.data.topup = {};
+            $scope.fetch('vw_organization_balances');
+            $scope.app.alert("TOPUP RESPONSE", d.data.message);
+        } else {
+            $scope.data.topup = {};
+            $scope.app.alert("<font color=red>TOPUP RESPONSE</font>", d.data.message || "There was no response from the topup server.");
+        }
+    };
+
+    //@ Produce a list to remove extra assigned shortcodes from a user
+    $scope.removify_roles = function (shortcodes, member_id) {
+
+        // console.log(`Received some shortcodes to remove for ${member_id}:`);
+        // console.dir(shortcodes);
+
+        if (member_id) {
+            return shortcodes.reduce(function (prev, shortcode, pos) {
+                return prev + "<button  ng-click=\" (permissions.admin_only_org(data.me,1)) ? ( [del('permissions',{member_id: " + member_id + ", shortcode: '" + shortcode.replace(/\s/ig, '') + "' }),fetch_user_assignments(" + member_id + ")] ) : app.doNothing() \" class=\"md-btn uk-width-1-5\" style=\"margin-bottom:1em;\">" + shortcode + " <i class=\"uk-icon uk-icon-times uk-text-muted col-red pull-right\" ng-show=\"permissions.admin_only_org(data.me,1)\" ></i></button>";
+            }, "");
+        }
+    };
+
+    //@ Produce a list to remove extra assigned shortcodes from a user    
+    $scope.assignify_roles = function (shortcodes, member_id) {
+        if (member_id) {
+            shortcodes = shortcodes.reduce(function (prev, scd, idx) {
+                prev[idx] = scd.org.replace(/\s/ig, '');return prev;
+            }, []);
+
+            if ($scope.fetched.vw_user_permissions) {
+
+                var existing = $scope.fetched.vw_user_permissions[0] ? $scope.fetched.vw_user_permissions[0].roles.split(',').filter(function (e) {
+                    return e;
+                }).map(function (f) {
+                    return f.replace(/ /ig, '');
+                }) : [$scope.fetched.vw_members[0].organization_name];
+
+                var resp = shortcodes.filter(function (role) {
+                    return existing.indexOf(role) == -1;
+                }).reduce(function (prev, shortcode, pos) {
+                    return prev + "<button ng-click=\"add('permissions',{ member_id: " + member_id + ", shortcode: '" + shortcode + "' });fetch_user_assignments(" + member_id + ");\" class=\"md-btn uk-width-1-5\" style=\"margin-bottom:1em !important;\">" + shortcode + " <i class=\"fa fa-plus uk-text-muted col-green pull-right\" ng-if=\"permissions.admin_only_org(data.me,1)\"></i></button>";
+                }, "");
+
+                return resp != "" ? resp : "<div class=\"uk-alert uk-text-center\">THERE ARE NO MORE SHORTCODES TO ASSIGN TO THIS USER</div>";
+            } else {
+
+                // console.log("LOADING OPTION 2")
+
+                return shortcodes.reduce(function (prev, shortcode, pos) {
+                    return prev + "<button ng-click=\"add('permissions',{ member_id: " + member_id + ", shortcode: '" + shortcode + "' });fetch_user_assignments(" + member_id + ");\" class=\"md-btn uk-width-1-5\" style=\"margin-bottom:1em !important;\">" + shortcode + " <i class=\"uk-icon uk-icon-plus uk-text-muted col-green\" ng-if=\"permissions.admin_only_org(data.me,1)\"></i></button> &nbsp;";
+                }, "");
+                // onClick="assignify_proxy('${shortcode.org}',${member});"
+            }
+        }
+    };
+
+    $scope.fetch_user_assignments = function (member_id) {
+        setTimeout(function () {
+            $scope.fetch('vw_user_permissions', { member_id: member_id });
+        }, 300);
+    };
+
+    $scope.data.pass_recovery = {};
+    $scope.data.current_user = {};
+
+    //@ -- SMS MANAGEMENT ISSUES
+    $scope.modaler = function (modal_identifier) {
+
+        console.log("Performing changes for " + modal_identifier);
+
+        var modal = UIkit.modal(modal_identifier);
+
+        console.dir(modal.isActive());
+
+        if (modal.isActive()) {
+            modal.hide();
+        } else {
+            modal.show();
+        }
+    };
+
+    //@ CONTACT TEMPLATE RELATED DATA
+    $scope.contact_placeholders = ["{{contact_first_name}}", "{{contact_middle_name}}", "{{contact_last_name}}", "{{contact_phone_number}}", "{{contact_owner}}", "{{contact_identification}}", "{{contact_gender}}", "{{contact_county}}", "{{contact_address}}", "{{contact_birthday}}"];
+    $scope.appendText = function (txt, scope) {
+        return (scope ? scope : '') + " " + txt;
+    };
+
+    //@ CONTACT EDITING FACILITATOR
+    $scope.current_contact = {};
+    $scope.setContact = function (from_obj) {
+        $scope.current_contact = $scope.app.clone(from_obj);
+    };
+
+    //@ Parse xml where is
+    $scope.fromXML = function (network_response) {
+        return network_response = network_response ? network_response.includes('<?xml version') ? network_response.match(/<faultstring>(.*?)<\/faultstring>/ig)[0].replace(/<.?faultstring>/ig, '') : network_response : '';
+    };
+
+    //@ Transform Relevant tags in the provided mapping_array
+    // [{contact_id,contact_tag_id,"contact_owner","t,a,g,s"}]
+    $scope.myTags = function () {
+        var mapArr = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+        var contact_id = arguments[1];
+        return contact_id ? mapArr.filter(function (mp) {
+            return mp.contact_id == contact_id;
+        }) : [];
+    };
+    $scope.unusedTags = function () {
+        var fetched_tags = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+        var alloted_tags = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+
+        return $q(function (resolve) {
+
+            $scope.fetched.tags = $scope.fetched.tags ? $scope.fetched.tags : [];
+            $scope.fetched.vw_contact_grouping = $scope.fetched.vw_contact_grouping ? $scope.fetched.vw_contact_grouping : [];
+
+            var used_tags = $scope.fetched.vw_contact_grouping.reduce(function (cumulative, tag_info, idx) {
+                cumulative.push(tag_info.tag_id);
+                return cumulative;
+            }, []) || [];
+
+            $scope.fetched.applicable_tags = $scope.fetched.tags.filter(function (fetched_tag_info) {
+                return used_tags.indexOf(fetched_tag_info.tag_id) == -1;
+            });
+            resolve();
+        });
+
+        // let unique_tags = (alloted_tags[0]) ? [] :fetched_tags;
+        // all_tags.forEach( unused_tag  => {
+        //     alloted_tags
+        //     .forEach( used_tag => {
+        //         if( used_tag.tag_id != unused_tag.tag_id )
+        //         {
+        //             unique_tags.push( unused_tag )
+        //         }
+        //     })
+        // })
+        // return $scope.app.remove_duplicates(unique_tags);
+    };
+
+    $scope.update_joined_groups = function () {
+
+        $scope.fetch([['vw_contact_grouping', { contact_id: $scope.current_contact.contact_id }], ['tags']]).then(function () {
+            $scope.unusedTags();
+        }).catch(function () {
+            $scope.unusedTags();
+        });
+    };
+
+    $scope.update_grouping_data = function (tag_id) {
+
+        $scope.data.current_tag = tag_id ? tag_id : $scope.data.current_tag;
+
+        var applicable_contacts = [];
+
+        $scope.fetch([['vw_contacts_with_tags', { contact_tag: $scope.data.current_tag }]]).then(function () {
+            $scope.contacts_fetched = true;
+        }).catch(function () {
+            $scope.contacts_fetched = true;
+        });
+    };
+
+    $scope.login_status = function () {
+        return $scope.storage.framify_user ? true : false;
+    };
+
+    //@ Handle Password Recovery Requests
+    $scope.password_recover = function (url_tail, recovery_data) {
+        $scope.app.post($scope.app.hlink + "/" + url_tail, recovery_data).then($scope.app.handler).catch($scope.app.handler);
+    };
+
+    //@ Handle SMS Unit Balance Requests
+    $scope.get_sms_balance = function () {
+        $scope.fetch('vw_organization_balances');
     };
 }])
 
@@ -1864,6 +2173,19 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
     };
 }])
 
+// .directive('showTab',[ function () {
+//     return {
+//         link: function (scope, element, attrs) {
+//             // console.dir(element);
+//             element.on('click',function (e) 
+//             {
+//                 e.preventDefault();
+//                 jQuery(element).tab('show');
+//             });
+//         }
+//     };
+// }])
+
 //!CONFIGURE THE BNASIC PRE-RUNTIME STATES OF THE APPLICATION
 .config(["ChartJsProvider", "$httpProvider", function (ChartJsProvider, $httpProvider) {
 
@@ -1871,8 +2193,477 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
     $httpProvider.interceptors.push('authIntercept');
 
     //@SET THE DEFAULT CHART COLORS
-    // ChartJsProvider.setOptions({ colors: ['#FF0000', '#FF00FF', '#00FFFF', '#00FF00', '#0000FF', '#FF00FF', '#4D5360'] });
-}])
+    ChartJsProvider.setOptions({ colors: ['#1976D2', '#292955', '#7CB342', '#FB8C39', '#d81b60', '#2196f3', '#cddc39', '#00897b', '#5d4037', '#212121', '#9c27b0'] });
+}]).controller("chartcontroller", ["$scope", "$q", "app", "worker", function ($scope, $q, app, worker) {
+
+    // $scope.webWorker = worker;
+
+    // let eventListener;
+
+    $scope.charts = { type: "line" };
+
+    $scope.fetched = $scope.fetched || {};
+    $scope.showCharts = false;
+    $scope.show_charts = function () {
+        return $scope.showCharts;
+    };
+
+    $scope.labels2 = ['total_delivered', 'total_pending', 'total_failed', 'total_requeued'];
+    $scope.labels = [];
+
+    $scope.app = app;
+
+    $scope.getData = function (obj, nom) {
+
+        // if(typeof(Worker) == "undefined")
+        // {
+
+        if (Array.isArray(obj) && obj[0]) {
+            var enumerable_data = obj.filter(function (e) {
+                return e.sender && e.sender != 'null' && e.sender != null;
+            });
+
+            // console.log(`Attempting to populate data for ${nom}`)
+            // console.dir(enumerable_data)
+
+            var chart_data_template = {
+                data: [],
+                labels: [],
+                series: ['Delivered', 'Pending', 'Failed', 'Requeued'],
+                total: [],
+                requeue: [],
+                total_series: ['Received'],
+                options: {
+                    colors: ['#FF0000', '#00FF00', '#0000FF', '#aaaaaa', '#00CCFF', '#FFCCFF', '#000000'],
+                    title: {
+                        display: true,
+                        text: nom.replace(/\_/ig, ' ').toUpperCase()
+                    },
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                }
+            };
+
+            $scope.charts["" + nom] = enumerable_data.reduce(function (cumulative, vl, idx) {
+
+                cumulative.chart.labels.push(vl.sender + " (" + vl['total_received'] + ")");
+                cumulative.data.delivered.push(vl['total_delivered']);
+                cumulative.data.pending.push(vl['total_pending']);
+                cumulative.data.failed.push(vl['total_failed']);
+                cumulative.data.requeued.push(vl['total_requeued']);
+                cumulative.chart.requeue.push([vl['total_requeue_failed'], vl['total_requeue_sent']]);
+                cumulative.chart.total.push(vl['total_received']);
+
+                //@ Format to the final form at the end of the iterations
+                if (idx == enumerable_data.length - 1) {
+                    cumulative.chart.data = Array(cumulative.data.delivered, cumulative.data.pending, cumulative.data.failed, cumulative.data.requeued);
+
+                    return cumulative.chart;
+                } else {
+                    return cumulative;
+                }
+            }, { chart: $scope.app.clone(chart_data_template),
+                data: {
+                    delivered: [],
+                    pending: [],
+                    failed: [],
+                    requeued: []
+                }
+            });
+        } else {
+            $scope.app.alert("<font color=red>CHART DRAW ERROR</font>", "<center>Failed to draw the required charts<br><br>Please ensure that you are loged in then continue.</center>");
+            // .then( a => $scope.app.redirect('/#/app/login') )
+        }
+
+        // }
+        // else
+        // {
+
+        //     console.log(`Using web workers for performance optimization.`);
+        //     let callID = $scope.webWorker.genCharts({ obj,nom });
+        //     eventListener = $scope.$on(callID, onMessageReceived);
+
+        // }
+    };
+
+    // function onMessageReceived( Event, args )
+    // {
+
+    //     console.dir(args);
+
+    //     if(args != undefined)
+    //     {
+    //         $scope.charts[args.title] = args.data;
+    //     }
+    //     else
+    //     {
+    //         $scope.app.alert(`<font color=red>CHART DRAW ERROR</font>`,`<center>Failed to draw the required charts<br><br>Please ensure that you are loged in then continue.</center>`)
+    //     }
+
+    //     eventListener();
+
+    // }
+
+    //@ Fetch the specified data
+    $scope.promisify = function () {
+        var process_data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+
+        return $q(function (resolve, reject) {
+
+            // $scope.app.alert("Promisify Triggered","The promisify method has been called.<br><br>Please check the logs to see what is going on")
+            // console.dir(process_data)
+
+            //@ ensure that the provided data is an array
+            if (Array.isArray(process_data)) {
+
+                //@ Construct an array of promises
+                var fetch_arr = process_data.reduce(function (cumulative, curr, indx) {
+                    cumulative[indx] = $scope.app.db({ command: "get", table: curr[0] || curr });
+                    return cumulative;
+                }, []);
+
+                //@ Wait for all the requests to resolve
+                $q.all(fetch_arr).then(function (d) {
+
+                    //@ Add/replace the data in the scope's "fetched" placeholder
+                    Object.assign($scope.fetched, d.reduce(function (cumulative, el, pos) {
+                        cumulative[process_data[pos][0]] = el.data ? el.data.message : el || [];
+                        return cumulative;
+                    }, {}));
+
+                    //@ Draw the charts
+                    resolve();
+                }).catch(function (e) {
+                    //@ Show an error message
+                    $scope.app.logger(e);
+                }).then(resolve);
+            } else {
+                //@ Show an error message
+                $scope.app.alert("Promisify Error", "Failed to capture the indices required for this request to terminate.");
+                reject();
+            }
+        });
+    };
+
+    //@ prepare the charts
+    $scope.draw_charts = function () {
+
+        //@ Ensure that we have at least fetched some database items
+        if ($scope.fetched == {}) {
+            $scope.app.alert("<font color='red'>Chart Drawing Failure</font>", "Please fetch the required data before initiating a chart draw!");
+        } else {
+            $scope.showCharts = true;
+            // $scope.$apply( );
+            $scope.getWeekData([$scope.fetched.vw_sms_one_day, $scope.fetched.vw_sms_two_day, $scope.fetched.vw_sms_three_day, $scope.fetched.vw_sms_four_day, $scope.fetched.vw_sms_five_day, $scope.fetched.vw_sms_six_day, $scope.fetched.vw_sms_seven_day], 'seven_day_summary');
+        }
+    };
+
+    // $scope.generate_days
+
+    $scope.getWeekData = function (obj, nom, days) {
+        return $q(function (resolve, reject) {
+
+            if (Array.isArray(obj) && obj[0]) {
+
+                //@ Check to see if the length of any of the objects is available
+                var enumerable_data = obj.filter(function (e) {
+                    return e.length > 0;
+                });
+                // const enumerable_data = obj.filter(e=> ( e.sender && e.sender != 'null' && e.sender != null ) )        
+
+
+                if (enumerable_data.length > 0) {
+
+                    //@ The chart structure object
+                    $scope.charts["" + nom] = {
+                        data: [],
+                        labels: days || $scope.getDays(),
+                        series: $scope.getSeries(enumerable_data),
+                        total: [],
+                        requeue: [],
+                        total_series: [],
+                        options: {
+                            colors: ['#1976D2', '#292955', '#7CB342', '#FB8C39', 'rgba(99,0,0,.9)', '#2196f3', '#cddc39', '#00897b', '#5d4037', '#212121', '#9c27b0'],
+                            title: {
+                                display: true,
+                                text: nom.replace(/\_/ig, ' ').toUpperCase()
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
+                        }
+                    };
+                    // console.dir($scope.charts[`${nom}`])
+
+                    //@ Define and inject the category placeholders for the specified chart                
+                    var d = $scope.charts["" + nom].series.reduce(function (cumulative, vl, idx) {
+                        cumulative["delivered"][vl] = [];
+                        cumulative["failed"][vl] = [];
+                        cumulative["pending"][vl] = [];
+                        cumulative["requeued"][vl] = [];
+                        cumulative["requeue"][vl] = [];
+                        cumulative["total"][vl] = [];
+                        return cumulative;
+                    }, { delivered: {}, failed: {}, pending: {}, requeued: {}, requeue: {}, total: {} });
+
+                    // console.dir(d)
+                    // console.dir(obj)
+
+
+                    // .filter(ojx => ojx.reduce( (prv,oj) => { if( oj.sender && oj.sender != 'null' && oj.sender != null && oj.sender != undefined && oj.sender != 'undefined') { prv.push(oj) };return prv; },[]))
+
+                    obj.forEach(function (a) {
+
+                        a = a.filter(function (b) {
+                            return b.sender;
+                        });
+                        // console.log(`\n=========================================================>\n`)
+                        // console.dir(a)
+                        // console.log(`\nTags\n`)
+                        // console.dir($scope.getSeries(enumerable_data));
+                        // console.log(`\n\n`);
+
+                        if (a.length == 0 || !Array.isArray(a)) {
+                            //@ Manually indicate that the transactions for this period were not found
+                            d = Object.keys(d.delivered).reduce(function (cumulative, v, pos) {
+
+                                //@ Ensure that the elements exist and populate them with a placeholder z ero
+                                cumulative.delivered[v] = cumulative.delivered[v] || [];
+                                cumulative.delivered[v].push(0);
+
+                                cumulative.pending[v] = cumulative.pending[v] || [];
+                                cumulative.pending[v].push(0);
+
+                                cumulative.failed[v] = cumulative.failed[v] || [];
+                                cumulative.failed[v].push(0);
+
+                                cumulative.requeued[v] = cumulative.requeued[v] || [];
+                                cumulative.requeued[v].push(0);
+
+                                cumulative.requeue[v] = cumulative.requeue[v] || [];
+                                cumulative.requeue[v].push([0, 0]);
+
+                                cumulative.total[v] = cumulative.total[v] || [];
+                                cumulative.total[v].push(0);
+
+                                return cumulative;
+                            }, $scope.app.clone(d));
+                        } else {
+
+                            //@ LOOP THROUGH EACH OF THE DEFINED SENDERS
+                            d = $scope.getSeries(enumerable_data).reduce(function (totld, curob, curinx) {
+                                // console.log(`\n\n===============================>\nServing ${curob}\n\n`)
+
+                                //@ The "is value defined" watcher
+                                var logd = false;
+
+                                //@ LOOP THROUGH EACH OF THE PROVIDED DATA OBJECTS
+                                return a.reduce(function (cumulative, vl, idx) {
+
+                                    // console.log(`Dealing with\n____________________________`)
+                                    // console.dir( vl)
+                                    // console.log(`____________________________`)
+
+                                    //@ Define the object or maintain it where necessary
+                                    if (idx == 0) {
+                                        //@ delivered
+                                        cumulative.delivered[curob] = cumulative.delivered[curob] || [];
+
+                                        //@ pending
+                                        cumulative.pending[curob] = cumulative.pending[curob] || [];
+
+                                        //@ failed
+                                        cumulative.failed[curob] = cumulative.failed[curob] || [];
+
+                                        //@ requeued
+                                        cumulative.requeued[curob] = cumulative.requeued[curob] || [];
+
+                                        //@ requeue
+                                        cumulative.requeue[curob] = cumulative.requeue[curob] || [];
+
+                                        //@ total
+                                        cumulative.total[curob] = cumulative.total[curob] || [];
+                                    }
+
+                                    //@ ADD DATA WHERE APPLICABLE
+                                    if (vl["sender"] == curob) {
+                                        logd = true;
+                                        //@ delivered
+                                        cumulative.delivered[curob].push(parseInt(vl['total_delivered']) || 0);
+
+                                        //@ pending
+                                        cumulative.pending[curob].push(parseInt(vl['total_pending']) || 0);
+
+                                        //@ failed
+                                        cumulative.failed[curob].push(parseInt(vl['total_failed']) || 0);
+
+                                        //@ requeued
+                                        cumulative.requeued[curob].push(parseInt(vl['total_requeued']) || 0);
+
+                                        //@ requeue
+                                        cumulative.requeue[curob].push([parseInt(vl['total_requeue_failed']) || 0, parseInt(vl['total_requeue_sent']) || 0]);
+
+                                        //@ total
+                                        cumulative.total[curob].push(parseInt(vl['total_received']) || 0);
+                                    }
+
+                                    //@ PUSH A ZERO WHERE NO DATA FOR THE CURRENT SENDER EXISTS
+                                    if (idx == a.length - 1 && logd == false) {
+
+                                        //@ delivered
+                                        cumulative.delivered[curob].push(0);
+
+                                        //@ pending
+                                        cumulative.pending[curob].push(0);
+
+                                        //@ failed
+                                        cumulative.failed[curob].push(0);
+
+                                        //@ requeued
+                                        cumulative.requeued[curob].push(0);
+
+                                        //@ requeue
+                                        cumulative.requeue[curob].push([0, 0]);
+
+                                        //@ total
+                                        cumulative.total[curob].push(0);
+                                    }
+
+                                    // console.dir(cumulative)
+
+                                    return cumulative;
+                                }, $scope.app.clone(totld));
+                            }, $scope.app.clone(d));
+                        }
+                    });
+
+                    // console.dir( Object.keys(d.delivered).map(k=>d.delivered[k]) );
+
+                    resolve($scope.charts[nom].data = {
+                        delivered: Object.keys(d.delivered).map(function (k) {
+                            return d.delivered[k] || 0;
+                        }),
+                        failed: Object.keys(d.failed).map(function (k) {
+                            return d.failed[k] || 0;
+                        }),
+                        pending: Object.keys(d.pending).map(function (k) {
+                            return d.pending[k] || 0;
+                        }),
+                        requeued: Object.keys(d.requeued).map(function (k) {
+                            return d.requeued[k] || 0;
+                        }),
+                        requeue: Object.keys(d.requeue).map(function (k) {
+                            return d.requeue[k] || 0;
+                        }),
+                        total: Object.keys(d.total).map(function (k) {
+                            return d.total[k] || 0;
+                        })
+                    });
+
+                    // console.dir($scope.charts[nom])
+
+                    // $scope.charts[nom] = [obj['total_delivered'],obj['total_pending'],obj['total_failed'],obj['total_requeued']];
+                    // $scope.$apply();
+                } else {
+                    resolve($scope.app.alert("<font color='red'>CHART GENERATOR ERROR</font>", "<center>It seems like there are no records to display for this week.</center>"));
+                }
+            } else {
+                resolve($scope.app.alert("<font color=red>CHART DRAW ERROR</font>", "<center>Failed to draw the required charts<br><br>Please ensure that you are loged in then continue.</center>"));
+                // .then( a => $scope.app.redirect('/#/app/login') )        
+            }
+        });
+    };
+
+    //@ The past seven day's day names
+    $scope.getDays = function () {
+
+        var dayhold = 86400000;
+        var now = new Date();
+        var labels = [];
+
+        for (var i = 0; i <= 6; i++) {
+            labels.push(new Date(now - i * dayhold).format("ddd < hh:mm TT"));
+        }
+
+        return labels;
+    };
+
+    //@ Get the series Labels
+    $scope.getSeries = function (chart_obj) {
+
+        if (Array.isArray(chart_obj)) {
+            var series_labels = void 0;
+
+            if (Array.isArray(chart_obj[0])) {
+
+                return $scope.app.unique(chart_obj.reduce(function (cumulative, chart_entry, pos) {
+                    cumulative = chart_entry.reduce(function (cum, vl, idx) {
+                        // cum[idx] = (vl.sender);
+                        cum.push(vl.sender);
+                        return cum;
+                    }, app.clone(cumulative));
+
+                    return cumulative;
+                }, [])).filter(function (e) {
+                    return e != null && e != undefined && e != 'undefined' && e != 'null';
+                });
+            } else {
+
+                return $scope.app.unique(chart_obj.reduce(function (cumulative, chart_data, idx) {
+                    cumulative[idx] = chart_data.sender;
+                    return cumulative;
+                }, []));
+            }
+        } else {
+            $scope.app.alert("Chart Drawing Error", "The Multichart Series Label Generator expects an array");
+            return [];
+        }
+    };
+
+    //@ Prepare the {delivered,failed,success_rate,cost} object
+    $scope.summaries = {
+        delivered: 0,
+        failed: 0,
+        success_rate: 0,
+        cost: 0
+    };
+
+    //@ Summarize the [delivered,failed,success_rate,cost] from the fetched data
+    $scope.prepare_rates = function () {
+        return $q(function (resolve, reject) {
+
+            $scope.summaries = $scope.fetched.vw_general_stats.reduce(function (cumulative, sender_status, indx) {
+                cumulative.delivered += parseInt(sender_status.total_delivered) || 0;
+                cumulative.failed += parseInt(sender_status.total_failed) || 0;
+                cumulative.success_rate = cumulative.delivered / (cumulative.delivered + cumulative.failed) * 100;
+                return cumulative;
+            }, {
+                delivered: 0,
+                failed: 0,
+                success_rate: 0
+            });
+            resolve();
+        });
+    };
+}]).directive("userEdit", function () {
+    return {
+        restrict: "E",
+        templateUrl: 'views/permissions.html'
+    };
+})
+
+// .directive("contactEdit"
+//                          ,[ function()
+// {
+//   return {
+//        restrict : "E", 
+//         templateUrl : 'views/client/contactEdit.html'
+//   }
+// }])
 
 //@ Allow ng-bind-html with directives
 .directive("compile", ["$compile", function ($compile) {
@@ -1892,9 +2683,111 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
             $compile(element.contents())(scope);
         });
     };
+}]).service("UuidService", [function () {
+
+    return {
+
+        generate: function generate() {
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+            }
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+        }
+
+    };
 }])
 
-//@ Optionally prevent default behavior of anchor tags
+//@ PDF Generation Service
+.service("pdfGen", ["$q", "$rootScope", "UuidService", function ($q, $rootScope, UuidService) {
+    var pdfGen = this;
+
+    pdfGen.WebWorkerService = function ($rootScope, UuidService) {
+        // Private properties.
+        var webWorker = new Worker("assets/js/worker.js");
+
+        // Activation.
+        this.activate();
+
+        return;
+        {
+
+            activate: (function () {
+
+                webWorker.addEventListener('message', onWebWorkerResponse, false);
+            });
+
+            generatePDF: (function (values) {
+                var MESSAGE_ID = UuidService.generate();
+
+                webWorker.postMessage(JSON.stringify([MESSAGE_ID, 'generatePDF', values]));
+
+                return MESSAGE_ID;
+            });
+
+            onWebWorkerResponse: (function (message) {
+
+                var data = JSON.parse(message.data),
+                    messageId = data[0],
+                    result = data[1];
+
+                // Call $apply around async events, including anywhere it calls 
+                // broadcast/emit.
+                // Docs: https://github.com/angular/angular.js/wiki/When-to-use-$scope.$apply()
+                $rootScope.$apply($rootScope.$broadcast(messageId, result));
+
+                data[1].save("SMS REPORTS FOR " + new Date().format("yyyy/mm/dd HH:mm") + ".pdf");
+            });
+
+            serviceInterface: {
+                generatePDF: generatePDF;
+            }
+        }
+    };
+
+    return pdfGen;
+}]).service("worker", ["$q", "$rootScope", "UuidService", function ($q, $rootScope, UuidService) {
+
+    var worker = this;
+
+    // Private properties.
+    var webWorker = new Worker("assets/js/worker.js");
+
+    worker.activate = function () {
+
+        webWorker.addEventListener('message', worker.onWebWorkerResponse, false);
+    };
+
+    worker.genCharts = function (values) {
+
+        console.log("\nAttempting to generate charts");
+
+        var MESSAGE_ID = UuidService.generate();
+
+        webWorker.postMessage(JSON.stringify([MESSAGE_ID, 'generateCharts', values]));
+        console.log(MESSAGE_ID);
+        return MESSAGE_ID;
+    };
+
+    worker.onWebWorkerResponse = function (message) {
+
+        console.log("\nThe webworker completed it's computaional task");
+
+        var data = JSON.parse(message.data),
+            messageId = data[0],
+            result = data[1];
+
+        // Call $apply around async events, including anywhere it calls 
+        // broadcast/emit.
+        // Docs: https://github.com/angular/angular.js/wiki/When-to-use-$scope.$apply()
+        $rootScope.$apply($rootScope.$broadcast(messageId, result));
+    };
+
+    worker.activate();
+
+    return worker;
+}])
+
+//@ Allow easy disabling of anchor tags
 .directive("a", [function () {
     return {
         restrict: 'E',
@@ -1906,4 +2799,23 @@ angular.module("framify.js", ["ui.router", "framify-paginate", "ngStorage", "cha
             });
         }
     };
-}]);
+}]).directive('fileDownload', function () {
+    return {
+        restrict: 'E', // applied on 'element'
+        scope: {
+            fileurl: '@fileurl',
+            linktext: '@linktext'
+        },
+        template: '<a href="{{ fileurl }}" download>{{ linktext }}</a>', // need this so that the inner HTML can be re-used
+        link: function link(scope, elem, attrs) {
+            /* Ref: https://thinkster.io/egghead/isolate-scope-at
+             * This block is used when we have
+             * scope: {
+                 fileurl: '=fileurl',
+                 linktext: '=linktext'     
+               }          
+             scope.fileurl = attrs.fileurl;
+             scope.linktext = attrs.linktext;*/
+        }
+    };
+});

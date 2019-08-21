@@ -1,4 +1,833 @@
-<div class="" ng-init="handlers.isLogedIn().then(handlers.identity).then(app.doNothing).catch(app.doNothing)"></div>
-Welcome to the administrative panel.
-<!-- <div ng-init="fetch('members')"></div>
-<json-formatter ng-if="fetched.members" json="fetched.members" open="1"></json-formatter> -->
+<div class="" ng-init="handlers.isLogedIn().then(handlers.identity).then(app.doNothing).catch(app.doNothing);section='charts';"></div>
+<h3 class="heading_b uk-margin-bottom">JAMBOPAY SMS</h3>
+
+<div>
+
+    <div id="top_bar" class="uk-animation-slide-bottom" style="background-color:rgba(100, 100, 100,0.99);text-transform: uppercase !important;"> 
+        <div class="md-top-bar">
+            <div class="uk-width-large-10-10 uk-text-justify uk-container-justify">
+                <ul class="top_bar_nav" id="snippets_grid_filter">
+
+                    <li ng-class="{'uk-active': frame.currTab == 'all' }">
+                        <a ng-click="frame.currTab='all';fetch('vw_all_sms', {extras:   ' WHERE Date > DATEADD(hour, -72, getdate() )'})" style="font-weight:bold;color:white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px green ;">All SMS</a>
+                    </li>
+                    <li ng-class="{'uk-active': frame.currTab == 'delivered' }" >
+                        <a ng-click="frame.currTab='delivered';fetch('vw_delivered_sms', {extras:   ' WHERE Date > DATEADD(hour, -72, getdate() )'})" style="font-weight:bold;color:white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px green ;">Delivered</a>
+                    </li> 
+                    <li ng-class="{'uk-active': frame.currTab == 'failed' }" >
+                        <a ng-click="frame.currTab='failed';fetch('vw_failed_sms', {extras:   ' WHERE Date > DATEADD(hour, -72, getdate() )'})" style="font-weight:bold;color:white;text-shadow: 1px 1px 2px black, 0.5px 0.5px 1px green ;">Failed</a>
+                    </li>
+                    <li class="pull-right uk-text-small" ng-if="data.me.role">
+                        <a style="font-weight:bold;color:white;text-decoration:none !important;cursor:pointer;">
+                            {{data.me["name.first"]}} -- <font ng-class=" (permissions.admin_only(data.me))? 'uk-text-success' : 'uk-text-primary' "> {{data.me.role | uppercase}} MODE</font> 
+                        </a>
+                    </li>
+                   
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+    <br>
+    <!-- ['vw_general_stats'],['vw_sms_this_week'],['vw_sms_last_week'],['vw_sms_two_week'],['vw_sms_three_week'] -->
+    <div 
+        ng-if="storage.framify_user" 
+        ng-init="frame.currTab='all';section='panel';fetch('vw_all_sms', {extras:' WHERE Date > DATEADD(hour, -72, getdate() )'});"></div>
+    <!-- <json-formatter open="1" json="fetched"></json-formatter> -->
+
+    <div class="uk-animation-slide-bottom uk-panel">
+        <div ng-if="frame.currTab == 'all'">
+            <p></p>
+            <div class="uk-card md-card uk-border-rounded">
+                    
+                    <div class="md-card-content">
+
+                            <div class="list list-inset uk-animation-slide-top uk-row uk-grid">
+
+                                <div class="uk-width-1-2">
+                                        <label class="item item-input">
+                                            <i class="icon ion-search placeholder-icon"></i>
+                                            <input type="text" ng-model="search" value="" class="md-input" placeholder="Search">
+                                        </label>
+                                    <button class="md-btn" ng-click="app.notify('Reloading all relevant data','success');fetch('vw_all_sms', {extras:   ' WHERE Date > DATEADD(hour, -72, getdate() )'})"><i class="fa fa-refresh"></i></button>
+                                </div>
+                                <div class="uk-width-1-2">
+                                    <div class="uk-row uk-grid">
+                                            <div class="uk-row-1-4" style="padding-top:1.4em;">Result Range:</div> 
+                                            <div class="uk-row-2-4">
+                                                <sm-range-picker-input
+                                                style="color:black !important;"
+                                                fname="sms_sent_range" 
+                                                    label="Sms Date Range"
+                                                    form="empForm"
+                                                    ng-model="range" 
+                                                    placeholder="Date Range"
+                                                    flex="50"                         
+                                                    is-required="{{true}}" 
+                                                    format="MMMM DD YYYY"
+                                                    mode="date-time" 
+                                                    week-start-day="Sunday">
+                                                </sm-range-picker-input>
+                                            </div> 
+                                            <div class="uk-row-1-4" style="padding-top:0.4em;">
+                                                    <button 
+                                                    class="md-btn" 
+                                                    ng-if="range" 
+                                                    ng-click="fetch('vw_all_sms', { specifics: ' * ',  extras: ' WHERE Date >= \''+ app.getIsoString(range.startDate) +'\' AND Date <= \''+ app.getIsoString(range.endDate)+'\''  });app.notify('Fetching Custom Range Results','warning');"><i class="fa fa-search"></i></button>
+                                                    <button class="md-btn" ng-if="fetched.vw_all_sms" ng-click="app.tabulate( data.me.organization_name+' SMS Summary',[{title:'RECIPIENT',dataKey:'Phone'},{title:'MESSAGE',dataKey:'Message'},{title:'RECEIPT',dataKey:'OperatorReceipt'},{title:'DATE',dataKey:'Date'}],fetched.vw_all_sms)"><i class="fa fa-download"></i> </button>
+                                            </div>
+                                    </div>
+                
+                                </div>        
+                
+                            </div>
+
+                            <div ng-if="!fetched['vw_all_sms']">
+                                    <div class="uk-grid">
+                                        <div class="uk-width-1-1 uk-text-center">
+                                            <div class="uk-icon-spinner fa-spin fa-4x col-blue"></div>
+                                            <h3 class=" col-blue">
+                                                LOADING SMS DATA
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                    
+                                <div  ng-if="fetched['vw_all_sms']">
+                    
+                    
+                                    
+                                    <table 
+                                        id="table-id" 
+                                        align="center" 
+                                        class="uk-animation-slide-bottom uk-table uk-table-striped  responsive-table" 
+                                        name="content"
+                                    
+                                    >
+                                        <thead>
+                                            <tr style="font-weight:bold; text-transform:uppercase; color:white !important; font-weight:bold !important; background-color: #2196F3 !important;">
+                                                <!-- <th style="color:white !important; font-weight:bold;" ng-click="sort('ID')">Id
+                                                    <span class="icon " ng-show="sortKey=='ID'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                                </th> -->
+                                                <th style="color:white !important; font-weight:bold;" ng-click="sort('Phone')">Recipient
+                                                    <span class="icon " ng-show="sortKey=='Phone'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                                </th>
+                                                <th style="color:white !important; font-weight:bold;" ng-click="sort('Message')">Message
+                                                    <span class="icon " ng-show="sortKey=='Message'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                                </th>
+                                                <!-- <th style="color:white !important; font-weight:bold;" ng-click="sort('Result')">Status
+                                                    <span class="icon " ng-show="sortKey=='Result'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                                </th> -->
+                                                <th style="color:white !important; font-weight:bold;" ng-click="sort('OperatorReceipt')">Receipt
+                                                    <span class="icon " ng-show="sortKey=='OperatorReceipt'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                                </th>
+                                                <th style="color:white !important; font-weight:bold;" ng-click="sort('Sender_Name')">Sender
+                                                    <span class="icon " ng-show="sortKey=='Sender_Name'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                                </th>
+                                                <th style="color:white !important; font-weight:bold;" ng-click="sort('Date')">Date
+                                                    <span class="icon " ng-show="sortKey=='Date'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                                </th>
+                                            
+                                                <th style="color:white !important; font-weight:bold;" class="noprint" style="margin:0 auto;text-align:center;"  ng-click="addAction( 'requeue', (actions.requeue) ? false : true )" >Requeue</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <form name="sms_all" novalidate>
+                                                <tr ng-if="!fetched.vw_all_sms[0]" >
+                                                    <th colspan="8" class="uk-text-center">It seems like no records are currently available</th> 
+                                                </tr>
+                                                <tr 
+                                                dir-paginate="sms in fetched.vw_all_sms |orderBy:sortKey:reverse|filter:search|itemsPerPage:5 "                    
+                                                pagination-id="all"
+                                                >
+                    
+                                                    <!-- <td scope="row" data-label="ID">
+                                                        {{sms["ID"]}}
+                                                    </td> -->
+                                                    <td scope="row" data-label="Recipient" >
+                                                        {{sms['Phone']}}
+                                                    </td>
+                                                    <td scope="row" class="uk-text-center" data-label="Message" >
+                                                        {{sms['Message']}}
+                                                    </td>
+                                                    <!-- <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Network Status Response">
+                                                        {{sms.OperatorResult}}
+                                                    </td> -->
+                                                    <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Network Receipt">
+                                                        {{fromXML(sms.OperatorReceipt)}}
+                                                    </td>
+                                                    <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Sender">
+                                                        {{sms['Sender_Name']}}
+                                                    </td>
+                                                    <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Sent At">
+                                                            {{ app.to_date(sms['Date'])|date:'EEE MMM/dd/y @ hh:mm a'}}
+                                                    </td>                   
+                                                    <td>
+                                                        <!-- ng-click="( sms.Delivered == true || sms.Phone == 254725678447 )? app.notify('This message has already been delivered.') : iSMS.one({ body: { to: sms['Phone'], text: sms['Message'] }, sender: sms['Sender_Name'] }).then(app.handler).catch(app.handler)" -->
+                                                        <!-- -->
+                                                        
+                                                        <button ng-show="!actions.requeue"
+                                                        ng-title="(sms.Delivered)? 'This message Has been delivered' : 'Requeue the message'"
+                                                        class="md-btn"
+                                                        ng-class="( sms.Delivered == true ) ? ' ' : 'md-btn-primary'"
+                                                        ng-click="(sms.Delivered != true) ? iSMS.one({ body: { to: sms['Phone'], text: sms['Message'] }, sender: sms['Sender_Name'] }).then(app.handler).catch(app.handler) : app.notify('This message has already been sent.','danger') "
+                                                        >
+                                                            <i class="material-icons "  ng-class="(sms.Delivered==true)? 'col-red' : 'col-white'" >&#XE8B3;</i>
+                                                        </button>
+                                                        
+                                                        <md-checkbox ng-show="actions.requeue" ng-if="sms.Delivered != true" aria-label="Checkbox 1" ng-checked="obj_in_array(actions.prequeue, { to: sms['Phone'], text: sms['Message'], sender: sms['Sender_Name'] })!=-1" ng-click="prequeue({ to: sms['Phone'], text: sms['Message'], sender: sms['Sender_Name'] })">
+                                                        </md-checkbox>
+                                                            
+                                                    </td>
+                    
+                                                </tr>
+                                            </form>
+                                        </tbody>
+                                    </table>
+                                    <div class="uk-grid">
+                    
+                                        <div class="uk-width-1-2">
+                                            <dir-pagination-controls
+                                            max-size="5"
+                                            direction-links="true"
+                                            boundary-links="true"
+                                            pagination-id="all"
+                                            >
+                                            </dir-pagination-controls>
+                                        </div>
+                                        <div class="uk-width-1-2" style="padding-top:1em !important;">
+                                            <button class="md-btn md-btn-success" ng-show="actions.requeue && actions.prequeue[0]" ng-click="iSMS.many( { body:  actions.prequeue, sender: actions.prequeue[0].sender } ).then(app.handler).catch(app.handler);app.notify('Please try again later','danger')" >Requeue {{actions.prequeue.length}} Message{{actions.prequeue.length>1 ? 's' : ''}}</button>
+                                            <button class="md-btn md-btn-danger" ng-show="actions.requeue&&actions.prequeue[0]" ng-click="addAction('prequeue',[])" >Clear Selection</button>
+                                        </div>
+                    
+                                    </div>
+                    
+                                </div>
+                    </div>
+                      
+                    </div>
+
+            
+
+            
+
+        </div>
+
+        <div ng-if="frame.currTab == 'delivered'">
+
+            <p></p>
+            <div class="uk-card md-card uk-border-rounded">
+                    
+                <div class="md-card-content">
+
+                    <div class="list list-inset uk-animation-slide-top uk-row uk-grid">
+
+                        <div class="uk-width-1-2">
+                                <label class="item item-input">
+                                    <i class="icon ion-search placeholder-icon"></i>
+                                    <input type="text" ng-model="search" value="" class="md-input" placeholder="Search">
+                                </label>
+                            <button class="md-btn" ng-click="app.notify('Reloading all relevant data','success');fetch('vw_delivered_sms', {extras:   ' WHERE Date > DATEADD(hour, -72, getdate() )'})"><i class="fa fa-refresh"></i></button>
+                        </div>
+                        <div class="uk-width-1-2">
+                            <div class="uk-row uk-grid">
+                                    <div class="uk-row-1-4" style="padding-top:1.4em;">Result Range:</div> 
+                                    <div class="uk-row-2-4">
+                                        <sm-range-picker-input
+                                        style="color:black !important;"
+                                        fname="sms_sent_range" 
+                                            lable="Sms Date Range"
+                                            form="empForm"
+                                            ng-model="range" 
+                                            placeholder="Date Range"
+                                            flex="50"                         
+                                            is-required="{{true}}" 
+                                            format="MMMM DD YYYY"
+                                            mode="date-time" 
+                                            week-start-day="Sunday">
+                                        </sm-range-picker-input>
+                                    </div> 
+                                    <div class="uk-row-1-4" style="padding-top:0.4em;">
+                                            <button class="md-btn" ng-if="range" ng-click="fetch('vw_delivered_sms', { specifics: ' * ',  extras: ' WHERE Date >= \''+ app.getIsoString(range.startDate) +'\' AND Date <= \''+ app.getIsoString(range.endDate)+'\''  });app.notify('Fetching Custom Range Results','warning');"><i class="fa fa-search"></i></button>
+                                            <button class="md-btn" ng-if="fetched.vw_delivered_sms" ng-click="app.tabulate( data.me.organization_name+' Delivered SMS Summary',[{title:'RECIPIENT',dataKey:'Phone'},{title:'MESSAGE',dataKey:'Message'},{title:'RECEIPT',dataKey:'OperatorReceipt'},{title:'DATE',dataKey:'Date'}],fetched.vw_delivered_sms)"><i class="fa fa-download"></i> </button>
+                                    </div>
+                            </div>
+
+                        </div>                
+                    
+                    </div>
+
+                    <div ng-if="!fetched['vw_delivered_sms']">
+                        <div class="uk-grid">
+                            <div class="uk-width-1-1 uk-text-center">
+                                <div class="uk-icon-spinner fa-spin fa-4x col-blue"></div>
+                                <h3 class=" col-blue">
+                                    LOADING SMS DATA
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div  ng-if="fetched['vw_delivered_sms']">
+                                
+                        <table 
+                            id="table-id" 
+                            align="center" 
+                            class=" uk-animation-slide-bottom uk-table uk-table-striped  responsive-table" 
+                            name="content"
+                        
+                        >
+                            <thead>
+                                <tr style="font-weight:bold; text-transform:uppercase; color:white !important; font-weight:bold !important; background-color: #2196F3 !important;">
+                                    <!-- <th style="color:white !important; font-weight:bold;" ng-click="sort('ID')">Id
+                                        <span class="icon " ng-show="sortKey=='ID'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th> -->
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Phone')">Recipient
+                                        <span class="icon " ng-show="sortKey=='Phone'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Message')">Message
+                                        <span class="icon " ng-show="sortKey=='Message'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <!-- <th style="color:white !important; font-weight:bold;" ng-click="sort('Result')">Status
+                                        <span class="icon " ng-show="sortKey=='Result'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th> -->
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('OperatorReceipt')">Receipt
+                                        <span class="icon " ng-show="sortKey=='OperatorReceipt'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Sender_Name')">Sender
+                                        <span class="icon " ng-show="sortKey=='Sender_Name'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Date')">Date
+                                        <span class="icon " ng-show="sortKey=='Date'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                
+                                    <!-- <th style="color:white !important; font-weight:bold;" class="noprint" style="margin:0 auto;text-align:center;">Requeue</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <form name="sms_delivered" novalidate>
+                                    <tr ng-if="!fetched.vw_delivered_sms[0]" >
+                                        <th colspan="8" class="uk-text-center">It seems like no records are currently available</th> 
+                                    </tr>
+                                    <tr 
+                                    pagination-id="delivered"
+                                    dir-paginate="sms in fetched.vw_delivered_sms |orderBy:sortKey:reverse|filter:search|itemsPerPage:5">
+
+                                        <!-- <td scope="row" data-label="ID">
+                                            {{sms["ID"]}}
+                                        </td> -->
+                                        <td scope="row" data-label="Recipient" >
+                                            {{sms['Phone']}}
+                                        </td>
+                                        <td scope="row" class="uk-text-center" data-label="Message" >
+                                            {{sms['Message']}}
+                                        </td>
+                                        <!-- <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Network Status Response">
+                                            {{sms.OperatorResult}}
+                                        </td> -->
+                                        <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Network Receipt">
+                                            {{fromXML(sms.OperatorReceipt)}}
+                                        </td>
+                                        <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Sender">
+                                            {{sms['Sender_Name']}}
+                                        </td>
+                                        <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Sent At">
+                                                {{ app.to_date(sms['Date'])|date:'EEE MMM/dd/y @ hh:mm a'}}
+                                        </td>                   
+                                        <!-- <td>
+                                                <button 
+                                                title="Requeue Message"
+                                                class="md-btn md-btn-primary"
+                                                ng-click="app.notify('Not yet implemented')"
+                                                >
+                                                <i class="material-icons col-white">&#XE8B3;</i>
+                                                </button>
+                                        </td> -->
+
+                                    </tr>
+                                </form>
+                            </tbody>
+                        </table>
+                        <dir-pagination-controls
+                        max-size="5"
+                        direction-links="true"
+                        boundary-links="true"
+                        pagination-id="delivered"
+                        >
+                        </dir-pagination-controls>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div ng-if="frame.currTab == 'pending'">
+
+            <p></p>
+            <div class="uk-card md-card uk-border-rounded">
+                
+                <div class="md-card-content">
+
+                    <div class="list list-inset uk-animation-slide-top uk-row uk-grid">
+                    
+                        <div class="uk-width-1-2">
+                                <label class="item item-input">
+                                    <i class="icon ion-search placeholder-icon"></i>
+                                    <input type="text" ng-model="search" value="" class="md-input" placeholder="Search">
+                                </label>
+                            <button class="md-btn" ng-click="app.notify('Reloading all relevant data','success');fetch('vw_pending_sms', {extras:   ' WHERE Date > DATEADD(hour, -72, getdate() )'})"><i class="fa fa-refresh"></i></button>
+                        </div>
+                        <div class="uk-width-1-2">
+                            <div class="uk-row uk-grid">
+                                    <div class="uk-row-1-4" style="padding-top:1.4em;">Result Range:</div> 
+                                    <div class="uk-row-2-4">
+                                        <sm-range-picker-input
+                                        style="color:black !important;"
+                                        fname="sms_sent_range" 
+                                            lable="Sms Date Range"
+                                            form="empForm"
+                                            ng-model="range" 
+                                            placeholder="Date Range"
+                                            flex="50"                         
+                                            is-required="{{true}}" 
+                                            format="MMMM DD YYYY"
+                                            mode="date-time" 
+                                            week-start-day="Sunday">
+                                        </sm-range-picker-input>
+                                    </div> 
+                                    <div class="uk-row-1-4" style="padding-top:0.4em;">
+                                        <button class="md-btn" ng-if="range" ng-click="fetch('vw_pending_sms', { specifics: ' * ',  extras: ' WHERE Date >= \''+ app.getIsoString(range.startDate) +'\' AND Date <= \''+ app.getIsoString(range.endDate)+'\''  });app.notify('Fetching Custom Range Results','warning');"><i class="fa fa-search"></i></button>
+                                        <button class="md-btn" ng-if="fetched.vw_pending_sms" ng-click="app.tabulate( data.me.organization_name+' Pending SMS Summary',[{title:'RECIPIENT',dataKey:'Phone'},{title:'MESSAGE',dataKey:'Message'},{title:'RECEIPT',dataKey:'OperatorReceipt'},{title:'DATE',dataKey:'Date'}],fetched.vw_pending_sms)"><i class="fa fa-download"></i> </button>
+                                    </div>
+                            </div>
+
+                        </div>            
+
+                    </div>
+
+                    <div  ng-if="fetched['vw_pending_sms']">
+
+                        
+                        <table 
+                            id="table-id" 
+                            align="center" 
+                            class=" uk-animation-slide-bottom uk-table uk-table-striped  responsive-table" 
+                            name="content"
+                        
+                        >
+                            <thead>
+                                <tr style="font-weight:bold; text-transform:uppercase; color:white !important; font-weight:bold !important; background-color: #2196F3 !important;">
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('ID')">Id
+                                        <span class="icon " ng-show="sortKey=='ID'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Phone')">Recipient
+                                        <span class="icon " ng-show="sortKey=='Phone'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Message')">Message
+                                        <span class="icon " ng-show="sortKey=='Message'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <!-- <th style="color:white !important; font-weight:bold;" ng-click="sort('Result')">Status
+                                        <span class="icon " ng-show="sortKey=='Result'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th> -->
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('OperatorReceipt')">Receipt
+                                        <span class="icon " ng-show="sortKey=='OperatorReceipt'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Sender_Name')">Sender
+                                        <span class="icon " ng-show="sortKey=='Sender_Name'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Date')">Date
+                                        <span class="icon " ng-show="sortKey=='Date'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                
+                                    <th style="color:white !important; font-weight:bold;" class="noprint" style="margin:0 auto;text-align:center;">Requeue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <form name="sms_pending" novalidate>
+                                    <tr ng-if="!fetched.vw_pending_sms[0]" >
+                                        <th colspan="8" class="uk-text-center">It seems like no records are currently available</th> 
+                                    </tr>
+                                    <tr 
+                                    pagination-id="pending"
+                                    dir-paginate="sms in fetched.vw_pending_sms |orderBy:sortKey:reverse|filter:search|itemsPerPage:5">
+
+                                        <td scope="row" data-label="ID">
+                                            {{sms["ID"]}}
+                                        </td>
+                                        <td scope="row" data-label="Recipient" >
+                                            {{sms['Phone']}}
+                                        </td>
+                                        <td scope="row" data-label="Message" >
+                                            {{sms['Message']}}
+                                        </td>
+                                        <!-- <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Network Status Response">
+                                            {{sms.OperatorResult}}
+                                        </td> -->
+                                        <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Network Receipt">
+                                            {{fromXML(sms.OperatorReceipt)}}
+                                        </td>
+                                        <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Sender">
+                                            {{sms['Sender_Name']}}
+                                        </td>
+                                        <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Sent At">
+                                                {{ app.to_date(sms['Date'])|date:'EEE MMM/dd/y @ hh:mm a'}}
+                                        </td>                   
+                                        <td>
+                                                <button 
+                                                title="Requeue Message"
+                                                class="md-btn md-btn-primary"
+                                                ng-click="(sms.Delivered != true) ? iSMS.one({ data: { to: sms['Phone'], text: sms['Message'] }, sender: sms['Sender_Name'] }).then(SmsSuccess).catch(SmsError) : app.notify('This message has already been sent.','danger')"
+                                                >
+                                                <i class="material-icons col-white">&#XE8B3;</i>
+                                                </button>
+                                        </td>
+
+                                    </tr>
+                                </form>
+                            </tbody>
+                        </table>
+                        <dir-pagination-controls
+                        max-size="5"
+                        direction-links="true"
+                        boundary-links="true"
+                        pagination-id="pending"
+                        >
+                        </dir-pagination-controls>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div ng-if="frame.currTab == 'failed'">
+
+            <p></p>
+            <div class="uk-card md-card uk-border-rounded">
+                
+                <div class="md-card-content">
+
+                    <div class="list list-inset uk-animation-slide-top uk-row uk-grid">
+
+                        <div class="uk-width-1-2">
+                                <label class="item item-input">
+                                    <i class="icon ion-search placeholder-icon"></i>
+                                    <input type="text" ng-model="search" value="" class="md-input" placeholder="Search">
+                                </label>
+                            <button class="md-btn" ng-click="app.notify('Reloading all relevant data','success');fetch('vw_failed_sms', {extras:   ' WHERE Date > DATEADD(hour, -72, getdate() )'})"><i class="fa fa-refresh"></i></button>
+                        </div>
+                        
+                        <div class="uk-width-1-2">
+                            <div class="uk-row uk-grid">
+                                    <div class="uk-row-1-4" style="padding-top:1.4em;">Result Range:</div> 
+                                    <div class="uk-row-2-4">
+                                        <sm-range-picker-input
+                                        style="color:black !important;"
+                                        fname="sms_sent_range" 
+                                            lable="Sms Date Range"
+                                            form="empForm"
+                                            ng-model="range" 
+                                            placeholder="Date Range"
+                                            flex="50"                         
+                                            is-required="{{true}}" 
+                                            format="MMMM DD YYYY"
+                                            mode="date-time" 
+                                            week-start-day="Sunday">
+                                        </sm-range-picker-input>
+                                    </div> 
+                                    <div class="uk-row-1-4" style="padding-top:0.4em;">
+                                        <button class="md-btn" ng-if="range" ng-click="fetch('vw_failed_sms', { specifics: ' * ',  extras: ' WHERE Date >= \''+ app.getIsoString(range.startDate) +'\' AND Date <= \''+ app.getIsoString(range.endDate)+'\''  });app.notify('Fetching Custom Range Results','warning');"><i class="fa fa-search"></i></button>
+                                        <button class="md-btn" ng-if="fetched.vw_failed_sms" ng-click="app.tabulate( data.me.organization_name+' Failed SMS Summary',[{title:'RECIPIENT',dataKey:'Phone'},{title:'MESSAGE',dataKey:'Message'},{title:'RECEIPT',dataKey:'OperatorReceipt'},{title:'DATE',dataKey:'Date'}],fetched.vw_failed_sms)"><i class="fa fa-download"></i> </button>
+                                    </div>
+                            </div>
+
+                        </div>
+                        
+
+                    </div>
+                    
+                    <div ng-if="!fetched['vw_failed_sms']">
+                        <div class="uk-grid">
+                            <div class="uk-width-1-1 uk-text-center">
+                                <div class="uk-icon-spinner fa-spin fa-4x col-blue"></div>
+                                <h3 class=" col-blue">
+                                    LOADING SMS DATA
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div  ng-if="fetched['vw_failed_sms']" ng-init="addAction('prequeue',[])">
+
+                        
+                        <table 
+                            id="table-id" 
+                            align="center" 
+                            class=" uk-animation-slide-bottom uk-table uk-table-striped  responsive-table" 
+                            name="content"
+                        
+                        >
+                            <thead>
+                                <tr style="font-weight:bold; text-transform:uppercase; color:white !important; font-weight:bold !important; background-color: #2196F3 !important;">
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('ID')">Id
+                                        <span class="icon " ng-show="sortKey=='ID'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Phone')">Recipient
+                                        <span class="icon " ng-show="sortKey=='Phone'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Message')">Message
+                                        <span class="icon " ng-show="sortKey=='Message'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <!-- <th style="color:white !important; font-weight:bold;" ng-click="sort('Result')">Status
+                                        <span class="icon " ng-show="sortKey=='Result'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th> -->
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('OperatorReceipt')">Reason
+                                        <span class="icon " ng-show="sortKey=='OperatorReceipt'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Sender_Name')">Sender
+                                        <span class="icon " ng-show="sortKey=='Sender_Name'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Date')">Date
+                                        <span class="icon " ng-show="sortKey=='Date'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                
+                                    <th style="color:white !important; font-weight:bold;" class="noprint" style="margin:0 auto;text-align:center;"  ng-click="addAction( 'requeue', (actions.requeue) ? false : true )" >Requeue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <form name="sms_failed" novalidate>
+                                    <tr ng-if="!fetched.vw_failed_sms[0]" >
+                                        <th colspan="8" class="uk-text-center">It seems like no records are currently available</th> 
+                                    </tr>
+                                    <tr 
+                                    pagination-id="failed"
+                                    dir-paginate="sms in fetched.vw_failed_sms |orderBy:sortKey:reverse|filter:search|itemsPerPage:5">
+
+                                        <td scope="row" data-label="ID">
+                                            {{sms["ID"]}}
+                                        </td>
+                                        <td scope="row" data-label="Recipient" >
+                                            {{sms['Phone']}}
+                                        </td>
+                                        <td scope="row" data-label="Message" >
+                                            {{sms['Message']}}
+                                        </td>
+                                        <!-- <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Network Status Response">
+                                            {{sms.OperatorResult}}
+                                        </td> -->
+                                        <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Network Receipt">
+                                            {{fromXML(sms.OperatorReceipt)}}
+                                        </td>
+                                        <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Sender">
+                                            {{sms['Sender_Name']}}
+                                        </td>
+                                        <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Sent At">
+                                                {{ app.to_date(sms['Date'])|date:'EEE MMM/dd/y @ hh:mm a'}}
+                                        </td>                   
+                                        <td>
+                                            <button ng-show="!actions.requeue"
+                                            ng-title="(sms.Delivered)? 'This message Has been delivered' : 'Requeue the message'"
+                                            class="md-btn"
+                                            ng-class="( sms.Delivered == true ) ? ' ' : 'md-btn-primary'"
+                                            ng-click="(sms.Delivered != true) ? iSMS.one({ body: { to: sms['Phone'], text: sms['Message'] }, sender: sms['Sender_Name'] }).then(app.handler).catch(app.handler) : app.notify('This message has already been sent.','danger') "
+                                            >
+                                            <i class="material-icons "  ng-class="(sms.Delivered==true)? 'col-red' : 'col-white'" >&#XE8B3;</i>
+                                            </button>
+                                            
+                                            <md-checkbox ng-show="actions.requeue" ng-if="sms.Delivered != true" aria-label="Checkbox 1" ng-checked="obj_in_array(actions.prequeue, { to: sms['Phone'], text: sms['Message'], sender: sms['Sender_Name'] })!=-1" ng-click="prequeue({ to: sms['Phone'], text: sms['Message'], sender: sms['Sender_Name'] })">
+                                            </md-checkbox>
+                                        </td>
+
+                                    </tr>
+                                </form>
+                            </tbody>
+                        </table>
+                        <div class="uk-grid">
+
+                            <div class="uk-width-1-2">
+                                <dir-pagination-controls
+                                max-size="5"
+                                direction-links="true"
+                                boundary-links="true"
+                                pagination-id="failed"
+                                >
+                                </dir-pagination-controls>
+                            </div>
+                            <div class="uk-width-1-2" style="padding-top:1em !important;">
+                                <button class="md-btn md-btn-success" ng-show="actions.requeue && actions.prequeue[0]" ng-click="iSMS.many( { body:  actions.prequeue, sender: actions.prequeue[0].sender } ).then(app.handler).catch(app.handler);app.notify('Please try again later','danger')" >Requeue {{actions.prequeue.length}} Message{{actions.prequeue.length>1 ? 's' : ''}}</button>
+                                <button class="md-btn md-btn-danger" ng-show="actions.requeue&&actions.prequeue[0]" ng-click="addAction('prequeue',[])" >Clear Selection</button>
+                            </div>
+
+                        </div>
+                        
+                    
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div ng-if="frame.currTab == 'requeued'">
+
+            <p></p>
+            <div class="uk-card md-card uk-border-rounded">
+                
+                <div class="md-card-content">
+
+                    <div class="list list-inset uk-animation-slide-top uk-row uk-grid">
+                        
+                        <div class="uk-width-1-2">
+                                <label class="item item-input">
+                                        <i class="icon ion-search placeholder-icon"></i>
+                                        <input type="text" ng-model="search" value="" class="md-input" placeholder="Search">
+                                    </label>
+                            <button class="md-btn" ng-click="app.notify('Reloading all relevant data','success');fetch('vw_required_sms', {extras:   ' WHERE Date > DATEADD(hour, -72, getdate() )'})"><i class="fa fa-refresh"></i></button>
+                        </div>
+
+                        <div class="uk-width-1-2">
+                            <div class="uk-row uk-grid">
+                                    <div class="uk-row-1-4" style="padding-top:1.4em;">Result Range:</div> 
+                                    <div class="uk-row-2-4">
+                                        <sm-range-picker-input
+                                        style="color:black !important;"
+                                        fname="sms_sent_range" 
+                                            lable="Sms Date Range"
+                                            form="empForm"
+                                            ng-model="range" 
+                                            placeholder="Date Range"
+                                            flex="50"                         
+                                            is-required="{{true}}" 
+                                            format="MMMM DD YYYY"
+                                            mode="date-time" 
+                                            week-start-day="Sunday">
+                                        </sm-range-picker-input>
+                                    </div> 
+                                    <div class="uk-row-1-4" style="padding-top:0.4em;">
+                                        <button class="md-btn" ng-if="range" ng-click="fetch('vw_requeued_sms', { specifics: ' * ',  extras: ' WHERE Date >= \''+ app.getIsoString(range.startDate) +'\' AND Date <= \''+ app.getIsoString(range.endDate)+'\''  });app.notify('Fetching Custom Range Results','warning');"><i class="fa fa-search"></i></button>
+                                        <button class="md-btn" ng-if="fetched.vw_requeued_sms" ng-click="app.tabulate( data.me.organization_name+' Requeued SMS Summary',[{title:'RECIPIENT',dataKey:'Phone'},{title:'MESSAGE',dataKey:'Message'},{title:'RECEIPT',dataKey:'OperatorReceipt'},{title:'DATE',dataKey:'Date'}],fetched.vw_requeued_sms)"><i class="fa fa-download"></i> </button>
+                                    </div>
+                            </div>
+
+                        </div>            
+
+                    </div>
+                    
+                    <div ng-if="!fetched['vw_requeued_sms']">
+                        <div class="uk-grid">
+                            <div class="uk-width-1-1 uk-text-center">
+                                <div class="uk-icon-spinner fa-spin fa-4x col-blue"></div>
+                                <h3 class=" col-blue">
+                                    LOADING SMS DATA
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div  ng-if="fetched['vw_requeued_sms']">
+
+                        
+                        <table 
+                            id="table-id" 
+                            align="center" 
+                            class=" uk-animation-slide-bottom uk-table uk-table-striped  responsive-table" 
+                            name="content"
+                        
+                        >
+                            <thead>
+                                <tr style="font-weight:bold; text-transform:uppercase; color:white !important; font-weight:bold !important; background-color: #2196F3 !important;">
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('ID')">Id
+                                        <span class="icon " ng-show="sortKey=='ID'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Phone')">Recipient
+                                        <span class="icon " ng-show="sortKey=='Phone'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Message')">Message
+                                        <span class="icon " ng-show="sortKey=='Message'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <!-- <th style="color:white !important; font-weight:bold;" ng-click="sort('Result')">Status
+                                        <span class="icon " ng-show="sortKey=='Result'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th> -->
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('OperatorReceipt')">Receipt
+                                        <span class="icon " ng-show="sortKey=='OperatorReceipt'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Sender_Name')">Sender
+                                        <span class="icon " ng-show="sortKey=='Sender_Name'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                    <th style="color:white !important; font-weight:bold;" ng-click="sort('Date')">Date
+                                        <span class="icon " ng-show="sortKey=='Date'" ng-class="{'uk-icon-chevron-up col-white':reverse,'uk-icon-chevron-down col-white':!reverse}"></span>
+                                    </th>
+                                
+                                    <!-- <th style="color:white !important; font-weight:bold;" class="noprint" style="margin:0 auto;text-align:center;">Requeue</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <form name="sms_requeued" novalidate>
+                                    <tr ng-if="!fetched.vw_requeued_sms[0]" >
+                                        <th colspan="8" class="uk-text-center">It seems like no records are currently available</th> 
+                                    </tr>
+                                    <tr 
+                                    pagination-id="requeued"
+                                    dir-paginate="sms in fetched.vw_requeued_sms |orderBy:sortKey:reverse|filter:search|itemsPerPage:5">
+
+                                        <td scope="row" data-label="ID">
+                                            {{sms["ID"]}}
+                                        </td>
+                                        <td scope="row" data-label="Recipient" >
+                                            {{sms['Phone']}}
+                                        </td>
+                                        <td scope="row" data-label="Message" >
+                                            {{sms['Message']}}
+                                        </td>
+                                            <!-- <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Network Status Response">
+                                                {{sms.OperatorResult}}
+                                            </td> -->
+                                        <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Network Receipt">
+                                            {{fromXML(sms.OperatorReceipt)}}
+                                        </td>
+                                        <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Sender">
+                                            {{sms['Sender_Name']}}
+                                        </td>
+                                        <td scope="row" style="font-family: 'Andale Mono', sans-serif !important" data-label="Sent At">
+                                                {{ app.to_date(sms['Date'])|date:'EEE MMM/dd/y @ hh:mm a'}}
+                                        </td>                   
+                                        <!-- <td>
+                                                <button 
+                                                title="Requeue Message"
+                                                class="md-btn md-btn-primary"
+                                                ng-click="app.notify('Not yet implemented')"
+                                                >
+                                                <i class="material-icons col-white">&#XE8B3;</i>
+                                                </button>
+                                        </td> -->
+
+                                    </tr>
+                                </form>
+                            </tbody>
+                        </table>
+                        <dir-pagination-controls
+                        max-size="5"
+                        direction-links="true"
+                        boundary-links="true"
+                        pagination-id="requeued"
+                        >
+                        </dir-pagination-controls>    
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

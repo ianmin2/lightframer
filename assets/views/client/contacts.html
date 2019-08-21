@@ -1,0 +1,896 @@
+<div class="" ng-init="handlers.isLogedIn().then(handlers.identity).then(app.doNothing).catch(app.doNothing);section='contact'"></div>
+<h3 class="heading_b uk-margin-bottom">JAMBOPAY SMS</h3>
+
+<div 
+    ng-init="data.contacts = {};fetch([['tags'],['contacts']]);setVar(data,['current_tag'],'');section='contact';" 
+    class="md-card uk-border-rounded uk-margin-medium-bottom">
+    <div class="md-card-content">
+        <div class="uk-grid" data-uk-grid-margin="">
+            <div class="uk-width-1-1 uk-row-first" ng-init="actTab='add'">
+                <ul class="uk-tab" data-uk-tab="{connect:'#tabs_1'}">
+                    <li ng-class="(actTab == 'add') ? 'uk-active bg-yellow' :''" ng-click="actTab ='add'" aria-expanded="{{actTab == 'add'}}"><a disabled='true' >ADD CONTACT</a></li>
+                    <li ng-class="(actTab == 'edit') ? 'uk-active bg-yellow' :''" ng-click="actTab ='edit'" aria-expanded="{{actTab == 'edit'}}"><a disabled='true' >MANAGE CONTACTS</a></li>
+                    <li ng-class="(actTab == 'manage') ? 'uk-active bg-yellow' :''" ng-click="actTab ='manage'" aria-expanded="{{actTab == 'manage'}}"><a disabled='true'>CONTACT GROUPING</a></li> 
+                    <li class="uk-disabled pull-right" aria-expanded="false" ><a class="uk-button uk-button-small" style="cursor: pointer;" href="{{app.hlink}}/samples/contacts">Sample Template</a></li>
+                    <li class="uk-disabled pull-right" aria-expanded="false"><a disabled='true'  ><font color="red">{{fetched.contacts.length}}</font> <font class="col-blue"></font>available contact{{fetched.contacts.length != 1 ? 's' : ''}}</a></li>
+                    <li class="uk-tab-responsive uk-active uk-hidden" aria-haspopup="true" aria-expanded="false"><a disabled='true'>Active</a>
+                        <div class="uk-dropdown uk-dropdown-small" aria-hidden="true">
+                            <ul class="uk-nav uk-nav-dropdown"></ul>
+                        </div>
+                    </li>
+                </ul>
+                <ul  class="uk-switcher uk-margin">
+                    
+                    <li aria-hidden="{{actTab=='add'}}" ng-class="(actTab == 'add') ? 'uk-active' :''">
+                        
+                            <div class="uk-grid md-card uk-border-rounded">
+
+                                    <div class="uk-width-medium-2-3 ">
+                                        <div class="uk-grid ">
+                                            <div class="uk-width-1-1 md-card uk-animation-slide-right">
+            
+                                                <div class="md-card-header" style="padding-top:1em;">
+                                                    <h5 class="col-blue" style="font-family: 'Andale Mono', sans-serif;"><u>CONTACT ADDITION</u></h5>
+                                                </div>
+            
+                                                <div class="md-card-content">
+    
+                                                    <form name="contact_addition_form" novalidate>
+                        
+                                                        <div class="uk-grid uk-form-row" >
+                        
+                                                            <md-input-container class="uk-width-medium-1-3">
+                                                                <label>First Name<sup style="color:red">*</sup></label>
+                                                                <input type="text" ng-model="data.contacts.contact_first_name" name="contact_first_name" ng-maxlength="30"  class="md-input" required>
+                                                                <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_addition_form.contact_first_name.$error" ng-if="contact_addition_form.contact_first_name.$touched">
+                                                                    <p class="col-red" ng-message="required">A Contact first name is required.</p>
+                                                                    <p class="col-red" ng-message="maxlength">Please enter a shorter first name.</p>
+                                                                </div>
+                                                            </md-input-container>
+                        
+                                                            <md-input-container class="uk-width-medium-1-3">
+                                                                <label>Middle Name<!--sup style="color:red">*</sup--></label>
+                                                                <input type="text" ng-model="data.contacts.contact_middle_name" name="contact_middle_name" ng-maxlength="30"  class="md-input" >
+                                                                <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_addition_form.contact_middle_name.$error" ng-if="contact_addition_form.contact_middle_name.$touched">
+                                                                    <p class="col-red" ng-message="required">A Contact middle name is required.</p>
+                                                                    <p class="col-red" ng-message="maxlength">Please enter a shorter middle name.</p>
+                                                                </div>
+                                                            </md-input-container>
+                        
+                                                            <md-input-container class="uk-width-medium-1-3">
+                                                                <label>last Name<sup style="color:red">*</sup></label>
+                                                                <input type="text" ng-model="data.contacts.contact_last_name" name="contact_last_name" ng-maxlength="30"  class="md-input" required>
+                                                                <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_addition_form.contact_last_name.$error" ng-if="contact_addition_form.contact_last_name.$touched">
+                                                                    <p class="col-red" ng-message="required">A Contact last name is required.</p>
+                                                                    <p class="col-red" ng-message="maxlength">Please enter a shorter last name.</p>
+                                                                </div>
+                                                            </md-input-container>
+                                                        
+                                                        </div>
+                        
+                                                        <div class="uk-grid uk-form-row" >
+                                                                
+                                                            <md-input-container class="uk-width-medium-1-3">
+                                                                <label>Phone Number<sup style="color:red">*</sup></label>
+                                                                <input type="text" ng-model="data.contacts.contact_phone_number" name="contact_phone_number" ng-maxlength="15" ng-pattern="app.istelephone"  class="md-input" required>
+                                                                <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_addition_form.contact_phone_number.$error" ng-if="contact_addition_form.contact_phone_number.$touched">
+                                                                    <p class="col-red" ng-message="required">A Contact phone number is required.</p>
+                                                                    <p class="col-red" ng-message="maxlength">Please enter a shorter phone number.</p>
+                                                                    <p class="col-red" ng-message="pattern">Please enter a valid telephone number.</p>
+                                                                </div>
+                                                            </md-input-container>
+                        
+                                                            <md-input-container class="uk-width-medium-1-3">
+                                                                <label>Id Number<sup style="color:red"></sup></label>
+                                                                <input type="text" ng-model="data.contacts.contact_identification" name="contact_identification" ng-maxlength="35" ng-minlength="4" class="md-input">
+                                                                <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_addition_form.contact_identification.$error" ng-if="contact_addition_form.contact_identification.$touched">
+                                                                    <!-- <p class="col-red" ng-message="required">A Contact identification number is required.</p> -->
+                                                                    <p class="col-red" ng-message="maxlength">Please enter a shorter identification number.</p>
+                                                                    <p class="col-red" ng-message="minlength">Please enter a longer identification number.</p>
+                                                                </div>
+                                                            </md-input-container>
+                                                            
+                                                            <div class="uk-width-medium-1-3 " style="padding-top:1.2em;">  
+                                                                <md-select name="owner" ng-model="data.contacts.contact_owner" placeholder="Organization"  required>
+                                                                    <md-option value="">...</md-option>
+                                                                    <md-option ng-repeat="contact in getRoles()" ng-value="contact" >{{contact}}</md-option>
+                                                                </md-select>
+                                                                <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_addition_form.owner.$error" ng-if="contact_addition_form.owner.$touched">
+                                                                    <p class="col-red" ng-message="required" class="uk-text-danger">A Contact organization is required.</p>
+                                                                </div>
+                                                            </div>
+                        
+                                                        </div>
+                        
+                                                        <div class="uk-grid uk-form-row">
+                        
+                                                            <md-input-container class="uk-width-medium-1-3">
+                                                                <label>County<!--sup style="color:red">*</sup--></label>
+                                                                <input type="text" ng-model="data.contacts.contact_county" name="contact_county" ng-maxlength="45" class="md-input" >
+                                                                <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_addition_form.contact_county.$error" ng-if="contact_addition_form.contact_county.$touched">
+                                                                    <p class="col-red" ng-message="required">A Contact county is required.</p>
+                                                                    <p class="col-red" ng-message="maxlength">Please enter a shorter county name.</p>
+                                                                    <p class="col-red" ng-message="pattern">Please enter a valid county.</p>
+                                                                </div>
+                                                            </md-input-container>
+                        
+                                                            <md-input-container class="uk-width-medium-1-3">
+                                                                <label>Address<!--sup style="color:red">*</sup--></label>
+                                                                <input type="text" ng-model="data.contacts.contact_address" name="contact_address" class="md-input" >
+                                                                <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_addition_form.contact_address.$error" ng-if="contact_addition_form.contact_address.$touched">
+                                                                    <p class="col-red" ng-message="required">A Contact address is required.</p>
+                                                                    <p class="col-red" ng-message="maxlength">Please enter a shorter address.</p>
+                                                                    <p class="col-red" ng-message="pattern">Please enter a valid address.</p>
+                                                                </div>
+                                                            </md-input-container>
+                        
+                                                            <md-input-container class="uk-width-medium-1-3">
+                                                                <label>Birthday<!--sup style="color:red">*</sup--></label>
+                                                                <input type="text" ng-model="data.contacts.contact_birthday" name="contact_birthday" ng-maxlength="45" class="md-input" >
+                                                                <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_addition_form.contact_birthday.$error" ng-if="contact_addition_form.contact_birthday.$touched">
+                                                                    <p class="col-red" ng-message="required">A Contact birthday is required.</p>
+                                                                    <p class="col-red" ng-message="maxlength">Please enter a shorter birthday.</p>
+                                                                    <p class="col-red" ng-message="pattern">Please enter a valid birthday.</p>
+                                                                </div>
+                                                            </md-input-container>
+                                                        
+                                                        </div>
+                        
+                                                        <div class="uk-grid uk-form-row" >
+                        
+                                                            <div class="uk-width-medium-1-3 " style="padding-top:1.2em;">  
+                                                                <md-select name="gender" ng-model="data.contacts.contact_gender" placeholder="Gender"  >
+                                                                    <md-option value="">Gender</md-option>
+                                                                    <md-option ng-repeat="contact in [{ abbr: 'M', title: 'Male'} ,{ abbr: 'F', title: 'Female'}]" ng-value="contact.abbr" >{{contact.title}}</md-option>
+                                                                </md-select>
+                                                                <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_addition_form.gender.$error" ng-if="contact_addition_form.gender.$touched">
+                                                                    <p class="col-red" ng-message="required" class="uk-text-danger">A Contact Organization is required.</p>
+                                                                </div>
+                                                            </div>
+                        
+                                                            <div class="uk-width-medium-2-3">
+                                                                <button 
+                                                                style="margin-top:1.8em;"
+                                                                    class="md-btn md-btn-lg" 
+                                                                    ng-disabled="!( contact_addition_form.$valid)"
+                                                                    ng-class="( contact_addition_form.$valid) ? 'md-btn-success' : 'md-btn-danger' "  
+                                                                    ng-click="add('contacts', data.contacts);"
+                                                                >Add Contact</button>
+                                                            </div>
+                
+                                                        </div>                              
+                                                        
+                                                    </form> 
+                        
+                                                </div>
+                    
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                
+                                    <div class="uk-width-medium-1-3" >
+
+                                        <form name="contact_upload_form" novalidate>
+
+                                            <div class="uk-grid ">
+                                                
+                                                <div class="uk-width-1-1 uk-row" style="padding-top:1em;">
+                                                    <h5 class="col-blue" style="font-family: 'Andale Mono', sans-serif;"><u>CSV CONTACT UPLOAD</u></h5>
+                                                </div>
+
+                                                <div class="uk-grid">
+
+                                                    <div class="uk-width-medium-1-1 uk-margin-top">
+                                            
+                                                        <div >
+                                                            <div class="uk-form-file md-btn uk-border-rounded btn-block " ng-class="(data.contacts_upload.contact)? 'md-btn-primary':'md-btn-warning'" style="margin-top:1em !important;">
+                                                                {{(data.contacts_upload.contact==undefined) ? 'PICK A CONTACT FILE' : 'USING SELECTED CONTACT FILE'}}
+                                                                <input id="form-file" type="file" name="upload" file-model="data.contacts_upload.contact" accept=".csv" required>
+                                                            </div>
+                                                        </div>     
+    
+                                                    </div>
+        
+                                                    <div class="uk-width-medium-1-1 uk-margin-top">
+    
+                                                        <button 
+                                                            ng-disabled="!data.contacts_upload.contact" 
+                                                            ng-class="(data.contacts_upload.contact) ?'md-btn-success uk-animation-slide-right': 'md-btn-danger'" 
+                                                            class="md-btn btn-block" 
+                                                            ng-click="app.upload( data.contacts_upload,'contacts' ).then(app.handler);app.notify('Attempting to upload contacts.');data.contacts_upload.contact=undefined">UPLOAD CONTACTS VIA CSV</button>
+                                                        
+                                                    </div>
+
+                                                </div>
+                                                
+                                            </div>
+
+                                        </form>
+
+                                    </div>
+
+                                    
+            
+                            </div>
+
+                    </li>
+                    
+                    <li aria-hidden="{{actTab=='edit'}}" ng-class="(actTab == 'edit') ? 'uk-active' :''">
+                        
+                        <div class="uk-grid md-card" ng-init="fetch('contacts')">
+
+                            <div class="uk-width-1-1 ">
+                                <div class="uk-grid ">
+                                    <div class="uk-width-1-1 md-card">
+    
+                                        <div class="md-card-content">
+                                            
+                                            <!-- CONTACT Management -->
+                                            <div class="uk-width-3-3 ">
+                                                <div  ng-if="fetched.contacts" ng-hide="current_contact.contact_id" class="md-card">
+                    
+                                                    <div class="md-card-content">
+
+                                                        <div class="list list-inset uk-animation-slide-top">
+                                                            <label class="item item-input">
+                                                                <i class="icon ion-search placeholder-icon"></i>
+                                                                <input type="text" ng-model="search" value="" class="md-input" placeholder="Search">
+                                                            </label>
+                                                            <button class="md-btn" ng-click="fetch('contacts');app.notify('Fetching Contacts')"><i class="fa fa-refresh"></i></button>
+                                                        </div>
+                        
+                                                        <table align="center" class="uk-animation-slide-bottom uk-table uk-table-striped  responsive-table" name="content">
+                                                            <!-- <thead> -->
+                                                            <tr style="font-weight:bold; text-transform:uppercase; color:white !important; font-weight:bold !important; background-color: #2196F3 !important;">
+                                                                <th style="color:white !important; font-weight:bold;" ng-click="sort('contact_id')">ID
+                                                                    <span class="icon col-white" ng-show="sortKey=='contact_id'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                                                </th>
+                                                                <th style="color:white !important; font-weight:bold;" ng-click="sort('contact_first_name')">Name
+                                                                    <span class="icon col-white" ng-show="sortKey=='contact_first_name'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                                                </th>
+                                                                <th style="color:white !important; font-weight:bold;" ng-click="sort('contact_phone_number')">Telephone
+                                                                    <span class="icon col-white" ng-show="sortKey=='contact_phone_number'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                                                </th>
+                                                                <th style="color:white !important; font-weight:bold;" ng-click="sort('contact_owner')">OWNER
+                                                                    <span class="icon col-white" ng-show="sortKey=='contact_owner'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                                                </th>
+                                                                <th></th>
+                                                            </tr>
+                                                            <!-- </thead>
+                                                            <tbody> -->                                                                    
+                                                            <tr dir-pagination-id="contacts" dir-paginate="contact in fetched.contacts |orderBy:sortKey:reverse|filter:search|itemsPerPage:5">
+                                            
+                                                                <td scope="row" data-label="ID" >{{contact["contact_id"]}}</td>
+                                                                <td scope="row" data-label="Name">{{contact['contact_first_name']}} {{contact['contact_last_name']}} </td>
+                                                                <td scope="row" data-label="Telephone">{{contact.contact_phone_number}}</td>
+                                                                <td scope="row" data-label="Owner">{{contact.contact_owner}}</td>
+                                                                <td data-label="" class="noprint" style="margin:0 auto;text-align:center;">
+                                                                        
+                                                                    <button 
+                                                                        title="{{ ( contact.contact_active == 1 ) ? 'Disable Sending' : 'Enable Sending'}}" 
+                                                                        class="md-btn" 
+                                                                        ng-class="(contact.contact_active==0) ? ' md-btn-danger': 'md-btn-success'; " 
+                                                                        style="font-weight:bold; font-size:1em !important; color:white !important; text-align:center;" 
+                                                                        ng-click="update('contacts', setVar({ contact_active: (contact.contact_active==1)? false : true },['extras'], 'contact_id='+contact.contact_id) )">
+                                                                        <i class="fa" ng-class="( contact.contact_active == 0 ? 'fa-lock':'fa-unlock')"></i>
+                                                                    </button>
+                                                                   
+                
+                                                                    <!-- ng-click="app.notify('THE CONTACT EDIT FEATURE IS NOT YET DEFINED.');" -->                                                    
+                                                                        <button 
+                                                                            title="Edit"
+                                                                            class="md-btn" 
+                                                                            ng-class="(contact.contact_active==0) ? ' md-btn-danger': 'md-btn-success'; " 
+                                                                            style="font-weight:bold; font-size:1em !important; color:white !important; text-align:center;" 
+                                                                            type="button"
+                                                                            ng-click="setContact(contact)"
+                                                                            uk-toggle="target: #user_edit_modal">
+                                                                            <i class="fa fa-pencil"></i>
+                                                                        </button>
+
+                                                                        <button 
+                                                                        title="Delete" 
+                                                                        class="md-btn" 
+                                                                        ng-class="(contact.contact_active==0) ? ' md-btn-danger': 'md-btn-success'; " 
+                                                                        style="font-weight:bold; font-size:1em !important; color:white !important; text-align:center;" 
+                                                                        ng-click="del('contacts', { contact_id: contact.contact_id, contact_owner : contact.contact_owner } )">
+                                                                        <i class="fa fa-trash"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                            <!-- </tbody> -->
+                                                        </table>                                                           
+                                                        <dir-pagination-controls
+                                                            dir-pagination-id="contacts"
+                                                            max-size="5"
+                                                            direction-links="true"
+                                                            boundary-links="true" >
+                                                        </dir-pagination-controls>
+                    
+                                                    </div>
+                    
+                                                </div>
+
+                                                <!-- CONTACT UPDATE -->
+                                                <div ng-if="current_contact.contact_id">
+
+                                                    <div class="uk-grid uk-animation-slide-right" ng-init="update_joined_groups()">
+                                                        <div class="uk-width-medium-2-3 uk-margin-bottom" style="border-right: 1px darkgray dashed ; padding-right: 1em;">
+                                                            <form name="contact_management_form" novalidate>
+                    
+                                                                    <div class="uk-grid uk-form-row" >
+                                    
+                                                                        <md-input-container class="uk-width-medium-1-3">
+                                                                            <label>First Name<sup style="color:red">*</sup></label>
+                                                                            <input type="text" ng-model="current_contact.contact_first_name" name="contact_first_name" ng-maxlength="30"  class="md-input" required>
+                                                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_first_name.$error" ng-if="contact_management_form.contact_first_name.$touched">
+                                                                                <p class="col-red" ng-message="required">A Contact first name is required.</p>
+                                                                                <p class="col-red" ng-message="maxlength">Please enter a shorter first name.</p>
+                                                                            </div>
+                                                                        </md-input-container>
+                                    
+                                                                        <md-input-container class="uk-width-medium-1-3">
+                                                                            <label>Middle Name<!--sup style="color:red">*</sup--></label>
+                                                                            <input type="text" ng-model="current_contact.contact_middle_name" name="contact_middle_name" ng-maxlength="30"  class="md-input" >
+                                                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_middle_name.$error" ng-if="contact_management_form.contact_middle_name.$touched">
+                                                                                <p class="col-red" ng-message="required">A Contact middle name is required.</p>
+                                                                                <p class="col-red" ng-message="maxlength">Please enter a shorter middle name.</p>
+                                                                            </div>
+                                                                        </md-input-container>
+                                    
+                                                                        <md-input-container class="uk-width-medium-1-3">
+                                                                            <label>last Name<sup style="color:red">*</sup></label>
+                                                                            <input type="text" ng-model="current_contact.contact_last_name" name="contact_last_name" ng-maxlength="30"  class="md-input" required>
+                                                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_last_name.$error" ng-if="contact_management_form.contact_last_name.$touched">
+                                                                                <p class="col-red" ng-message="required">A Contact last name is required.</p>
+                                                                                <p class="col-red" ng-message="maxlength">Please enter a shorter last name.</p>
+                                                                            </div>
+                                                                        </md-input-container>
+                                                                    
+                                                                    </div>
+                                    
+                                                                    <div class="uk-grid uk-form-row" >
+                                                                            
+                                                                        <md-input-container class="uk-width-medium-1-3">
+                                                                            <label>Phone Number<sup style="color:red">*</sup></label>
+                                                                            <input type="text" ng-model="current_contact.contact_phone_number" name="contact_phone_number" ng-maxlength="15" ng-pattern="app.istelephone"  class="md-input" required>
+                                                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_phone_number.$error" ng-if="contact_management_form.contact_phone_number.$touched">
+                                                                                <p class="col-red" ng-message="required">A Contact phone number is required.</p>
+                                                                                <p class="col-red" ng-message="maxlength">Please enter a shorter phone number.</p>
+                                                                                <p class="col-red" ng-message="pattern">Please enter a valid telephone number.</p>
+                                                                            </div>
+                                                                        </md-input-container>
+                                    
+                                                                        <md-input-container class="uk-width-medium-1-3">
+                                                                            <label>Id Number<sup style="color:red">*</sup></label>
+                                                                            <input type="text" ng-model="current_contact.contact_identification" name="contact_identification" ng-maxlength="35" ng-minlength="4" class="md-input" >
+                                                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_identification.$error" ng-if="contact_management_form.contact_identification.$touched">
+                                                                                <!-- <p class="col-red" ng-message="required">A Contact identification number is required.</p> -->
+                                                                                <p class="col-red" ng-message="maxlength">Please enter a shorter identification number.</p>
+                                                                                <p class="col-red" ng-message="minlength">Please enter a longer identification number.</p>
+                                                                            </div>
+                                                                        </md-input-container>
+                                                                        
+                                                                        <div class="uk-width-medium-1-3 " style="padding-top:1.2em;">  
+                                                                            <md-select name="owner" ng-model="current_contact.contact_owner" placeholder="Organization"  required>
+                                                                                <md-option value="">...</md-option>
+                                                                                <md-option ng-repeat="contact in getRoles()" ng-value="contact" >{{contact}}</md-option>
+                                                                            </md-select>
+                                                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.owner.$error" ng-if="contact_management_form.owner.$touched">
+                                                                                <p class="col-red" ng-message="required" class="uk-text-danger">A Contact Organization is required.</p>
+                                                                            </div>
+                                                                        </div>
+                                    
+                                                                    </div>
+                                    
+                                                                    <div class="uk-grid uk-form-row">
+                                    
+                                                                        <md-input-container class="uk-width-medium-1-3">
+                                                                            <label>County<!--sup style="color:red">*</sup--></label>
+                                                                            <input type="text" ng-model="current_contact.contact_county" name="contact_county" ng-maxlength="45" class="md-input" >
+                                                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_county.$error" ng-if="contact_management_form.contact_county.$touched">
+                                                                                <p class="col-red" ng-message="required">A Contact county is required.</p>
+                                                                                <p class="col-red" ng-message="maxlength">Please enter a shorter county name.</p>
+                                                                                <p class="col-red" ng-message="pattern">Please enter a valid county.</p>
+                                                                            </div>
+                                                                        </md-input-container>
+                                    
+                                                                        <md-input-container class="uk-width-medium-1-3">
+                                                                            <label>Address<!--sup style="color:red">*</sup--></label>
+                                                                            <input type="text" ng-model="current_contact.contact_address" name="contact_address" class="md-input" >
+                                                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_address.$error" ng-if="contact_management_form.contact_address.$touched">
+                                                                                <p class="col-red" ng-message="required">A Contact address is required.</p>
+                                                                                <p class="col-red" ng-message="maxlength">Please enter a shorter address.</p>
+                                                                                <p class="col-red" ng-message="pattern">Please enter a valid address.</p>
+                                                                            </div>
+                                                                        </md-input-container>
+                                    
+                                                                        <md-input-container class="uk-width-medium-1-3">
+                                                                            <label>Birthday<!--sup style="color:red">*</sup--></label>
+                                                                            <input type="text" ng-model="current_contact.contact_birthday" name="contact_birthday" ng-maxlength="45" class="md-input" >
+                                                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_birthday.$error" ng-if="contact_management_form.contact_birthday.$touched">
+                                                                                <p class="col-red" ng-message="required">A Contact birthday is required.</p>
+                                                                                <p class="col-red" ng-message="maxlength">Please enter a shorter birthday.</p>
+                                                                                <p class="col-red" ng-message="pattern">Please enter a valid birthday.</p>
+                                                                            </div>
+                                                                        </md-input-container>
+                                                                    
+                                                                    </div>
+                                    
+                                                                    <div class="uk-grid uk-form-row" >
+                                    
+                                                                        <div class="uk-width-medium-1-3 " style="padding-top:1.2em;">  
+                                                                            <md-select name="gender" ng-model="current_contact.contact_gender" placeholder="Gender"  >
+                                                                                <md-option value="">Gender</md-option>
+                                                                                <md-option ng-repeat="contact in [{ abbr: 'M', title: 'Male'} ,{ abbr: 'F', title: 'Female'}]" ng-value="contact.abbr" >{{contact.title}}</md-option>
+                                                                            </md-select>
+                                                                            <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.gender.$error" ng-if="contact_management_form.gender.$touched">
+                                                                                <p class="col-red" ng-message="required" class="uk-text-danger">A Contact Organization is required.</p>
+                                                                            </div>
+                                                                        </div>
+                                    
+                                                                        <div class="uk-width-medium-2-3">
+                                                                            <button 
+                                                                            style="margin-top:1.8em;"
+                                                                                class="md-btn md-btn-lg" 
+                                                                                ng-disabled="!( contact_management_form.$valid)"
+                                                                                ng-class="( contact_management_form.$valid) ? 'md-btn-success' : 'md-btn-danger' "  
+                                                                                ng-click="update('contacts', setVar( delParams(current_contact,'contact_id'), ['extras'], 'contact_id='+current_contact.contact_id  ) );"
+                                                                            >UPDATE CONTACT</button>
+                                                                        </div>
+                            
+                                                                    </div>                              
+                                                                    
+                                                            </form>
+                                                        </div>
+                                                        <div class="uk-width-medium-1-3">
+
+                                                                                                            
+                                                            <div ng-if="!fetched.tags[0] && !fetched.vw_contact_grouping[0]">
+                                                                <div class="col-red uk-text-center uk-text-bold">
+                                                                    It looks like no groups are defined as yet
+                                                                    <a class="col-blue" ui-sref="app.client.tags">
+                                                                        <u class="col-blue">Create Groups</u>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+
+                                                            <div  ng-if="!(!fetched.applicable_tags[0] && !fetched.vw_contact_grouping[0])">
+                                                                <h5 class="col-blue uk-text-center uk-margin"><u>PENDING GROUPS</u></h5>
+
+                                                                <div ng-if="true" class="uk-text-justify" style="overflow-x: scroll;overflow-y: scroll;white-space: nowrap;" style="max-height:300px !important; min-height: 300px !important;">
+                                                                                                                            
+                                                                    <a
+                                                                        disabled=true
+                                                                        style="margin:1em; font-size:1em;padding:0.5em;"
+                                                                        ng-repeat="tag in fetched.applicable_tags"
+                                                                        class="uk-badge uk-badge-notification uk-text-uppercase bg-blue col-white uk-text-center"                                                                         
+                                                                        ng-click="add('contact_tags',{ contact_tag_contact : current_contact.contact_id, contact_tag_tag: tag.tag_id }).then(update_joined_groups).catch(update_joined_groups);app.notify('Adding group membership.');"
+                                                                    >
+                                                                        {{ tag.tag_title }} 
+                                                                    </a>
+                                                                
+                                                                </div>
+                                                            </div>
+
+                                                            <br>
+                                                            <div ng-if="fetched.vw_contact_grouping[0]">
+                                                                <h5 class="col-blue uk-text-center uk-margin"><u>JOINED GROUPS</u></h5>
+                                                                <div class="uk-text-justify" style="overflow-x: scroll;overflow-y: scroll;white-space: nowrap;" style="max-height:300px !important; min-height: 300px !important;">
+                                                                
+                                                                        
+                                                                
+                                                                    <a
+                                                                        disabled=true
+                                                                        style="margin:1em; font-size:1em;padding:0.5em;"
+                                                                        ng-repeat="ct in myTags(fetched.vw_contact_grouping,current_contact.contact_id)"
+                                                                        class="uk-badge uk-badge-notification bg-green uk-text-uppercase col-white uk-text-center"                                                                         
+                                                                        ng-click="del('contact_tags',{contact_tag_id : ct.contact_tag_id}).then(update_joined_groups).catch(update_joined_groups);app.notify('Removing group membership');"
+                                                                    >
+                                                                        {{ ct.tag }}
+                                                                    </a>
+                                                                    
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <br>
+
+                                                            <div class="col-red uk-margin-top uk-text-center" ng-if="!fetched.vw_contact_grouping[0]">
+                                                                THIS CONTACT DOES NOT  BELONG TO ANY GROUP
+                                                            </div>
+
+                                                            <br>
+                                                            <!-- BACK BUTTON -->
+                                                            <button class="md-btn uk-text-center md-btn-warning pull-right uk-border-circle" ng-click="setVar(current_contact,['contact_id'],undefined)">
+                                                                <i class="fa fa-arrow-circle-left  "></i> BACK TO CONTACTS
+                                                            </button>
+
+                                                        </div>
+                                                    </div>
+
+
+                                                    
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>                       
+    
+                    </li>
+                    
+                    <li aria-hidden="{{actTab!='manage'}}" ng-class="(actTab == 'manage') ? 'uk-active' :''">
+                            <div class="uk-grid md-card" ng-init="fetch([['tags']]);setVar(data,['current_tag'],'');">
+
+                                <!-- GROUP NAMES -->
+                                <div class="uk-width-medium-1-4 ">
+
+                                    <div class="md-list-outside-inner"  style="height:auto;">
+
+                                        <div class="scroll-wrapper scrollbar-inner" style="position: relative;">
+
+                                            <div class="scrollbar-inner scroll-content scroll-scrolly_visible" style="height: auto; margin-bottom: -12px; margin-right: -12px; max-height: 650px;">
+                                                
+                                                <ul class="md-list md-list-outside invoices_list" id="group_lists">
+            
+                                                    <li class="heading_list">Available Groups</li>
+                    
+                                                    <li class="md-list-item-active" ng-if="!fetched.tags[0]" >
+                                                        <a ui-sref="app.client.tags"  class="md-list-content">
+                                                            <span class="md-list-heading uk-text-truncate col-red">No Groups Found </span>
+                                                            <span class="uk-text-small uk-text-muted">You should consider adding some.</span>
+                                                        </a>                                                        
+                                                    </li>
+                            
+                                                    <li class="md-list-item-active" ng-if="fetched.tags[0]"  ng-repeat="tag in fetched.tags">
+                                                        <a disabled="true" ng-click="update_grouping_data(tag.tag_id);" class="md-list-content" ng-class="(data.current_tag == tag.tag_id) ? 'jp-bg-active': 'jp-bg-inactive' ">
+                                                            <span ng-if="!tag.tag_active" class="uk-badge uk-badge-danger">Disabled<sup>*</sup></span>
+                                                            <span class="md-list-heading uk-text-truncate uk-text-bold uk-text-uppercase  ">
+                                                                {{tag.tag_title}}
+                                                                <span class="uk-text-small ">({{tag.tag_owner}})</span>                                                            
+                                                            </span>
+                                                            <span class="uk-text-small uk-text-muted">&nbsp;</span>
+                                                        </a>
+                                                    </li>
+                                        
+                                                </ul>
+
+                                            </div>
+
+                                            <!-- X SCROLLER -->
+                                            <div class="scroll-element scroll-x scroll-scrolly_visible">
+
+                                                <div class="scroll-element_outer">
+                                                    
+                                                    <div class="scroll-element_size"></div>
+                                                    
+                                                    <div class="scroll-element_track"></div>
+                                                    
+                                                    <div class="scroll-bar" style="width: 89px;"></div>
+                                                
+                                                </div>
+
+                                            </div>
+                                            
+                                            <!-- Y SCROLLER -->
+                                            <div class="scroll-element scroll-y scroll-scrolly_visible">
+
+                                                <div class="scroll-element_outer">
+                                                    
+                                                    <div class="scroll-element_size"></div>
+
+                                                    <div class="scroll-element_track"></div>
+                                                    
+                                                    <div class="scroll-bar" style="height: 46px; top: 0px;"></div>
+
+                                                </div>
+                                            
+                                            </div>
+                                        
+                                        </div>
+                                    
+                                    </div>
+
+                                </div>
+
+                                <!-- CONTACTS BY GROUP -->
+                                <div class="uk-width-medium-3-4">
+
+                                    <div class="uk-grid">
+
+                                        <div class="uk-width-1-1"  ng-if="!current_contact.contact_id">
+
+                                            <div class="list list-inset uk-animation-slide-top">
+                                                <label class="item item-input">
+                                                    <i class="icon ion-search placeholder-icon"></i>
+                                                    <input type="text" ng-model="search" value="" class="md-input" placeholder="Search">
+                                                </label>
+                                                <button ng-if="data.current_tag" class="md-btn" ng-click="update_grouping_data(data.current_tag);app.notify('Fetching Contacts')"><i class="fa fa-refresh"></i></button>
+                                                
+                                            </div> 
+
+                                            <div class="md-card" ng-if="!fetched.vw_contacts_with_tags">
+                                                <div class="md-card-content uk-text-center uk-text-uppercase uk-animation-slide-bottom">
+                                                    Please pick a group
+                                                </div>
+                                            </div>
+            
+                                            <div ng-if="fetched.vw_contacts_with_tags">
+                                                
+                                                <table  align="center" class="uk-animation-slide-bottom uk-table uk-table-striped  responsive-table" name="content">
+                                                    <!-- <thead> -->
+                                                    <tr style="font-weight:bold; text-transform:uppercase; color:white !important; font-weight:bold !important; background-color: #2196F3 !important;">
+                                                        <th class="uk-text-center"  style="color:white !important; font-weight:bold;" ng-click="sort('contact_first_name')">First Name
+                                                            <span class="icon col-white" ng-show="sortKey=='contact_first_name'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                                        </th>
+                                                        <th class="uk-text-center" style="color:white !important; font-weight:bold;" ng-click="sort('contact_last_name')">Last Name
+                                                            <span class="icon col-white" ng-show="sortKey=='contact_last_name'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                                        </th>
+                                                        <th class="uk-text-center" style="color:white !important; font-weight:bold;" ng-click="sort('contact_phone_number')">Phone #
+                                                            <span class="icon col-white" ng-show="sortKey=='contact_phone_number'" ng-class="{'uk-icon-chevron-up':reverse,'uk-icon-chevron-down':!reverse}"></span>
+                                                        </th>
+                                                        <th></th>
+                                                    </tr>
+                                                    <!-- </thead>
+                                                    <tbody> -->                                                                    
+                                                    <tr 
+                                                        dir-pagination-id="contacts_by_tag" 
+                                                        dir-paginate="contact in fetched.vw_contacts_with_tags |orderBy:sortKey:reverse|filter:search|itemsPerPage:5" >
+                                    
+                                                        <td scope="row" data-label="First Name">{{contact['contact_first_name']}}</td>
+                                                        <td scope="row" data-label="Last Name">{{contact['contact_last_name']}} </td>
+                                                        <td scope="row" data-label="Phone#">{{contact.contact_phone_number}}</td>
+                                                        <td data-label="" class="noprint" style="margin:0 auto;text-align:center;">
+                                                                
+                                                            <button 
+                                                                title="Edit"
+                                                                class="md-btn" 
+                                                                ng-class="(contact.contact_active==0) ? ' md-btn-danger': 'md-btn-success'; " 
+                                                                style="font-weight:bold; font-size:1em !important; color:white !important; text-align:center;" 
+                                                                type="button"
+                                                                ng-click="setContact(contact)"
+                                                                uk-toggle="target: #user_edit_modal">
+                                                                <i class="fa fa-pencil"></i>
+                                                            </button>
+        
+                                                        </td>
+                                                    </tr>
+                                                    <!-- </tbody> -->
+                                                </table>                                                           
+                                                <dir-pagination-controls
+                                                    dir-pagination-id="contacts_by_tag"
+                                                    max-size="5"
+                                                    direction-links="true"
+                                                    boundary-links="true" >
+                                                </dir-pagination-controls>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="uk-width-1-1"  ng-if="current_contact.contact_id">
+                                             <!-- CONTACT UPDATE -->
+                                            <div>
+
+                                                <div class="uk-grid uk-animation-slide-right" ng-init="update_joined_groups()">
+                                                    <div class="uk-width-medium-2-3 uk-margin-bottom" style="border-right: 1px darkgray dashed ; padding-right: 1em !important; ">
+                                                        <form name="contact_management_form" novalidate>
+                
+                                                                <div class="uk-grid uk-form-row" >
+                                
+                                                                    <md-input-container class="uk-width-medium-1-3">
+                                                                        <label>First Name<sup style="color:red">*</sup></label>
+                                                                        <input type="text" ng-model="current_contact.contact_first_name" name="contact_first_name" ng-maxlength="30"  class="md-input" required>
+                                                                        <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_first_name.$error" ng-if="contact_management_form.contact_first_name.$touched">
+                                                                            <p class="col-red" ng-message="required">A Contact first name is required.</p>
+                                                                            <p class="col-red" ng-message="maxlength">Please enter a shorter first name.</p>
+                                                                        </div>
+                                                                    </md-input-container>
+                                
+                                                                    <md-input-container class="uk-width-medium-1-3">
+                                                                        <label>Middle Name<!--sup style="color:red">*</sup--></label>
+                                                                        <input type="text" ng-model="current_contact.contact_middle_name" name="contact_middle_name" ng-maxlength="30"  class="md-input" >
+                                                                        <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_middle_name.$error" ng-if="contact_management_form.contact_middle_name.$touched">
+                                                                            <p class="col-red" ng-message="required">A Contact middle name is required.</p>
+                                                                            <p class="col-red" ng-message="maxlength">Please enter a shorter middle name.</p>
+                                                                        </div>
+                                                                    </md-input-container>
+                                
+                                                                    <md-input-container class="uk-width-medium-1-3">
+                                                                        <label>last Name<sup style="color:red">*</sup></label>
+                                                                        <input type="text" ng-model="current_contact.contact_last_name" name="contact_last_name" ng-maxlength="30"  class="md-input" required>
+                                                                        <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_last_name.$error" ng-if="contact_management_form.contact_last_name.$touched">
+                                                                            <p class="col-red" ng-message="required">A Contact last name is required.</p>
+                                                                            <p class="col-red" ng-message="maxlength">Please enter a shorter last name.</p>
+                                                                        </div>
+                                                                    </md-input-container>
+                                                                
+                                                                </div>
+                                
+                                                                <div class="uk-grid uk-form-row" >
+                                                                        
+                                                                    <md-input-container class="uk-width-medium-1-3">
+                                                                        <label>Phone Number<sup style="color:red">*</sup></label>
+                                                                        <input type="text" ng-model="current_contact.contact_phone_number" name="contact_phone_number" ng-maxlength="15" ng-pattern="app.istelephone"  class="md-input" required>
+                                                                        <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_phone_number.$error" ng-if="contact_management_form.contact_phone_number.$touched">
+                                                                            <p class="col-red" ng-message="required">A Contact phone number is required.</p>
+                                                                            <p class="col-red" ng-message="maxlength">Please enter a shorter phone number.</p>
+                                                                            <p class="col-red" ng-message="pattern">Please enter a valid telephone number.</p>
+                                                                        </div>
+                                                                    </md-input-container>
+                                
+                                                                    <md-input-container class="uk-width-medium-1-3">
+                                                                        <label>Id Number<sup style="color:red"></sup></label>
+                                                                        <input type="text" ng-model="current_contact.contact_identification" name="contact_identification" ng-maxlength="35" ng-minlength="4" class="md-input">
+                                                                        <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_identification.$error" ng-if="contact_management_form.contact_identification.$touched">
+                                                                            <!-- <p class="col-red" ng-message="required">A Contact identification number is required.</p> -->
+                                                                            <p class="col-red" ng-message="maxlength">Please enter a shorter identification number.</p>
+                                                                            <p class="col-red" ng-message="minlength">Please enter a longer identification number.</p>
+                                                                        </div>
+                                                                    </md-input-container>
+                                                                    
+                                                                    <div class="uk-width-medium-1-3 " style="padding-top:1.2em;">  
+                                                                        <md-select name="owner" ng-model="current_contact.contact_owner" placeholder="Organization"  required>
+                                                                            <md-option value="">...</md-option>
+                                                                            <md-option ng-repeat="contact in getRoles()" ng-value="contact" >{{contact}}</md-option>
+                                                                        </md-select>
+                                                                        <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.owner.$error" ng-if="contact_management_form.owner.$touched">
+                                                                            <p class="col-red" ng-message="required" class="uk-text-danger">A Contact Organization is required.</p>
+                                                                        </div>
+                                                                    </div>
+                                
+                                                                </div>
+                                
+                                                                <div class="uk-grid uk-form-row">
+                                
+                                                                    <md-input-container class="uk-width-medium-1-3">
+                                                                        <label>County<!--sup style="color:red">*</sup--></label>
+                                                                        <input type="text" ng-model="current_contact.contact_county" name="contact_county" ng-maxlength="45" class="md-input" >
+                                                                        <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_county.$error" ng-if="contact_management_form.contact_county.$touched">
+                                                                            <p class="col-red" ng-message="required">A Contact county is required.</p>
+                                                                            <p class="col-red" ng-message="maxlength">Please enter a shorter county name.</p>
+                                                                            <p class="col-red" ng-message="pattern">Please enter a valid county.</p>
+                                                                        </div>
+                                                                    </md-input-container>
+                                
+                                                                    <md-input-container class="uk-width-medium-1-3">
+                                                                        <label>Address<!--sup style="color:red">*</sup--></label>
+                                                                        <input type="text" ng-model="current_contact.contact_address" name="contact_address" class="md-input" >
+                                                                        <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_address.$error" ng-if="contact_management_form.contact_address.$touched">
+                                                                            <p class="col-red" ng-message="required">A Contact address is required.</p>
+                                                                            <p class="col-red" ng-message="maxlength">Please enter a shorter address.</p>
+                                                                            <p class="col-red" ng-message="pattern">Please enter a valid address.</p>
+                                                                        </div>
+                                                                    </md-input-container>
+                                
+                                                                    <md-input-container class="uk-width-medium-1-3">
+                                                                        <label>Birthday<!--sup style="color:red">*</sup--></label>
+                                                                        <input type="text" ng-model="current_contact.contact_birthday" name="contact_birthday" ng-maxlength="45" class="md-input" >
+                                                                        <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.contact_birthday.$error" ng-if="contact_management_form.contact_birthday.$touched">
+                                                                            <p class="col-red" ng-message="required">A Contact birthday is required.</p>
+                                                                            <p class="col-red" ng-message="maxlength">Please enter a shorter birthday.</p>
+                                                                            <p class="col-red" ng-message="pattern">Please enter a valid birthday.</p>
+                                                                        </div>
+                                                                    </md-input-container>
+                                                                
+                                                                </div>
+                                
+                                                                <div class="uk-grid uk-form-row" >
+                                
+                                                                    <div class="uk-width-medium-1-3 " style="padding-top:1.2em;">  
+                                                                        <md-select name="gender" ng-model="current_contact.contact_gender" placeholder="Gender"  >
+                                                                            <md-option value="">Gender</md-option>
+                                                                            <md-option ng-repeat="contact in [{ abbr: 'M', title: 'Male'} ,{ abbr: 'F', title: 'Female'}]" ng-value="contact.abbr" >{{contact.title}}</md-option>
+                                                                        </md-select>
+                                                                        <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="contact_management_form.gender.$error" ng-if="contact_management_form.gender.$touched">
+                                                                            <p class="col-red" ng-message="required" class="uk-text-danger">A Contact Organization is required.</p>
+                                                                        </div>
+                                                                    </div>
+                                
+                                                                    <div class="uk-width-medium-2-3">
+                                                                        <button 
+                                                                        style="margin-top:1.8em;"
+                                                                            class="md-btn md-btn-lg" 
+                                                                            ng-disabled="!( contact_management_form.$valid)"
+                                                                            ng-class="( contact_management_form.$valid) ? 'md-btn-success' : 'md-btn-danger' "  
+                                                                            ng-click="update('contacts', setVar( delParams(current_contact,'contact_id'), ['extras'], 'contact_id='+current_contact.contact_id  ) );"
+                                                                        >UPDATE CONTACT</button>
+                                                                    </div>
+                        
+                                                                </div>                              
+                                                                
+                                                        </form>
+                                                    </div>
+                                                    <div class="uk-width-medium-1-3">
+            
+                                                                                                        
+                                                        <div ng-if="!fetched.tags[0] && !fetched.vw_contact_grouping[0]">
+                                                            <div class="col-red uk-text-center uk-text-bold">
+                                                                It looks like no groups are defined as yet
+                                                                <a class="col-blue" ui-sref="app.client.tags">
+                                                                    <u class="col-blue">Create Groups</u>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+            
+                                                        <div  ng-if="!(!fetched.applicable_tags[0] && !fetched.vw_contact_grouping[0])">
+                                                            <h5 class="col-blue uk-text-center uk-margin"><u>PENDING GROUPS</u></h5>
+            
+                                                            <div ng-if="true" class="uk-text-justify" style="overflow-x: scroll;overflow-y: scroll;white-space: nowrap;" style="max-height:300px !important; min-height: 300px !important;">
+                                                                                                                        
+                                                                <a
+                                                                    disabled=true
+                                                                    style="margin:1em; font-size:1em;padding:0.5em;"
+                                                                    ng-repeat="tag in fetched.applicable_tags"
+                                                                    class="uk-badge uk-badge-notification uk-text-uppercase bg-blue col-white uk-text-center"                                                                         
+                                                                    ng-click="add('contact_tags',{ contact_tag_contact : current_contact.contact_id, contact_tag_tag: tag.tag_id }).then(update_joined_groups).catch(update_joined_groups);app.notify('Adding Group Membership');"
+                                                                >
+                                                                    {{ tag.tag_title }} 
+                                                                </a>
+                                                            
+                                                            </div>
+                                                        </div>
+            
+                                                        <br>
+                                                        <div ng-if="fetched.vw_contact_grouping[0]">
+                                                            <h5 class="col-blue uk-text-center uk-margin"><u>JOINED GROUPS</u></h5>
+                                                            <div class="uk-text-justify" style="overflow-x: scroll;overflow-y: scroll;white-space: nowrap;" style="max-height:300px !important; min-height: 300px !important;">
+                                                            
+                                                                    
+                                                            
+                                                                <a
+                                                                    disabled=true
+                                                                    style="margin:1em; font-size:1em;padding:0.5em;"
+                                                                    ng-repeat="ct in myTags(fetched.vw_contact_grouping,current_contact.contact_id)"
+                                                                    class="uk-badge uk-badge-notification bg-green uk-text-uppercase col-white uk-text-center"                                                                         
+                                                                    ng-click="del('contact_tags',{contact_tag_id : ct.contact_tag_id}).then(update_joined_groups).catch(update_joined_groups);app.notify('Removing Group Membership');"
+                                                                >
+                                                                    {{ ct.tag }}
+                                                                </a>
+                                                                
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <br>
+            
+                                                        <div class="col-red uk-margin-top uk-text-center" ng-if="!fetched.vw_contact_grouping[0]">
+                                                            THIS CONTACT DOES NOT  BELONG TO ANY GROUP
+                                                        </div>
+            
+                                                        <br>
+                                                        <!-- BACK BUTTON -->
+                                                        <button class="md-btn uk-text-center md-btn-warning pull-right uk-border-circle" ng-click="setVar(current_contact,['contact_id'],undefined)">
+                                                            <i class="fa fa-arrow-circle-left  "></i> BACK TO CONTACTS
+                                                        </button>
+            
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                               
+
+
+                            </div>
+                    </li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</div>
+              
+
+
+

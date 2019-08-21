@@ -1,0 +1,59 @@
+<div class="md-card uk-border-rounded uk-margin-medium-bottom" ng-init="app.setVar(frame,'currTab','simple_sms')">
+   
+    <div class="md-card-header"style="padding-top:1em;padding-left:1em;">
+            <h5 class="col-blue" style="font-family: 'Andale Mono', sans-serif;"><u>SIMPLE SMS</u></h5>
+    </div> 
+    <div class="md-card-content">
+        <form name="single_sms_form" class="uk-animation-slide-right" style="" ng-init="data.msg = data.msg || { body : {}}" novalidate>
+
+            <div class="uk-grid" data-uk-grid-margin>
+
+                <div class="uk-width-large-1-4 uk-width-medium-1-3" >  
+                    <label style="padding-top:1em !important;">Sender ID<sup style="color:red">*</sup></label>
+                    <md-select name="sender" ng-model="data.msg.sender" style="padding-top: 3.2em !important;" placeholder="PICK A SENDER"  required>
+                        <md-option value="">...</md-option>
+                        <md-option ng-repeat="org in getRoles()" ng-value="org" >{{org}}</md-option>
+                    </md-select>
+                    <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="single_sms_form.sender.$error" ng-if="single_sms_form.sender.$touched">
+                        <p class="col-red" ng-message="required" class="uk-text-danger">A message sender is required.</p>
+                    </div>
+                </div>
+    
+                <div style="margin-top:1em !important;" class="uk-width-large-1-4 uk-width-medium-1-3">
+                    <label>Recipient(s)<sup style="color:red">*</sup></label>
+                    <input type="text" name="recipient" class="md-input" style="padding: 2.0em !important;text-align:justify;font-family: 'Andale Mono', sans-serif;" ng-model="data.msg.body.to" ng-pattern="app.ismultitelephone" placeholder="2547XXXXXXXX,679XXXXXXXX" required>
+                    <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="single_sms_form.recipient.$error" ng-if="single_sms_form.recipient.$touched">
+                        <p class="col-red" ng-message="required">A message recipient is required.</p>
+                        <p class="col-red" ng-message="pattern">Please enter a valid set of phone numbers.</p>
+                    </div>
+                </div>
+    
+                <div style="margin-top:1em !important;" class="uk-width-large-1-4 uk-width-medium-1-3">
+                    <label>Message<sup style="color:red">*</sup></label>
+                    
+                    <textarea style="text-align:justify;font-family: 'Andale Mono', sans-serif;  " placeholder="This is to inform you of an oncoming .." cols="30" name="message" class="md-input " ng-minlength="5" ng-model="data.msg.body.text" required></textarea>
+                                                                    
+                    <p class="col-teal" ng-if="data.msg.body.text">{{data.msg.body.text.length}} Characters  [ {{app.countSMS(data.msg.body.text)}} Message{{(app.countSMS(data.msg.body.text)>1)?'s ':' '}}]</p>
+    
+                    <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="single_sms_form.message.$error" ng-if="single_sms_form.message.$touched">
+                        <p class="col-red" ng-message="required">A message is required.</p>
+                        <p class="col-red" ng-message="minlength">Please enter a longer message.</p>
+                    </div>
+                </div>                                                                            
+    
+                <div style="margin-top:1em !important;" class="uk-width-large-1-4 uk-width-medium-1-3">
+                    <button 
+                        style="margin-top: 4.7em !important;"
+                        ng-disabled="single_sms_form.$invalid" 
+                        ng-click="iSMS.one(data.msg).then(app.handler).catch(app.handler).then(get_sms_balance);app.notify('Attempting to send your message','warning');" 
+                        ng-class="(!single_sms_form.$invalid) ? 'md-btn-success' : 'md-btn-danger'" 
+                        class="md-btn "> Send SMS</button>
+                </div>
+    
+            </div>
+
+        </form>
+    </div>
+    
+    
+</div>

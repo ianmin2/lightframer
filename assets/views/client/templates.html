@@ -1,0 +1,341 @@
+<div class="" ng-init="handlers.isLogedIn().then(handlers.identity).then(app.doNothing).catch(app.doNothing)"></div>
+<h3 class="heading_b uk-margin-bottom">JAMBOPAY SMS</h3>
+
+<div ng-init="data.templates = {};fetch([['templates']]);section='templates';" class="md-card uk-border-rounded uk-margin-medium-bottom">
+    <div class="md-card-content">
+        <div class="uk-grid" data-uk-grid-margin="">
+            <div class="uk-width-1-1 uk-row-first" ng-init="actTab='add'">
+                <ul class="uk-tab" data-uk-tab="{connect:'#tabs_1'}">
+                    <li ng-class="(actTab == 'add') ? 'uk-active bg-yellow' :''" ng-click="actTab ='add'" aria-expanded="{{actTab == 'add'}}"><a disabled='true' >ADD TEMPLATE</a></li>
+                    <li ng-class="(actTab == 'edit') ? 'uk-active bg-yellow' :''" ng-click="actTab ='edit'" aria-expanded="{{actTab == 'edit'}}"><a disabled='true' >EDIT TEMPLATES</a></li>
+                    <!-- <li ng-class="(actTab == 'delete') ? 'uk-active bg-yellow' :''" ng-click="actTab ='delete'" aria-expanded="{{actTab == 'delete'}}"><a disabled='true'>DELETE GROUP</a></li> -->
+                    <li class="uk-disabled pull-right" aria-expanded="false" ><a class="uk-button uk-button-small" style="cursor: pointer;" href="{{app.hlink}}/samples/templates">Sample Template</a></li>
+                    <li class="uk-disabled pull-right" aria-expanded="false"><a disabled='true'  ><font color="red">{{fetched.templates.length}}</font> <font class="col-blue"></font>available template{{fetched.templates.length != 1 ? 's' : ''}}</a></li>
+                <li class="uk-tab-responsive uk-active uk-hidden" aria-haspopup="true" aria-expanded="false"><a disabled='true'>Active</a><div class="uk-dropdown uk-dropdown-small" aria-hidden="true"><ul class="uk-nav uk-nav-dropdown"></ul><div></div></div></li></ul>
+                <ul  class="uk-switcher uk-margin">
+                    
+                    <li aria-hidden="{{actTab=='add'}}" ng-class="(actTab == 'add') ? 'uk-active' :''">
+                        
+                        <div class="uk-grid md-card">
+
+                            <div class="uk-width-medium-2-3 ">
+                                <div class="uk-grid ">
+                                    <div class="uk-width-1-1 md-card">
+    
+                                        <div class="md-card-header" style="padding-top:1em;">
+                                            <h5 class="col-blue" style="font-family: 'Andale Mono', sans-serif;"><u>TEMPLATE ADDITION</u></h5>
+                                        </div>
+    
+                                        <div class="md-card-content" >
+
+
+                                            <form ng-if="!permissions.audit_only(data.me)" name="add_t_form" class=" uk-animation-slide-right" novalidate>
+            
+                                                <div class="uk-grid" data-uk-grid-margin>
+                        
+                                                    <div  class="uk-width-large-1-2 uk-width-medium-1-2">
+                                                        <label>Name <sup style="color:red">*</sup></label>
+                                                        <input style="margin-top:1.2em !important;" class="md-input" name="name" ng-model="data.template.template_name" required ng-minlength="3" ng-maxlength="20">
+                                                        <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="add_t_form.name.$error" ng-if="add_t_form.name.$touched">
+                                                            <p class="col-red" ng-message="required">A Template name is required.</p>
+                                                            <p class="col-red" ng-message="minlength">Please enter a longer template name.</p>
+                                                            <p class="col-red" ng-message="maxlength">That template name is too long</p>
+                                                        </div>
+                                                    </div>                                                   
+                                                   
+                                                    <div style="margin-top:0.5em !important;" class="uk-width-large-1-2 uk-width-medium-1-2">                                                                    
+                                                        <label>Template Owner <sup style="color:red">*</sup></label>
+                                                        <md-select name="senderid" ng-model="data.template.template_senderid" placeholder="Pick a Template Owner"  required>
+                                                            <md-option value="">...</md-option>
+                                                            <md-option ng-repeat="org in getRoles()" ng-value="org" >{{org}}</md-option>
+                                                        </md-select>
+                                                        <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="add_t_form.senderid.$error" ng-if="add_t_form.senderid.$touched">
+                                                            <p class="col-red" ng-message="required">A template owner is required.</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div  class="uk-width-large-1-1 uk-width-medium-1-1">
+
+                                                        <div class="uk-grid">
+                                                            <div class="uk-width-1-1">
+                                                                <label>Template Text <sup style="color:red">*</sup></label>
+
+                                                                <textarea style="overflow-y: scroll;" class="md-input " name="text" ng-model="data.template.template_text" placeholder="Hello &#123; &#123;contact_first_name } } ... " required></textarea>
+                                                                
+                                                               
+                                                                <!-- <div><code ng-if="data.template.template_text">{{data.template.template_text.length}} characters.  [ Roughly {{app.countSMS(data.template.template_text)}} Message(s)]</code></div> -->
+                                                                <p class="col-teal" ng-if="data.template.template_text">{{data.template.template_text.length}} Characters  [ {{app.countSMS(data.template.template_text)}} Message{{(app.countSMS(data.template.template_text)>1)?'s ':' '}}]</p>
+                                                                <div class="help-block" style="font-family:  'Andale Mono', sans-serif;" ng-messages="add_t_form.text.$error" ng-if="add_t_form.text.$touched">
+                                                                    <p class="col-red" ng-message="required">A Template text is required.</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="uk-width-1-1 uk-margin">
+                                                                <p>Available Placeholders</p>
+                                                                <div class="uk-row uk-text-right uk-padding uk-border-rounded" style="overflow-x: scroll;white-space: nowrap;" style="max-height:2em!important;">
+                                                                                                                                     
+                                                                        <a
+                                                                            disabled=true
+                                                                            style="margin-right:2px;font-size: 1em;padding:0.6em !important;"
+                                                                            ng-repeat="placeholder in contact_placeholders"
+                                                                            class="uk-badge uk-badge-notification uk-badge-primary uk-text-bold"                                                                         
+                                                                            ng-click="data.template.template_text = appendText(placeholder,data.template.template_text)"
+                                                                        >
+                                                                            {{ placeholder }}
+                                                                        </a>
+                                                                    
+                                                                </div>
+                                                                
+                                                                    
+                                                                
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                    
+                                                    <div style="margin-top:1em !important;" class="uk-width-large-1-2 uk-width-medium-1-2">
+                                                        <button 
+                                                            ng-disabled="add_t_form.$invalid" 
+                                                            ng-click="add('templates',data.template);data.template={ template_owner: data.me.org_name };" 
+                                                            ng-class=" (!add_t_form.$invalid) ? 'md-btn-success' : 'md-btn-danger'" 
+                                                            class="md-btn "
+                                                        >
+                                                            Add SMS Template
+                                                        </button>                        
+                                                    </div>
+                        
+                                                </div>
+                            
+                                            </form>
+                                           
+                                            
+                                        </div>
+            
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        
+                            <div class="uk-width-medium-1-3" >
+
+                                <div class="uk-grid ">
+                                    <div class="uk-width-1-1 ">
+                                        <form name="template_upload_form" novalidate>
+                                            <div class="" style="padding-top:1em;">
+                                                <h5 class="col-blue" style="font-family: 'Andale Mono', sans-serif;"><u>CSV TEMPLATE UPLOAD</u></h5>
+                                            </div>
+        
+
+                                            <div class="uk-grid"style="padding-top: 3.5em !important;" data-uk-grid-margin>
+
+                                                <div class="uk-width-medium-1-1">
+                                                    <div class="">
+                                                        <div 
+                                                        class="uk-form-file md-btn uk-border-rounded btn-block " 
+                                                        ng-class="(data.templates_upload.template)? 'md-btn-primary':'md-btn-warning'" 
+                                                        style="margin-top:0em !important;">
+                                                            {{(data.templates_upload.template==undefined) ? 'PICK A DATA TEMPLATE' : 'USING SELECTED TEMPLATE FILE'}}
+                                                            <input 
+                                                                id="form-file" 
+                                                                type="file" 
+                                                                name="template" 
+                                                                file-model="data.templates_upload.template" 
+                                                                accept=".csv" required>
+                                                        </div>
+                                                    </div>
+                                                    <!-- <span ng-init="data.templates_upload =  data.templates_upload || {}" class="md-btn uk-align-left md-btn-primary uk-animation-slide-right" style="margin-left:1em !important;">
+                                                        <input type="file" name="template" class="form-control"
+                                                        style="background-color:#2196F3 !important; border:0px !important; color:white;font-weight:bold;font-family: 'Andale Mono', sans-serif;" 
+                                                        file-model="data.templates_upload.template"
+                                                        accept=".csv"
+                                                        required>
+                                                    </span> -->
+                                                </div>
+                                                <div class="uk-width-1-1">
+                                                    <br>
+                                                </div>
+                                                <div class="uk-width-medium-1-1">
+                                                    <button 
+                                                    ng-disabled="!data.templates_upload.template" 
+                                                    ng-class=" (data.templates_upload.template)? 'md-btn-success uk-animation-slide-right' : 'uk-animation-slide-right md-btn-danger'" 
+                                                    class="md-btn uk-animation-slide-right btn-block" 
+                                                    ng-click="app.upload( data.templates_upload,'templates' ).then(app.handler);app.notify('Attempting to upload templates.');data.templates_upload.template=undefined">UPLOAD GROUP CSV</button>
+                                                        
+                                                </div>
+                                            </div>
+
+                                        </form>
+                                        
+                                        
+                                    </div>
+
+                                </div>
+
+                            </div>
+    
+                        </div>
+
+                    </li>
+                    
+                    <li aria-hidden="{{actTab=='edit'}}" ng-class="(actTab == 'edit') ? 'uk-active' :''">
+                        
+                        <div class="uk-grid md-card">
+
+                            <div class="uk-width-1-1 ">
+                                <div class="uk-grid ">
+                                    <div class="uk-width-1-1 md-card">
+    
+                                        <div class="md-card-content">
+                                            
+                                            <div class="uk-width-3-3 ">
+                                                <div  ng-if="fetched.templates" class="md-card">
+                    
+                                                    <div class="md-card-content">
+
+                                                        <div class="list list-inset uk-animation-slide-top">
+                                                            <label class="item item-input">
+                                                                <i class="icon ion-search placeholder-icon"></i>
+                                                                <input type="text" ng-model="search" value="" class="md-input" placeholder="Search">
+                                                            </label>
+                                                            <button class="md-btn" ng-click="fetch('templates');app.notify('Fetching Templates')"><i class="fa fa-refresh"></i></button>
+                                                        </div>
+                        
+                                                        <table id="tEdit" align="center" class="uk-table uk-table-justify uk-table-striped responsive-table" name="content">
+                                                            <thead style="font-weight:bold;">
+                                                                <tr style="font-weight:bold !important; background-color:#1976d2; text-transform:uppercase;">
+                                                                    <th class="uk-text-center" style="color:white !important; font-weight: bold;" ng-click="sort('template_id')">ID
+                                                                        <span class="icon " ng-show="sortKey=='template_id'" ng-class="{'fa fa-chevron-up':reverse,'fa fa-chevron-down':!reverse}"></span>
+                                                                    </th>
+                                                                    <th class="uk-text-center" style="color:white !important; font-weight: bold;" ng-click="sort('template_name')">NAME
+                                                                        <span class="icon " ng-show="sortKey=='template_name'" ng-class="{'fa fa-chevron-up':reverse,'fa fa-chevron-down':!reverse}"></span>
+                                                                    </th>
+                                                                    <th class="uk-text-center" style="color:white !important; font-weight: bold;" ng-click="sort('template_text')">TEXT
+                                                                        <span class="icon " ng-show="sortKey=='template_text'" ng-class="{'fa fa-chevron-up':reverse,'fa fa-chevron-down':!reverse}"></span>
+                                                                    </th>
+                                                                    <th class="uk-text-center" style="color:white !important; font-weight: bold;" ng-click="sort('template_senderid')">Owner
+                                                                        <span class="icon " ng-show="sortKey=='template_senderid'" ng-class="{'fa fa-chevron-up':reverse,'fa fa-chevron-down':!reverse}"></span>
+                                                                    </th>
+                                                                    <!-- <th style="color:white !important;" ng-click="sort('template_created')">Created
+                                                                        <span class="icon " ng-show="sortKey=='template_added'" ng-class="{'fa fa-chevron-up':reverse,'fa fa-chevron-down':!reverse}"></span>
+                                                                    </th> -->
+                                                                    <th class="uk-text-center col-white" style="font-weight: bold;" >AVAILABILITY</th>
+                                                                    <th class="uk-text-center col-white" style="font-weight: bold;">UPDATE</th>
+                                                                    <th class="uk-text-center col-white" style="font-weight: bold;">DELETE</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr ng-if="!fetched.templates">
+                                                                    <td colspan="6" ng-click="fetch([['templates']])">
+                                                                        <div class="fa fa-circle-o-notch fa-2x fa-spin"></div>
+                                                                        <p><code>Loading template Lists</code></p>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr class="" dir-paginate="template in fetched.templates |orderBy:sortKey:reverse|filter:search|itemsPerPage:5" pagination-id="templates">
+                                                                    <td scope="row" data-label="Template ID">
+                                                                        {{template.template_id}}
+                                                                    </td>
+                                                                    <td data-label="Template Name" style="" contenteditable ng-model="template.template_name">
+                                                                    </td>
+                                                                    <td data-label="Template Text" style="" contenteditable ng-model="template.template_text">
+                                                                    </td>
+                                                                    <td data-label="Template Owner" style="text-transform:capitalize;">
+                                                                        {{template.template_senderid}}
+                                                                    </td>
+                            
+                                                                    <!-- <td data-label="Template Added">
+                                                                        {{template.template_created}}
+                                                                    </td> -->
+
+                                                                    <td data-label="" class="noprint" style="margin:0 auto;text-align:center;">
+                            
+                                                                        <button 
+                                                                            ng-disabled="template.template_id==0" 
+                                                                            class="md-btn " 
+                                                                            ng-class="(template.template_active == 1) ? 'md-btn-success':'md-btn-danger'" 
+                                                                            ng-click="update('templates',setVar( { template_active: ( (template.template_active == 1) ? false: true )}, ['extras'],' template_id='+ template.template_id  ) )">
+                                                                                    <i class="fa" ng-class="(template.template_active == 1) ?  'fa-unlock': 'fa-lock'"
+                                                                                    ></i>
+                                                                        </button>
+                            
+                                                                    </td>
+                            
+                                                                    <td data-label="" class="noprint" style="margin:0 auto;text-align:center;">
+                        
+                                                                        <!--  ng-hide="!permissions.any_admin_client_org(data.me,template.template_organization)" -->
+                                                                        <button 
+                                                                            class="md-btn " 
+                                                                            ng-class="( (template.template_active == 1) ? 'md-btn-success' : 'md-btn-danger' )" 
+                                                                            ng-click="update('templates',setVar( { template_name: template.template_name, template_text : template.template_text }, ['extras'],'template_id='+ template.template_id  ) )"
+                                                                        >
+                                                                            <i class="fa fa-floppy-o"></i>
+                                                                        </button>
+                                                                            
+                                                                    </td>
+
+                                                                    <td data-label="" class="noprint" style="margin:0 auto;text-align:center;">
+                        
+                                                                        <!--  ng-hide="!permissions.any_admin_client_org(data.me,template.template_organization)" -->
+                                                                        <button 
+                                                                            class="md-btn " 
+                                                                            ng-class="( (template.template_active == 1) ? 'md-btn-success' : 'md-btn-danger' )" 
+                                                                            ng-click="del('templates',{ template_id: template.template_id, template_senderid : template.template_senderid } )"
+                                                                        >
+                                                                            <i class="fa fa-trash"></i>
+                                                                        </button>
+                                                                            
+                                                                    </td>
+                            
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>                                                           
+                                                        <dir-pagination-controls
+                                                            pagination-id="templates"
+                                                            max-size="5"
+                                                            direction-links="true"
+                                                            boundary-links="true" >
+                                                        </dir-pagination-controls>
+                    
+                                                    </div>
+                    
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+    
+                    </li>
+                    
+                    <li aria-hidden="{{actTab!='delete'}}" ng-class="(actTab == 'delete') ? 'uk-active' :''">
+                            <div class="uk-grid md-card">
+
+                                <div class="uk-width-1-3 ">
+                                    <div class="uk-grid ">
+                                        <div class="uk-width-1-1 md-card">
+        
+                                            <div class="md-card-header" style="padding-top:1em;">
+                                                <h5 class="col-blue" style="font-family: 'Andale Mono', sans-serif;"><u>CONTACT GROUP DELETING</u></h5>
+                                            </div>
+                                            <div class="md-card-content">
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</div>
+              
+
+
+

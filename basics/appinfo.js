@@ -6,7 +6,7 @@ function AppInfo( ){
 		//console.log( typeof(data) );
 
 		//application name
-		this.name 			= "\n\nApplication: ".info +"\t\tLightFramer".yell + " by Bixbyte";
+		this.name 			= "\n\nApplication: ".info +"\t\tLiteFramer".yell + " by Bixbyte";
 		
 		//application version
 		this.version 			= "\n\nVersion: \t\t".info + data.version;

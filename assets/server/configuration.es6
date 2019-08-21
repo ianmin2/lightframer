@@ -1,7 +1,7 @@
 //@ +====================================================================================
 //# Essential &  swichable application running
 
-//@ Define the authentication database [sql]  -- at the verge of deprecation 
+//@ Define the authentication database [sql,mongo]  -- at the verge of deprecation 
 global.authMeth = "sql";
 
 //@ Set the application's running port [the default port is 1357]
@@ -20,8 +20,7 @@ Object.assign(global, require( path.join(__dirname, 'enc_dec.js') ) );
 //@ Avail the "sms_actions" method globally
 Object.assign(global, require(path.join(__dirname, 'sms_actions.js') ));
 
-//@ Initialize the sms service
-
+//@ Initialize the sms service [when necessary]
 
 //@ Initialize the "mailer" service
 Object.assign( global, { mailer: nodemailer.createTransport(config.email.connection) });
